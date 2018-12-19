@@ -1,0 +1,16 @@
+.you {
+  .card {
+    cursor: pointer;
+  }
+
+  .controls {
+    transform: translateY(-100%);
+    position: absolute;
+    right: 0;
+    z-index: 10;
+
+    button {
+      margin: 0 3px;
+    }
+  }
+}

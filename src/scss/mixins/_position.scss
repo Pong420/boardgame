@@ -1,0 +1,23 @@
+@mixin position($top: null, $bottom: null, $left: null, $right: null, $position: absolute) {
+    position: $position;
+
+    @if ($top) {
+        top: $top;
+    }
+
+    @if ($bottom) {
+        bottom: $bottom;
+    }
+
+    @if ($left) {
+        left: $left;
+    }
+
+    @if ($right) {
+        right: $right;
+    }
+}
+
+@mixin fixed($top: null, $bottom: null, $left: null, $right: null) {
+    @include position($top, $bottom, $left, $right, fixed);
+}

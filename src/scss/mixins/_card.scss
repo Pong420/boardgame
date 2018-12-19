@@ -1,0 +1,13 @@
+@mixin card-size($size: $card-height, $reverse: false) {
+  $width: $size * 3/4;
+  $height: $size;
+
+  @if ($reverse) {
+    $width: $size;
+    $height: $size * 3/4;
+  }
+
+  width: $width;
+  height: $height;
+  border-radius: $height * 9px/120px;
+}
