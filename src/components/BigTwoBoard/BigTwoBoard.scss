@@ -1,0 +1,81 @@
+$card-height: 120px;
+$card-width: $card-height * 3/4;
+$card-margin: 5px;
+$grid-corner-size: $card-height + $card-margin * 2;
+$grid-template: $grid-corner-size calc(100% - #{$grid-corner-size * 2}) $grid-corner-size;
+$max-dimension: ($card-width + $card-margin * 2) * 13;
+
+.big-two-board {
+  @include relative();
+  @include sq-dimen(100%);
+  display: grid;
+  grid-template-rows: $grid-template;
+  grid-template-columns: $grid-template;
+
+  > * {
+    //bottom
+    &:nth-child(1) {
+      grid-column: 2;
+      grid-row: 3;
+    }
+
+    &.left {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    &.top {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    &.right {
+      grid-column: 3;
+      grid-row: 2;
+    }
+
+    &.center {
+      grid-column: 2;
+      grid-row: 2;
+
+      display: flex;
+      justify-content: center;
+    }
+
+    &.other-deck {
+      // top
+      &:nth-child(odd) .cards {
+        display: grid;
+        grid-template-columns: repeat(13, calc(100% / 13));
+        grid-template-rows: repeat(1, auto);
+        justify-content: center;
+
+        width: 100%;
+        max-width: $max-dimension;
+        margin: auto;
+      }
+
+      // left, right
+      &:nth-child(even) .cards {
+        display: grid;
+        grid-template-columns: repeat(1, auto);
+        grid-template-rows: repeat(13, calc(100% / 13));
+        align-items: center;
+
+        height: 100%;
+        max-height: calc(100% - 240px);
+        margin: auto;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+      }
+    }
+  }
+}
+
+#big-two-local {
+  @include sq-dimen(100%);
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: 50% 50%;
+}

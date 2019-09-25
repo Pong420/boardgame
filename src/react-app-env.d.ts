@@ -1,6 +1,8 @@
 /// <reference types="react-scripts" />
 
 declare module 'Poker.JS/release/poker.min.js';
+declare module 'boardgame.io/core';
+declare module 'boardgame.io/react';
 
 declare module '*.png';
 declare module '*.jpg';

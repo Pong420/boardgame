@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ImgHTMLAttributes } from 'react';
-import { CARD_WIDTH, CARD_HEIGHT } from '../Card';
+import { CARD_HEIGHT } from '../Card';
 
 interface Props extends ImgHTMLAttributes<HTMLImageElement> {
   degree?: number;
@@ -17,7 +17,7 @@ export const CardBack = React.memo(({ degree = 0 }: Props) => {
     getCardBack(degree).then(setSrc);
   }, [degree]);
 
-  return <img draggable={false} style={{ width: CARD_WIDTH }} src={src} alt="" />;
+  return <img draggable={false} src={src} alt="" />;
 });
 
 function getCardBack(degree: number) {
