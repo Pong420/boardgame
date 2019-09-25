@@ -1,0 +1,80 @@
+{
+  "name": "create-react-app",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint 'src/**/*.ts?(x)'",
+    "component": "node scripts/component.js",
+    "redux": "node scripts/redux.js",
+    "get": "node scripts/type.js"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.3",
+    "@types/node": "12.7.4",
+    "@types/react": "16.9.2",
+    "@types/react-dom": "16.9.0",
+    "@types/react-redux": "^7.1.2",
+    "@types/react-router-dom": "^4.3.5",
+    "husky": "^3.0.5",
+    "lint-staged": "^9.2.5",
+    "node-sass": "4.12.0",
+    "pong-react-scripts": "^3.1.1",
+    "prettier": "^1.18.2",
+    "sass": "^1.22.10",
+    "typescript": "3.5.3"
+  },
+  "dependencies": {
+    "Poker.JS": "https://github.com/Tairraos/Poker.JS.git",
+    "array-move": "^2.1.0",
+    "boardgame.io": "^0.32.1",
+    "lodash-es": "^4.17.15",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-router-dom": "^5.0.1",
+    "react-spring": "^9.0.0-beta.34",
+    "react-use-gesture": "^6.0.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint",
+      "prettier --ignore-path .eslintignore --write",
+      "git add"
+    ],
+    "{*.json,.{babelrc,eslintrc,prettierrc}}": [
+      "prettier --ignore-path .eslintignore --parser json --write",
+      "git add"
+    ],
+    "*.{css,scss}": [
+      "prettier --ignore-path .eslintignore --single-quote --write",
+      "git add"
+    ],
+    "*.{yml,md}": [
+      "prettier --ignore-path .eslintignore --single-quote --write",
+      "git add"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

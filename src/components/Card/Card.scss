@@ -1,0 +1,10 @@
+.card {
+  @include absolute();
+  transform-origin: center center;
+  pointer-events: auto;
+  user-select: none;
+
+  img {
+    @include absolute();
+  }
+}
