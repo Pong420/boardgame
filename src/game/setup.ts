@@ -1,20 +1,20 @@
 import { deck } from '../constants';
-import { Player, Secret } from '../typings';
+import { Player, Secret, Schema$Context } from '../typings';
 
-const getInitialValue = () => ({
+const createPlayer = (): Player => ({
   ready: false,
-  cards: []
+  hand: []
 });
 
 function createPlayers(num: number) {
-  const players: Record<number, Player> = {};
+  const players: Record<string, Player> = {};
   for (let i = 0; i < num; i++) {
-    players[i] = getInitialValue();
+    players[i] = createPlayer();
   }
   return players;
 }
 
-export function setup(ctx: any) {
+export function setup(ctx: Schema$Context) {
   const secret: Secret = {
     deck
   };
@@ -25,7 +25,6 @@ export function setup(ctx: any) {
       hand: null,
       player: ctx.currentPlayer
     },
-    // ctx.numPlayers incorrect in some time
     players: createPlayers(4)
   };
 }

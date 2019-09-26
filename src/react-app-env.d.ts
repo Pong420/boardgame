@@ -3,6 +3,7 @@
 declare module 'Poker.JS/release/poker.min.js';
 declare module 'boardgame.io/core';
 declare module 'boardgame.io/react';
+declare module 'boardgame.io/plugins';
 
 declare module '*.png';
 declare module '*.jpg';

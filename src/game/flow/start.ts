@@ -1,17 +1,16 @@
 import { setup } from '../setup';
-import { Handler, Context } from '../../typings';
+import { Schema$Phase } from '../../typings';
 
-export const start = {
+export const start: Schema$Phase = {
   next: 'ready',
   allowedMoves: ['playCard', 'pass', 'sort', 'setHand'],
-  endPhaseIf: (G: Handler, ctx: Context) => {
+  endPhaseIf: (G, ctx) => {
     for (let i = 0; i < ctx.numPlayers; i++) {
-      if (G.players[i].cards.length === 0) {
+      if (G.players[i].hand.length === 0) {
         return true;
       }
     }
   },
-  onPhaseEnd: (_: Handler, ctx: Context) => {
-    return setup(ctx);
-  }
+  // @ts-ignore
+  onPhaseEnd: (_, ctx) => setup(ctx)
 };
