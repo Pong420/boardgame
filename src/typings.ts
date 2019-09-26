@@ -10,6 +10,7 @@ export interface Secret {
 
 export interface Context {
   numPlayers: number;
+  phase: string;
   random: {
     Shuffle<T>(array: T[]): T[];
   };
@@ -22,4 +23,9 @@ export interface Player {
 export interface OtherPlayer {
   id: number;
   cards: number;
+  ready: boolean;
+}
+
+export interface Moves {
+  [key: string]: (...args: any[]) => any;
 }

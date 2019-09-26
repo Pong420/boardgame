@@ -1,9 +1,13 @@
+import { ready } from './ready';
 import { draw } from './draw';
+import { start } from './start';
 
 export const flow = {
-  startingPhase: 'draw',
+  startingPhase: 'ready',
 
   phases: {
-    draw
+    ready,
+    draw,
+    start
   }
 };

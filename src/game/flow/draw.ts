@@ -1,6 +1,7 @@
 import { Handler, Context } from '../../typings';
 
 export const draw = {
+  next: 'start',
   allowedMoves: [],
   onPhaseBegin(G: Handler, ctx: Context) {
     const poker = ctx.random.Shuffle(G.secret!.deck).slice(0, ctx.numPlayers * 13);
