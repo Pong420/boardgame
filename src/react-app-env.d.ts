@@ -1,6 +1,8 @@
 /// <reference types="react-scripts" />
 
+declare module 'pokersolver';
 declare module 'Poker.JS/release/poker.min.js';
+
 declare module 'boardgame.io/core';
 declare module 'boardgame.io/react';
 declare module 'boardgame.io/plugins';
@@ -19,8 +21,16 @@ declare interface Window {
 declare interface Window {
   Poker: {
     getCardData(height: number, suit: string, point: string): string;
-    getBackImage(height: number, frontColor: string, backColor: string): HTMLImageElement;
-    getBackCanvas(height: number, frontColor: string, backColor: string): HTMLCanvasElement;
+    getBackImage(
+      height: number,
+      frontColor: string,
+      backColor: string
+    ): HTMLImageElement;
+    getBackCanvas(
+      height: number,
+      frontColor: string,
+      backColor: string
+    ): HTMLCanvasElement;
   };
 }
 

@@ -13,6 +13,7 @@
     "get": "node scripts/type.js"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.139",
     "@types/lodash-es": "^4.17.3",
     "@types/node": "12.7.4",
     "@types/react": "16.9.2",
@@ -31,7 +32,9 @@
     "Poker.JS": "https://github.com/Tairraos/Poker.JS.git",
     "array-move": "^2.1.0",
     "boardgame.io": "^0.32.1",
+    "lodash": "^4.17.15",
     "lodash-es": "^4.17.15",
+    "pokersolver": "Pong420/pokersolver#38f2e64",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-router-dom": "^5.0.1",
@@ -64,14 +67,13 @@
     ]
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": {
+      "@typescript-eslint/consistent-type-assertions": 0
+    }
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",

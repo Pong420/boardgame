@@ -21,7 +21,7 @@ export function setup(ctx: Schema$Context) {
 
   return {
     secret,
-    history: {
+    previous: {
       hand: null,
       player: ctx.currentPlayer
     },

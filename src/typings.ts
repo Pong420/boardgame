@@ -2,6 +2,10 @@ export interface State {
   players: Record<number, Player>;
   opponents: Opponent[];
   secret?: Secret;
+  previous: {
+    hand: string[] | null;
+    player: string;
+  };
 }
 
 export interface Secret {
@@ -43,7 +47,11 @@ export interface Schema$Context {
   };
 }
 
-export type Schema$Move = (G: State, ctx: Schema$Context, ...args: any[]) => any;
+export type Schema$Move = (
+  G: State,
+  ctx: Schema$Context,
+  ...args: any[]
+) => any;
 
 export type Schema$Moves = Record<string, Schema$Move>;
 
@@ -93,4 +101,8 @@ export interface BoardComponentProps {
   isConnected: boolean;
 }
 
-export type Schema$PlayerView = (G: State, ctx: Schema$Context, playerID: string) => State;
+export type Schema$PlayerView = (
+  G: State,
+  ctx: Schema$Context,
+  playerID: string
+) => State;
