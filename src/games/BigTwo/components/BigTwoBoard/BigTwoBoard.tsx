@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { MyDeck } from './MyDeck';
 import { OtherDeck } from './OtherDeck';
-import { BoardComponentProps } from '../../typings';
+import { BoardComponentProps } from '../../../../typings';
 
 export function BigTwoBoard({
   isConnected,

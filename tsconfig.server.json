@@ -6,5 +6,5 @@
     "noEmit": false,
     "isolatedModules": false
   },
-  "include": ["src/server.ts", "src/react-app-env.d.ts", "src/game/**/*"]
+  "include": ["src/server.ts", "src/react-app-env.d.ts", "src/**/game/**/*"]
 }

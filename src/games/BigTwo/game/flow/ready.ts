@@ -1,5 +1,5 @@
 import { TurnOrder } from 'boardgame.io/core';
-import { Schema$Phase } from '../../typings';
+import { Schema$Phase } from '../../../../typings';
 
 export const ready: Schema$Phase = {
   next: 'draw',

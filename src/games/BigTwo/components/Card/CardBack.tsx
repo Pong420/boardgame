@@ -26,7 +26,11 @@ function getCardBack(degree: number) {
   }
 
   const img = window.Poker.getBackImage(CARD_HEIGHT, FRONT_COLOR, BACK_COLOR);
-  const canvas = window.Poker.getBackCanvas(CARD_HEIGHT, FRONT_COLOR, BACK_COLOR);
+  const canvas = window.Poker.getBackCanvas(
+    CARD_HEIGHT,
+    FRONT_COLOR,
+    BACK_COLOR
+  );
   const ctx = canvas.getContext('2d')!;
 
   if (degree % 180 !== 0) {

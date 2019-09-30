@@ -1,5 +1,5 @@
 import { setup } from '../setup';
-import { Schema$Phase } from '../../typings';
+import { Schema$Phase } from '../../../../typings';
 
 export const start: Schema$Phase = {
   next: 'ready',

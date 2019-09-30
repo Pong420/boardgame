@@ -1,3 +1,5 @@
 {
-  "HOME": "/"
+  "HOME": "/",
+  "BIG_TWO": "/big-two/:gameID/:playerID/:credentials",
+  "BIG_TWO_LOCAL": "/big-two/local/:numPlayers?"
 }

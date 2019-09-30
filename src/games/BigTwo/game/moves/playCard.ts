@@ -1,6 +1,6 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
 import { Hand } from 'pokersolver';
-import { Schema$Move } from '../../typings';
+import { Schema$Move } from '../../../../typings';
 import pullAll from 'lodash/pullAll';
 
 export const playCard: Schema$Move = (

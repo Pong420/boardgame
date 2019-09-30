@@ -1,5 +1,5 @@
 import { PlayerView } from 'boardgame.io/core';
-import { Schema$PlayerView } from '../typings';
+import { Schema$PlayerView } from '../../../typings';
 
 export const playerView: Schema$PlayerView = (G, ctx, playerID) => {
   let r = { ...G };

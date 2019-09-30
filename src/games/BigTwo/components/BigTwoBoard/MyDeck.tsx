@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useMemo, useCallback } from 'react';
 import { useDrag } from 'react-use-gesture';
 import { useSprings, to } from 'react-spring';
 import { Card, CARD_WIDTH, CARD_HEIGHT } from '../Card';
-import { useMeasure } from '../../hooks/useMeasure';
+import { useMeasure } from '../../../../hooks/useMeasure';
 import { sortBy } from '../../utils/sortBy';
 import clamp from 'lodash-es/clamp';
 import swap from 'array-move';

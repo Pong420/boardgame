@@ -2,7 +2,7 @@ import path from 'path';
 import serve from 'koa-static';
 import dotenv from 'dotenv';
 import { Server } from 'boardgame.io/server';
-import { BigTwo } from './game';
+import { BigTwo } from './games/BigTwo/game';
 
 dotenv.config({
   path: '.env.development'
