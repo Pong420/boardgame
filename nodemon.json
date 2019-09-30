@@ -1,0 +1,5 @@
+{
+  "restartable": "rs",
+  "watch": ["src/server.ts", "src/game/**/*"],
+  "exec": "yarn server:build && yarn start"
+}

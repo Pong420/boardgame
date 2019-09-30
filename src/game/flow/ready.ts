@@ -6,8 +6,6 @@ export const ready: Schema$Phase = {
   allowedMoves: ['ready'],
   turnOrder: TurnOrder.ANY,
   endPhaseIf: (G, ctx) => {
-    console.log(G);
-
     for (let i = 0; i < ctx.numPlayers; i++) {
       if (G.players[i].ready === false) {
         return false;

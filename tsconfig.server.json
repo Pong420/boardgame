@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "./build/server",
+    "noEmit": false,
+    "isolatedModules": false
+  },
+  "include": ["src/server.ts", "src/react-app-env.d.ts", "src/game/**/*"]
+}
