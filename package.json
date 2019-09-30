@@ -13,31 +13,31 @@
     "get": "node scripts/type.js"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.139",
+    "@types/lodash": "^4.14.141",
     "@types/lodash-es": "^4.17.3",
-    "@types/node": "12.7.4",
-    "@types/react": "16.9.2",
-    "@types/react-dom": "16.9.0",
-    "@types/react-redux": "^7.1.2",
-    "@types/react-router-dom": "^4.3.5",
-    "husky": "^3.0.5",
-    "lint-staged": "^9.2.5",
+    "@types/node": "12.7.8",
+    "@types/react": "16.9.3",
+    "@types/react-dom": "16.9.1",
+    "@types/react-redux": "^7.1.4",
+    "@types/react-router-dom": "^5.1.0",
+    "husky": "^3.0.7",
+    "lint-staged": "^9.4.0",
     "node-sass": "4.12.0",
-    "pong-react-scripts": "^3.1.1",
+    "pong-react-scripts": "^3.1.2",
     "prettier": "^1.18.2",
-    "sass": "^1.22.10",
-    "typescript": "3.5.3"
+    "sass": "^1.22.12",
+    "typescript": "3.6.3"
   },
   "dependencies": {
-    "Poker.JS": "https://github.com/Tairraos/Poker.JS.git",
+    "Poker.JS": "Tairraos/Poker.JS#5f53c9a",
     "array-move": "^2.1.0",
     "boardgame.io": "^0.32.1",
     "lodash": "^4.17.15",
     "lodash-es": "^4.17.15",
     "pokersolver": "Pong420/pokersolver#38f2e64",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "react-router-dom": "^5.0.1",
+    "react": "^16.10.1",
+    "react-dom": "^16.10.1",
+    "react-router-dom": "^5.1.1",
     "react-spring": "^9.0.0-beta.34",
     "react-use-gesture": "^6.0.1",
     "resize-observer-polyfill": "^1.5.1"
@@ -67,10 +67,7 @@
     ]
   },
   "eslintConfig": {
-    "extends": "react-app",
-    "rules": {
-      "@typescript-eslint/consistent-type-assertions": 0
-    }
+    "extends": "react-app"
   },
   "browserslist": {
     "production": [">0.2%", "not dead", "not op_mini all"],
