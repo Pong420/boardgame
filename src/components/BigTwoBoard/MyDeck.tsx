@@ -3,11 +3,13 @@ import { useDrag } from 'react-use-gesture';
 import { useSprings, to } from 'react-spring';
 import { Card, CARD_WIDTH, CARD_HEIGHT } from '../Card';
 import { useMeasure } from '../../hooks/useMeasure';
+import { sortBy } from '../../utils/sortBy';
 import clamp from 'lodash-es/clamp';
 import swap from 'array-move';
 
 interface Props {
   deck: string[];
+  setHand: (cards: string[]) => void;
 }
 
 interface FnProps {
@@ -21,8 +23,8 @@ interface FnProps {
   selected?: boolean;
 }
 
-export function MyDeck({ deck }: Props) {
-  const order = useRef(deck.map((_, index) => index));
+export function MyDeck({ deck, setHand }: Props) {
+  const order = useRef<number[]>(deck.map((_, index) => index));
 
   const selected = useRef<number[]>([]);
   const dragDelta = React.useRef(0);
@@ -30,12 +32,24 @@ export function MyDeck({ deck }: Props) {
   const [bindMeasure, { width: viewWidth }] = useMeasure<HTMLDivElement>();
 
   const width = useMemo(
-    () => Math.max(CARD_WIDTH / 4, Math.min(viewWidth / deck.length, CARD_WIDTH + 10)),
+    () =>
+      Math.max(
+        CARD_WIDTH / 4,
+        Math.min(viewWidth / deck.length, CARD_WIDTH + 10)
+      ),
     [viewWidth, deck.length]
   );
 
   const fn = useCallback(
-    ({ width, order, down = false, originalIndex = -1, curIndex = -1, x = 0, y = 0 }: FnProps) => {
+    ({
+      width,
+      order,
+      down = false,
+      originalIndex = -1,
+      curIndex = -1,
+      x = 0,
+      y = 0
+    }: FnProps) => {
       return (index: number) => {
         return down && index === originalIndex
           ? {
@@ -59,10 +73,32 @@ export function MyDeck({ deck }: Props) {
     []
   );
 
-  const [springs, setSprings] = useSprings(deck.length, fn({ width, order: order.current }));
+  const [springs, setSprings] = useSprings(
+    deck.length,
+    fn({ width, order: order.current })
+  );
+
+  const [sortByPoints, sortBySuits] = useMemo(() => {
+    const handler = (...args: Parameters<typeof sortBy>) => () => {
+      const sort = sortBy(...args);
+      const newHand = sort(deck);
+      setHand(deck);
+      order.current = newHand.map(card => deck.indexOf(card));
+      setSprings(fn({ width, order: order.current }));
+    };
+    return [handler('points'), handler('suits')];
+  }, [deck, setHand, setSprings, fn, width]);
 
   const bind = useDrag(
-    ({ first, last, down, time = 0, args: [originalIndex], movement: [x, y], distance }) => {
+    ({
+      first,
+      last,
+      down,
+      time = 0,
+      args: [originalIndex],
+      movement: [x, y],
+      distance
+    }) => {
       if (first) {
         dragDelta.current = time;
       } else if (last) {
@@ -70,11 +106,17 @@ export function MyDeck({ deck }: Props) {
       }
 
       const curIndex = order.current.indexOf(originalIndex);
-      const curCol = clamp(Math.round((curIndex * width + x) / width), 0, deck.length - 1);
+      const curCol = clamp(
+        Math.round((curIndex * width + x) / width),
+        0,
+        deck.length - 1
+      );
       const newOrder = swap(order.current, curIndex, curCol);
 
       if (distance > 1) {
-        setSprings(fn({ width, order: newOrder, down, originalIndex, curIndex, x, y }));
+        setSprings(
+          fn({ width, order: newOrder, down, originalIndex, curIndex, x, y })
+        );
         if (!down) order.current = newOrder;
       }
     }
@@ -88,7 +130,10 @@ export function MyDeck({ deck }: Props) {
       if (dragDelta.current < 100) {
         selected.current = select
           ? [...selected.current, originalIndex]
-          : [...selected.current.slice(0, index), ...selected.current.slice(index + 1)];
+          : [
+              ...selected.current.slice(0, index),
+              ...selected.current.slice(index + 1)
+            ];
         setSprings(idx => ({
           y: selected.current.includes(idx) ? -10 : 0
         }));
@@ -99,12 +144,19 @@ export function MyDeck({ deck }: Props) {
     [setSprings]
   );
 
+  // resize
   useEffect(() => {
     setSprings(fn({ width, order: order.current }));
-  }, [setSprings, deck, width, fn]);
+  }, [setSprings, width, fn]);
 
   return (
     <div className="my-deck" {...bindMeasure}>
+      <div className="big-two-control">
+        <button onClick={sortByPoints}>Sort by Points</button>
+        <button onClick={sortBySuits}>Sort by Suits</button>
+        <button>Pass</button>
+        <button>Play Cards</button>
+      </div>
       <div className="cards">
         {springs.map(({ zIndex, shadow, x, y, scale }, i) => {
           const poker = deck[i];
@@ -116,7 +168,9 @@ export function MyDeck({ deck }: Props) {
               poker={poker}
               style={{
                 zIndex,
-                boxShadow: shadow.to(s => `rgba(0, 0, 0, 0.15) 0px ${s}px ${2 * s}px 0px`),
+                boxShadow: shadow.to(
+                  s => `rgba(0, 0, 0, 0.15) 0px ${s}px ${2 * s}px 0px`
+                ),
                 transform: to(
                   [x, y, scale],
                   (x, y, s) => `translate3d(${x}px,${y}px,0) scale(${s})`

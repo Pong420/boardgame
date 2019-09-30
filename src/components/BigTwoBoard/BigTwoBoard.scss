@@ -2,8 +2,8 @@ $card-height: 120px;
 $card-width: $card-height * 3/4;
 $card-margin: 5px;
 $grid-corner-size: $card-height + $card-margin * 2;
-$grid-template: $grid-corner-size calc(100% - #{$grid-corner-size * 2}) $grid-corner-size;
-$max-dimension: ($card-width + $card-margin * 2) * 13;
+$grid-template: $grid-corner-size calc(100% - #{$grid-corner-size * 2})
+  $grid-corner-size;
 
 .big-two-board {
   &.ready {
@@ -48,7 +48,24 @@ $max-dimension: ($card-width + $card-margin * 2) * 13;
         justify-content: center;
       }
 
+      &.my-deck {
+        @include relative();
+
+        .big-two-control {
+          @include absolute(-5px);
+          @include dimen(100%);
+          @include flex(center, center);
+          transform: translateY(-100%);
+
+          button + button {
+            margin-left: 10px;
+          }
+        }
+      }
+
       &.other-deck {
+        @include relative();
+
         // top
         &:nth-child(odd) .cards {
           display: grid;
@@ -57,7 +74,6 @@ $max-dimension: ($card-width + $card-margin * 2) * 13;
           justify-content: center;
 
           width: 100%;
-          max-width: $max-dimension;
           margin: auto;
         }
 
@@ -69,7 +85,6 @@ $max-dimension: ($card-width + $card-margin * 2) * 13;
           align-items: center;
 
           height: 100%;
-          max-height: calc(100% - 240px);
           margin: auto;
           position: absolute;
           top: 0;

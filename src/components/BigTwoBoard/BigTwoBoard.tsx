@@ -3,7 +3,13 @@ import { MyDeck } from './MyDeck';
 import { OtherDeck } from './OtherDeck';
 import { BoardComponentProps } from '../../typings';
 
-export function BigTwoBoard({ isConnected, G, ctx, moves, playerID }: BoardComponentProps) {
+export function BigTwoBoard({
+  isConnected,
+  G,
+  ctx,
+  moves,
+  playerID
+}: BoardComponentProps) {
   const { players, opponents } = G;
   const { phase } = ctx;
   const player = players[Number(playerID)];
@@ -31,7 +37,7 @@ export function BigTwoBoard({ isConnected, G, ctx, moves, playerID }: BoardCompo
   } else {
     content = (
       <>
-        <MyDeck deck={player.hand} />
+        <MyDeck deck={player.hand} setHand={moves.setHand} />
         {opponents.map(({ numOfCards }, index) => (
           <OtherDeck key={index} index={index} numOfCards={numOfCards} />
         ))}

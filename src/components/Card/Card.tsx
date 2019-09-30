@@ -13,7 +13,7 @@ interface Props extends AnimatedDivProps {
 export const CARD_HEIGHT = 120;
 export const CARD_WIDTH = CARD_HEIGHT * 0.75;
 
-export const Card = React.memo(({ poker, degree, style, ...props }: Props) => {
+export const Card = ({ poker, degree, style, ...props }: Props) => {
   return (
     <animated.div
       className="card"
@@ -24,9 +24,13 @@ export const Card = React.memo(({ poker, degree, style, ...props }: Props) => {
       <img
         className="front"
         draggable={false}
-        src={window.Poker.getCardData(CARD_HEIGHT * 3, poker[1], poker[0].replace(/t/i, '10'))}
+        src={window.Poker.getCardData(
+          CARD_HEIGHT * 3,
+          poker[1],
+          poker[0].replace(/t/i, '10')
+        )}
         alt=""
       />
     </animated.div>
   );
-});
+};
