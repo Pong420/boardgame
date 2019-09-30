@@ -41,11 +41,22 @@ $grid-template: $grid-corner-size calc(100% - #{$grid-corner-size * 2})
       }
 
       &.center {
+        &,
+        .last-hand {
+          @include flex(center, center);
+        }
+
         grid-column: 2;
         grid-row: 2;
+        text-align: center;
+      }
 
-        display: flex;
-        justify-content: center;
+      &.my-deck,
+      &.other-deck {
+        .card {
+          @include absolute();
+          transform-origin: center bottom;
+        }
       }
 
       &.my-deck {

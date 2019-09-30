@@ -1,15 +1,11 @@
 import React, { ReactNode } from 'react';
 import { MyDeck } from './MyDeck';
 import { OtherDeck } from './OtherDeck';
+import { Center } from './Center';
 import { BoardComponentProps } from '../../../../typings';
 
-export function BigTwoBoard({
-  isConnected,
-  G,
-  ctx,
-  moves,
-  playerID
-}: BoardComponentProps) {
+export function BigTwoBoard(props: BoardComponentProps) {
+  const { isConnected, G, ctx, moves, playerID } = props;
   const { players, opponents } = G;
   const { phase } = ctx;
   const player = players[Number(playerID)];
@@ -37,10 +33,15 @@ export function BigTwoBoard({
   } else {
     content = (
       <>
-        <MyDeck deck={player.hand} setHand={moves.setHand} />
+        <MyDeck
+          deck={player.hand}
+          setHand={moves.setHand}
+          playCard={moves.playCard}
+        />
         {opponents.map(({ numOfCards }, index) => (
           <OtherDeck key={index} index={index} numOfCards={numOfCards} />
         ))}
+        <Center {...props}></Center>
       </>
     );
   }

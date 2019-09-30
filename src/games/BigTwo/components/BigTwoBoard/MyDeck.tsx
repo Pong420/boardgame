@@ -10,6 +10,7 @@ import swap from 'array-move';
 interface Props {
   deck: string[];
   setHand: (cards: string[]) => void;
+  playCard: (cards: string[], combination: string[]) => void;
 }
 
 interface FnProps {
@@ -23,8 +24,8 @@ interface FnProps {
   selected?: boolean;
 }
 
-export function MyDeck({ deck, setHand }: Props) {
-  const order = useRef<number[]>(deck.map((_, index) => index));
+export function MyDeck({ deck, setHand, playCard }: Props) {
+  const order = useRef<number[]>([]);
 
   const selected = useRef<number[]>([]);
   const dragDelta = React.useRef(0);
@@ -129,7 +130,7 @@ export function MyDeck({ deck, setHand }: Props) {
 
       if (dragDelta.current < 100) {
         selected.current = select
-          ? [...selected.current, originalIndex]
+          ? [...selected.current, originalIndex].slice(-5)
           : [
               ...selected.current.slice(0, index),
               ...selected.current.slice(index + 1)
@@ -144,10 +145,18 @@ export function MyDeck({ deck, setHand }: Props) {
     [setSprings]
   );
 
+  const playCardCallback = useCallback(() => {
+    playCard(deck, selected.current.map(index => deck[index]));
+  }, [playCard, deck]);
+
   // resize
   useEffect(() => {
     setSprings(fn({ width, order: order.current }));
   }, [setSprings, width, fn]);
+
+  useEffect(() => {
+    order.current = deck.map((_, index) => index);
+  }, [deck]);
 
   return (
     <div className="my-deck" {...bindMeasure}>
@@ -155,7 +164,7 @@ export function MyDeck({ deck, setHand }: Props) {
         <button onClick={sortByPoints}>Sort by Points</button>
         <button onClick={sortBySuits}>Sort by Suits</button>
         <button>Pass</button>
-        <button>Play Cards</button>
+        <button onClick={playCardCallback}>Play Cards</button>
       </div>
       <div className="cards">
         {springs.map(({ zIndex, shadow, x, y, scale }, i) => {

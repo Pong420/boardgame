@@ -1,11 +1,9 @@
 .card {
-  @include absolute();
-  transform-origin: center bottom;
-  pointer-events: auto;
+  @include relative();
   user-select: none;
 
   img {
-    @include absolute();
+    @include absolute(0, null, 0);
     @include dimen(100%);
   }
 }
