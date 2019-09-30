@@ -7,7 +7,7 @@ interface MatchParams {
   numPlayers?: string;
 }
 
-const gameID = 'big-two' + Date.now();
+const gameID = 'big-two-local';
 
 export function BigTwoLocalClient({ match }: RouteComponentProps<MatchParams>) {
   const numPlayers = Math.max(2, +(match.params.numPlayers || 4));
