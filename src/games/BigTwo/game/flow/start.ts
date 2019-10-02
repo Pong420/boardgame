@@ -1,7 +1,7 @@
 import { setup } from '../setup';
-import { Schema$Phase } from '../../../../typings';
+import { State, Schema$Phase } from '../../typings';
 
-export const start: Schema$Phase = {
+export const start: Schema$Phase<State> = {
   next: 'ready',
   allowedMoves: ['playCard', 'pass', 'sort', 'setHand'],
   endPhaseIf: (G, ctx) => {

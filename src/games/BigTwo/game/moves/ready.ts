@@ -1,5 +1,5 @@
-import { Schema$Move } from '../../../../typings';
+import { State, Schema$Move } from '../../typings';
 
-export const ready: Schema$Move = (G, _, playerID: string) => {
+export const ready: Schema$Move<State> = (G, _, playerID: string) => {
   G.players[Number(playerID)].ready = true;
 };

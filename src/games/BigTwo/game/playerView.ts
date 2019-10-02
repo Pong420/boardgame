@@ -1,7 +1,7 @@
 import { PlayerView } from 'boardgame.io/core';
-import { Schema$PlayerView } from '../../../typings';
+import { State, Schema$PlayerView } from '../typings';
 
-export const playerView: Schema$PlayerView = (G, ctx, playerID) => {
+export const playerView: Schema$PlayerView<State> = (G, ctx, playerID) => {
   let r = { ...G };
   const { numPlayers } = ctx;
 

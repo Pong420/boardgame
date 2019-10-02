@@ -2,9 +2,9 @@ import React, { ReactNode } from 'react';
 import { MyDeck } from './MyDeck';
 import { OtherDeck } from './OtherDeck';
 import { Center } from './Center';
-import { BoardComponentProps } from '../../../../typings';
+import { State, BoardComponentProps } from '../../typings';
 
-export function BigTwoBoard(props: BoardComponentProps) {
+export function BigTwoBoard(props: BoardComponentProps<State>) {
   const { isConnected, G, ctx, moves, playerID } = props;
   const { players, opponents } = G;
   const { phase } = ctx;

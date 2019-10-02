@@ -1,27 +1,3 @@
-export interface State {
-  players: Record<number, Player>;
-  opponents: Opponent[];
-  secret?: Secret;
-  previous: {
-    hand: string[] | null;
-    player: string;
-  };
-}
-
-export interface Secret {
-  deck: string[];
-}
-
-export interface Player {
-  ready: boolean;
-  hand: string[];
-}
-
-export interface Opponent extends Omit<Player, 'hand'> {
-  id: number;
-  numOfCards: number;
-}
-
 export interface Schema$Context {
   numPlayers: number;
   turn: number;
@@ -47,15 +23,15 @@ export interface Schema$Context {
   };
 }
 
-export type Schema$Move = (
+export type Schema$Move<State> = (
   G: State,
   ctx: Schema$Context,
   ...args: any[]
 ) => any;
 
-export type Schema$Moves = Record<string, Schema$Move>;
+export type Schema$Moves<State> = Record<string, Schema$Move<State>>;
 
-interface SharedProps {
+interface SharedProps<State> {
   turnOrder?: any;
   endTurnIf?: (G: State, ctx: Schema$Context) => boolean | object;
   endGameIf?: (G: State, ctx: Schema$Context) => any;
@@ -64,13 +40,13 @@ interface SharedProps {
   onMove?: (G: State, ctx: Schema$Context) => State;
 }
 
-export interface Schema$Flow extends SharedProps {
+export interface Schema$Flow<State> extends SharedProps<State> {
   phases?: {
-    [key: string]: Schema$Phase;
+    [key: string]: Schema$Phase<State>;
   };
 }
 
-export interface Schema$Phase extends SharedProps {
+export interface Schema$Phase<State> extends SharedProps<State> {
   allowedMoves?: string[];
   undoableMoves?: string[];
   next?: string;
@@ -85,7 +61,7 @@ export interface Schema$Events {
   endPhase(): void;
 }
 
-export interface BoardComponentProps {
+export interface BoardComponentProps<State> {
   G: State;
   ctx: Schema$Context;
   events: Schema$Events;
@@ -101,7 +77,7 @@ export interface BoardComponentProps {
   isConnected: boolean;
 }
 
-export type Schema$PlayerView = (
+export type Schema$PlayerView<State> = (
   G: State,
   ctx: Schema$Context,
   playerID: string

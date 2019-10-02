@@ -1,6 +1,6 @@
-import { Schema$Phase } from '../../../../typings';
+import { State, Schema$Phase } from '../../typings';
 
-export const draw: Schema$Phase = {
+export const draw: Schema$Phase<State> = {
   next: 'start',
   allowedMoves: [],
   onPhaseBegin(G, ctx) {

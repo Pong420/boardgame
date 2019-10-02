@@ -1,7 +1,7 @@
 import { TurnOrder } from 'boardgame.io/core';
-import { Schema$Phase } from '../../../../typings';
+import { State, Schema$Phase } from '../../typings';
 
-export const ready: Schema$Phase = {
+export const ready: Schema$Phase<State> = {
   next: 'draw',
   allowedMoves: ['ready'],
   turnOrder: TurnOrder.ANY,

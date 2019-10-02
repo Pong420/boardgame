@@ -1,5 +1,5 @@
 import { deck } from '../constants';
-import { Player, Secret, Schema$Context } from '../../../typings';
+import { Player, Secret, Schema$Context } from '../typings';
 
 const createPlayer = (): Player => ({
   ready: false,
