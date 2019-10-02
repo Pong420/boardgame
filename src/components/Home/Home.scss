@@ -1,0 +1,4 @@
+.home {
+  @include flex(center, center);
+  @include sq-dimen(100%);
+}

@@ -82,3 +82,31 @@ export type Schema$PlayerView<State> = (
   ctx: Schema$Context,
   playerID: string
 ) => State;
+
+export interface Params$CreateRoom<T = any> {
+  name: string;
+  numPlayers: number;
+  setupData?: T;
+}
+
+export interface Params$JoinRoom {
+  name: string;
+  roomID: string;
+  playerID: number;
+  playerName: string;
+}
+
+export interface Params$LeaveRoom {
+  name: string;
+  roomID: string;
+  playerID: number;
+  credentials: string;
+}
+
+export interface Params$GetAllRoom {
+  name: string;
+}
+
+export interface Params$GetRoom extends Params$GetAllRoom {
+  roomID: string;
+}

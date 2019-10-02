@@ -5,7 +5,7 @@ import { playerView } from './playerView';
 import { moves } from './moves';
 
 export const BigTwo = Game({
-  name: 'big-two',
+  name: 'Big Two',
   flow,
   moves,
   setup,
