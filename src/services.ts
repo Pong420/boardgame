@@ -4,23 +4,24 @@ import {
   Params$JoinRoom,
   Params$LeaveRoom,
   Params$GetAllRoom,
-  Params$GetRoom
+  Params$GetRoom,
+  Response$GetAllRoom
 } from './typings';
 
 const api = axios.create({
   baseURL: process.env.NODE_ENV === 'development' ? '/api' : '/'
 });
 
-export function createRoom({ name }: Params$CreateRoom) {
-  return api.post(`/games/${name}/create`, {});
+export function createRoom({ name, ...params }: Params$CreateRoom) {
+  return api.post(`/games/${name}/create`, params);
 }
 
-export function joinRoom({ name, roomID }: Params$JoinRoom) {
-  return api.post(`/games/${name}/${roomID}/join`, {});
+export function joinRoom({ name, roomID, ...params }: Params$JoinRoom) {
+  return api.post(`/games/${name}/${roomID}/join`, params);
 }
 
-export function leveRoom({ name, roomID }: Params$LeaveRoom) {
-  return api.post(`/games/${name}/${roomID}/leave`, {});
+export function leveRoom({ name, roomID, ...params }: Params$LeaveRoom) {
+  return api.post(`/games/${name}/${roomID}/leave`, params);
 }
 
 export function getAllGames() {
@@ -28,7 +29,7 @@ export function getAllGames() {
 }
 
 export function getAllRoom({ name }: Params$GetAllRoom) {
-  return api.get(`/games/${name}`);
+  return api.get<Response$GetAllRoom>(`/games/${name}`);
 }
 
 export function getRoom({ name, roomID }: Params$GetRoom) {

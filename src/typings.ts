@@ -110,3 +110,10 @@ export interface Params$GetAllRoom {
 export interface Params$GetRoom extends Params$GetAllRoom {
   roomID: string;
 }
+
+export interface Response$GetAllRoom {
+  rooms: Array<{
+    gameID: string;
+    players: Array<{ id: number }>;
+  }>;
+}
