@@ -7,10 +7,10 @@ export const playCard: Schema$Move = (
   G,
   ctx,
   playerCards: string[],
-  combination: string[]
+  hand: string[]
 ) => {
-  if (Array.isArray(combination) && combination.length) {
-    const newHand = Hand.solve(combination, 'bigtwo');
+  if (Array.isArray(hand) && hand.length) {
+    const newHand = Hand.solve(hand, 'bigtwo');
     const samePlayer = G.previous.player === ctx.currentPlayer;
 
     let win = true;

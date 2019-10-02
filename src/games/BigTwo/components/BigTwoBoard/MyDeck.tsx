@@ -28,7 +28,6 @@ interface FnProps {
 export function MyDeck({ deck, setHand, pass, playCard }: Props) {
   const initialDeck = useRef(deck);
   const order = useRef<number[]>([]);
-
   const selected = useRef<number[]>([]);
   const dragDelta = useRef(0);
 
@@ -171,7 +170,6 @@ export function MyDeck({ deck, setHand, pass, playCard }: Props) {
       <div className="cards">
         {springs.map(({ zIndex, shadow, x, y, scale }, i) => {
           const poker = initialDeck.current[i];
-
           if (deck.includes(poker)) {
             return (
               <Card

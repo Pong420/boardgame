@@ -42,7 +42,7 @@ export function BigTwoBoard(props: BoardComponentProps) {
         {opponents.map(({ numOfCards }, index) => (
           <OtherDeck key={index} index={index} numOfCards={numOfCards} />
         ))}
-        <Center {...props}></Center>
+        <Center {...props} />
       </>
     );
   }
