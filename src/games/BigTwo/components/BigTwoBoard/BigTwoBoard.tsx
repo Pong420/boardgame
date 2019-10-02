@@ -37,6 +37,7 @@ export function BigTwoBoard(props: BoardComponentProps) {
           deck={player.hand}
           setHand={moves.setHand}
           playCard={moves.playCard}
+          pass={moves.pass}
         />
         {opponents.map(({ numOfCards }, index) => (
           <OtherDeck key={index} index={index} numOfCards={numOfCards} />

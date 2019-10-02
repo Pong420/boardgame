@@ -9,8 +9,7 @@ export const playCard: Schema$Move = (
   playerCards: string[],
   combination: string[]
 ) => {
-  console.log('Play Card', playerCards, combination);
-  if (Array.isArray(combination) && combination.length && G.secret) {
+  if (Array.isArray(combination) && combination.length) {
     const newHand = Hand.solve(combination, 'bigtwo');
     const samePlayer = G.previous.player === ctx.currentPlayer;
 
@@ -21,8 +20,6 @@ export const playCard: Schema$Move = (
     const playerCardsRemain = pullAll(playerCards.slice(), cards);
 
     if (newHand.isPossible) {
-      console.log('Vaild Card Combination');
-
       if (!samePlayer) {
         const lastHand = Hand.solve(G.previous.hand, 'bigtwo');
         win = newHand === Hand.winners([newHand, lastHand])[0];

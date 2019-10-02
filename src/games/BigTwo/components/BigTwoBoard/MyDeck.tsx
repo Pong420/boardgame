@@ -11,6 +11,7 @@ interface Props {
   deck: string[];
   setHand: (cards: string[]) => void;
   playCard: (cards: string[], combination: string[]) => void;
+  pass: () => void;
 }
 
 interface FnProps {
@@ -24,7 +25,7 @@ interface FnProps {
   selected?: boolean;
 }
 
-export function MyDeck({ deck, setHand, playCard }: Props) {
+export function MyDeck({ deck, setHand, pass, playCard }: Props) {
   const initialDeck = useRef(deck);
   const order = useRef<number[]>([]);
 
@@ -164,30 +165,35 @@ export function MyDeck({ deck, setHand, playCard }: Props) {
       <div className="big-two-control">
         <button onClick={sortByPoints}>Sort by Points</button>
         <button onClick={sortBySuits}>Sort by Suits</button>
-        <button>Pass</button>
+        <button onClick={pass}>Pass</button>
         <button onClick={playCardCallback}>Play Cards</button>
       </div>
       <div className="cards">
         {springs.map(({ zIndex, shadow, x, y, scale }, i) => {
           const poker = initialDeck.current[i];
-          return (
-            <Card
-              {...bind(i)}
-              onClick={toggleSelection(i)}
-              key={i}
-              poker={poker}
-              style={{
-                zIndex,
-                boxShadow: shadow.to(
-                  s => `rgba(0, 0, 0, 0.15) 0px ${s}px ${2 * s}px 0px`
-                ),
-                transform: to(
-                  [x, y, scale],
-                  (x, y, s) => `translate3d(${x}px,${y}px,0) scale(${s})`
-                )
-              }}
-            />
-          );
+
+          if (deck.includes(poker)) {
+            return (
+              <Card
+                {...bind(i)}
+                onClick={toggleSelection(i)}
+                key={i}
+                poker={poker}
+                style={{
+                  zIndex,
+                  boxShadow: shadow.to(
+                    s => `rgba(0, 0, 0, 0.15) 0px ${s}px ${2 * s}px 0px`
+                  ),
+                  transform: to(
+                    [x, y, scale],
+                    (x, y, s) => `translate3d(${x}px,${y}px,0) scale(${s})`
+                  )
+                }}
+              />
+            );
+          }
+
+          return null;
         })}
       </div>
     </div>
