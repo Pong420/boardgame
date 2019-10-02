@@ -25,10 +25,11 @@ interface FnProps {
 }
 
 export function MyDeck({ deck, setHand, playCard }: Props) {
+  const initialDeck = useRef(deck);
   const order = useRef<number[]>([]);
 
   const selected = useRef<number[]>([]);
-  const dragDelta = React.useRef(0);
+  const dragDelta = useRef(0);
 
   const [bindMeasure, { width: viewWidth }] = useMeasure<HTMLDivElement>();
 
@@ -83,12 +84,10 @@ export function MyDeck({ deck, setHand, playCard }: Props) {
     const handler = (...args: Parameters<typeof sortBy>) => () => {
       const sort = sortBy(...args);
       const newHand = sort(deck);
-      setHand(deck);
-      order.current = newHand.map(card => deck.indexOf(card));
-      setSprings(fn({ width, order: order.current }));
+      setHand(newHand);
     };
     return [handler('points'), handler('suits')];
-  }, [deck, setHand, setSprings, fn, width]);
+  }, [deck, setHand]);
 
   const bind = useDrag(
     ({
@@ -130,7 +129,7 @@ export function MyDeck({ deck, setHand, playCard }: Props) {
 
       if (dragDelta.current < 100) {
         selected.current = select
-          ? [...selected.current, originalIndex].slice(-5)
+          ? [...selected.current, originalIndex]
           : [
               ...selected.current.slice(0, index),
               ...selected.current.slice(index + 1)
@@ -146,7 +145,8 @@ export function MyDeck({ deck, setHand, playCard }: Props) {
   );
 
   const playCardCallback = useCallback(() => {
-    playCard(deck, selected.current.map(index => deck[index]));
+    playCard(deck, selected.current.map(index => initialDeck.current[index]));
+    selected.current = [];
   }, [playCard, deck]);
 
   // resize
@@ -155,8 +155,9 @@ export function MyDeck({ deck, setHand, playCard }: Props) {
   }, [setSprings, width, fn]);
 
   useEffect(() => {
-    order.current = deck.map((_, index) => index);
-  }, [deck]);
+    order.current = deck.map(card => initialDeck.current.indexOf(card));
+    setSprings(fn({ width, order: order.current }));
+  }, [deck, setSprings, fn, width]);
 
   return (
     <div className="my-deck" {...bindMeasure}>
@@ -168,7 +169,7 @@ export function MyDeck({ deck, setHand, playCard }: Props) {
       </div>
       <div className="cards">
         {springs.map(({ zIndex, shadow, x, y, scale }, i) => {
-          const poker = deck[i];
+          const poker = initialDeck.current[i];
           return (
             <Card
               {...bind(i)}
