@@ -1,15 +1,14 @@
-import { Game } from 'boardgame.io/core';
 import { setup } from './setup';
-import { flow } from './flow';
+import { phases } from './phases';
 import { playerView } from './playerView';
 import { moves } from './moves';
 
 export const BigTwoName = 'big-two';
 
-export const BigTwo = Game({
+export const BigTwo = {
   name: BigTwoName,
-  flow,
+  phases,
   moves,
   setup,
   playerView
-});
+};

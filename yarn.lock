@@ -2505,10 +2505,10 @@ bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
   integrity sha512-ItfYfPLkWHUjckQCk8xC+LwxgK8NYcXywGigJgSwOP8Y2iyWT4f2vsZnoOXTTbo+o5yXmIUJ4gn5538SO5S3gA==
 
-boardgame.io@^0.32.1:
-  version "0.32.1"
-  resolved "https://registry.yarnpkg.com/boardgame.io/-/boardgame.io-0.32.1.tgz#cadccbe75b447fb0b49a355186e82091380c9c07"
-  integrity sha512-RgUqIbXsPdkgWDr5A6RxoUpKsV/pz87senMoGDXUCPuMz8JHS0ThOowrc0/X33gXm3uhsgCbQLdOUMBavgzoLA==
+boardgame.io@^0.33.1:
+  version "0.33.1"
+  resolved "https://registry.yarnpkg.com/boardgame.io/-/boardgame.io-0.33.1.tgz#76ccf994fa4b2fb28dedc1f467628d4736b72d8d"
+  integrity sha512-hLVXYD/ICKx28SetcKo2Miph0TjBL95LXdmElDPyc9zLJy2EPr287pCnYrAoW/lBLLcO57kbgNalFFRYw+E2QQ==
   dependencies:
     "@koa/cors" "^2.2.1"
     flatted "^0.2.3"
@@ -2518,10 +2518,9 @@ boardgame.io@^0.32.1:
     koa-router "^7.2.1"
     koa-socket-2 "^1.0.17"
     lru-cache "^4.1.1"
-    mousetrap "^1.6.1"
+    mousetrap "^1.6.3"
     prop-types "^15.5.10"
     react-cookies "^0.1.0"
-    react-dragtastic "^2.4.3"
     redux "^4.0.0"
     shortid "^2.2.14"
     socket.io "^2.1.1"
@@ -7738,7 +7737,7 @@ mongodb@^3.3.2:
     require_optional "^1.0.1"
     safe-buffer "^5.1.2"
 
-mousetrap@^1.6.1:
+mousetrap@^1.6.3:
   version "1.6.3"
   resolved "https://registry.yarnpkg.com/mousetrap/-/mousetrap-1.6.3.tgz#80fee49665fd478bccf072c9d46bdf1bfed3558a"
   integrity sha512-bd+nzwhhs9ifsUrC2tWaSgm24/oo2c83zaRyZQF06hYA6sANfsXHtnZ19AbbbDXCDzeH5nZBSQ4NvCjgD62tJA==
@@ -9591,7 +9590,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.3"
 
-prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -9840,13 +9839,6 @@ react-dom@^16.10.1:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.16.1"
-
-react-dragtastic@^2.4.3:
-  version "2.4.3"
-  resolved "https://registry.yarnpkg.com/react-dragtastic/-/react-dragtastic-2.4.3.tgz#9cf5531c45cc52020b30f454f9b219852307f6ef"
-  integrity sha512-AQwmi3Ri9/Fpf8FKabxnsxSh6gRYZHIQqRBubu3NSBvWQ7bOOpqGxlTtxZVkj3QiSg3h2S3xYZoxB27A6dV0xg==
-  dependencies:
-    prop-types "^15.6.0"
 
 react-error-overlay@^6.0.2:
   version "6.0.2"

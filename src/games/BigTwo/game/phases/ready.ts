@@ -2,10 +2,11 @@ import { TurnOrder } from 'boardgame.io/core';
 import { State, Schema$Phase } from '../../typings';
 
 export const ready: Schema$Phase<State> = {
+  start: true,
   next: 'draw',
   allowedMoves: ['ready'],
   turn: {
-    order: TurnOrder.ANY
+    order: TurnOrder.ALL
   },
   endPhaseIf: (G, ctx) => {
     for (let i = 0; i < ctx.numPlayers; i++) {

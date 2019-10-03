@@ -40,13 +40,8 @@ interface SharedProps<State> {
   onMove?: (G: State, ctx: Schema$Context) => State;
 }
 
-export interface Schema$Flow<State> extends SharedProps<State> {
-  phases?: {
-    [key: string]: Schema$Phase<State>;
-  };
-}
-
 export interface Schema$Phase<State> extends SharedProps<State> {
+  start?: boolean;
   allowedMoves?: string[];
   undoableMoves?: string[];
   next?: string;

@@ -6,7 +6,7 @@ export const start: Schema$Phase<State> = {
   next: 'ready',
   allowedMoves: ['playCard', 'pass', 'sort', 'setHand'],
   turn: {
-    order: TurnOrder.ANY
+    order: TurnOrder.ALL
   },
   endPhaseIf: (G, ctx) => {
     for (let i = 0; i < ctx.numPlayers; i++) {
