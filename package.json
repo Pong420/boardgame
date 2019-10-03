@@ -15,7 +15,8 @@
     "lint": "eslint 'src/**/*.ts?(x)'",
     "component": "node scripts/component.js",
     "redux": "node scripts/redux.js",
-    "get": "node scripts/type.js"
+    "get": "node scripts/type.js",
+    "heroku-postbuild": "yarn build"
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.1",
