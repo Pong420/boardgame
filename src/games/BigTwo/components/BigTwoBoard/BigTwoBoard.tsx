@@ -7,8 +7,12 @@ import { State, BoardComponentProps } from '../../typings';
 export function BigTwoBoard(props: BoardComponentProps<State>) {
   const { isConnected, G, ctx, moves, playerID } = props;
   const { players, opponents } = G;
-  const { phase } = ctx;
+  const { phase, activePlayers } = ctx;
   const player = players[Number(playerID)];
+  const isActive =
+    !!activePlayers && activePlayers[Number(playerID)] === 'main';
+
+  console.log(ctx);
 
   if (!isConnected) {
     return <div className="disconnected">Connecting ...</div>;
@@ -18,7 +22,7 @@ export function BigTwoBoard(props: BoardComponentProps<State>) {
 
   if (phase === 'ready') {
     if (player.ready) {
-      content = (
+      content = opponents.length ? (
         <div>
           Waiting for Player{' '}
           {opponents
@@ -26,6 +30,8 @@ export function BigTwoBoard(props: BoardComponentProps<State>) {
             .map(({ id }) => id)
             .join(',')}
         </div>
+      ) : (
+        'loading...'
       );
     } else {
       content = <button onClick={() => moves.ready(playerID)}>Ready</button>;
@@ -34,6 +40,7 @@ export function BigTwoBoard(props: BoardComponentProps<State>) {
     content = (
       <>
         <MyDeck
+          isActive={isActive}
           deck={player.hand}
           setHand={moves.setHand}
           playCard={moves.playCard}
@@ -42,7 +49,7 @@ export function BigTwoBoard(props: BoardComponentProps<State>) {
         {opponents.map(({ numOfCards }, index) => (
           <OtherDeck key={index} index={index} numOfCards={numOfCards} />
         ))}
-        <Center {...props} />
+        <Center {...props} isActive={isActive} />
       </>
     );
   }

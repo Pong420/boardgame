@@ -1,7 +1,7 @@
 export * from '../../typings';
 
 export interface State {
-  players: Record<number, Player>;
+  players: Record<string, Player>;
   opponents: Opponent[];
   secret?: Secret;
   previous: {
@@ -19,7 +19,7 @@ export interface Player {
   hand: string[];
 }
 
-export interface Opponent extends Omit<Player, 'hand'> {
+export interface Opponent extends Player {
   id: number;
   numOfCards: number;
 }

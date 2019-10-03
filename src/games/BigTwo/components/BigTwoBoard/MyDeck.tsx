@@ -8,6 +8,7 @@ import clamp from 'lodash-es/clamp';
 import swap from 'array-move';
 
 interface Props {
+  isActive: boolean;
   deck: string[];
   setHand: (cards: string[]) => void;
   playCard: (cards: string[], combination: string[]) => void;
@@ -25,7 +26,7 @@ interface FnProps {
   selected?: boolean;
 }
 
-export function MyDeck({ deck, setHand, pass, playCard }: Props) {
+export function MyDeck({ isActive, deck, setHand, pass, playCard }: Props) {
   const initialDeck = useRef(deck);
   const order = useRef<number[]>([]);
   const selected = useRef<number[]>([]);
@@ -164,8 +165,12 @@ export function MyDeck({ deck, setHand, pass, playCard }: Props) {
       <div className="big-two-control">
         <button onClick={sortByPoints}>Sort by Points</button>
         <button onClick={sortBySuits}>Sort by Suits</button>
-        <button onClick={pass}>Pass</button>
-        <button onClick={playCardCallback}>Play Cards</button>
+        <button onClick={pass} disabled={!isActive}>
+          Pass
+        </button>
+        <button onClick={playCardCallback} disabled={!isActive}>
+          Play Cards
+        </button>
       </div>
       <div className="cards" style={{ maxWidth: width * deck.length }}>
         {springs.map(({ zIndex, shadow, x, y, scale }, i) => {

@@ -4,13 +4,22 @@ import { State, Schema$Phase } from '../../typings';
 
 export const ready: Schema$Phase<State> = {
   start: true,
-  next: 'draw',
+  next: 'start',
   moves: { ready: moves.ready },
   turn: {
     activePlayers: ActivePlayers.ALL
   },
-  onBegin: (G, ctx) => {
-    ctx.events.setActivePlayers(['0', '1', '2', '3']);
+  onEnd(G, ctx) {
+    const poker = ctx.random
+      .Shuffle(G.secret!.deck)
+      .slice(0, ctx.numPlayers * 13);
+
+    while (poker.length) {
+      for (let i = 0; i < ctx.numPlayers; i++) {
+        G.players[i].hand.push(poker.pop()!);
+      }
+    }
+
     return G;
   },
   endIf: (G, ctx) => {
@@ -19,7 +28,6 @@ export const ready: Schema$Phase<State> = {
         return false;
       }
     }
-
     return true;
   }
 };

@@ -14,7 +14,7 @@ export function BigTwoLocalClient({ match }: RouteComponentProps<MatchParams>) {
   const ClientComponent = useMemo(
     () =>
       Client({
-        debug: false,
+        debug: true,
         game: BigTwo,
         board: BigTwoBoard,
         numPlayers,

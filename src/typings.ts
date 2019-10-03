@@ -1,4 +1,4 @@
-type Action<State, R = State> = (G: State, ctx: Schema$Context) => R;
+export type Action<State, R = State> = (G: State, ctx: Schema$Context) => R;
 
 export interface Schema$Game<State> {
   name: string;
@@ -17,10 +17,12 @@ export interface Schema$Context {
   currentPlayerMoves: number;
   playOrder: string[];
   playOrderPos: number;
+  playerID: string;
   allPlayed: boolean;
   phase: string;
   prevPhase: string;
   allowedMoves: string[];
+  activePlayers: Record<number, string | null> | null;
   stats: Record<
     'phase' | 'turn',
     {
@@ -42,7 +44,7 @@ export interface Schema$Turn<State> {
   onMove?: Action<State>;
   moveLimit?: number;
   activePlayers?: any;
-  stages?: Schema$Stage<State>;
+  stages?: Record<string, Schema$Stage<State>>;
 }
 
 export type Schema$MoveFn<State> = (

@@ -1,7 +1,12 @@
 import React from 'react';
 import { Card } from '../Card';
+import { State, BoardComponentProps } from '../../typings';
 
-export function Center(props: any) {
+interface Props extends BoardComponentProps<State> {
+  isActive: boolean;
+}
+
+export function Center(props: BoardComponentProps<State>) {
   const { previous } = props.G;
 
   return (
