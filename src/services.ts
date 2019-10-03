@@ -3,8 +3,10 @@ import {
   Params$CreateRoom,
   Params$JoinRoom,
   Params$LeaveRoom,
+  Params$GetGame,
   Params$GetAllRoom,
   Params$GetRoom,
+  Response$GetGame,
   Response$GetAllRoom
 } from './typings';
 
@@ -13,15 +15,22 @@ const api = axios.create({
 });
 
 export function createRoom({ name, ...params }: Params$CreateRoom) {
-  return api.post(`/games/${name}/create`, params);
+  return api.post<{ gameID: string }>(`/games/${name}/create`, params);
 }
 
 export function joinRoom({ name, roomID, ...params }: Params$JoinRoom) {
-  return api.post(`/games/${name}/${roomID}/join`, params);
+  return api.post<{ playerCredentials: string }>(
+    `/games/${name}/${roomID}/join`,
+    params
+  );
 }
 
 export function leveRoom({ name, roomID, ...params }: Params$LeaveRoom) {
   return api.post(`/games/${name}/${roomID}/leave`, params);
+}
+
+export function getGame({ name, gameID }: Params$GetGame) {
+  return api.get<Response$GetGame>(`/games/${name}/${gameID}`);
 }
 
 export function getAllGames() {

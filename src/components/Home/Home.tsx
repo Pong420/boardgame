@@ -1,79 +1,99 @@
-import React, { useState, useCallback } from 'react';
-import { useRxAsync } from 'use-rx-hooks';
-import { Username } from './Username';
-import { useUsername } from '../../hooks/useUsername';
-import { getAllGames, getAllRoom } from '../../services';
+import React, { useState, useCallback, useMemo } from 'react';
+import { RouteComponentProps, generatePath } from 'react-router-dom';
+import { games, gameConfig } from '../../games';
+import { useRxAsync } from '../../hooks/useRxAsync';
+import { createRoom } from '../../services';
+import { PATHS } from '../../constants';
 
-const wrappedGetAllGames = () => getAllGames().then(res => res.data);
-
-interface Props {
-  gameList?: string[];
-}
-
-function Content({ gameList }: Props) {
-  const { username, setUsername } = useUsername();
+export function Home({ history }: RouteComponentProps) {
   const [selectedGame, selectGame] = useState('');
-
-  const getAllRoomCallback = useCallback(
-    () =>
-      selectedGame
-        ? getAllRoom({ name: selectedGame }).then(res => res.data.rooms)
-        : Promise.resolve([]),
+  const [numPlayers, setNumPlayers] = useState(-1);
+  const { maxPlayers = 0, minPlayers = 0 } = useMemo(
+    () => gameConfig[selectedGame] || {},
     [selectedGame]
   );
 
-  const { data: roomList } = useRxAsync(getAllRoomCallback, {});
+  const req = useCallback(
+    () =>
+      selectedGame && numPlayers
+        ? createRoom({ name: selectedGame, numPlayers }).then(
+            res => res.data.gameID
+          )
+        : Promise.reject(),
+    [selectedGame, numPlayers]
+  );
 
-  if (username) {
-    if (gameList) {
-      return (
-        <div>
-          <h4>Select a game</h4>
-          <div>
-            <div>
-              <select
-                value={selectedGame}
-                onChange={evt => selectGame(evt.target.value)}
-              >
-                <option value="" disabled>
-                  Select a game
-                </option>
-                {gameList.map((gameName, index) => (
-                  <option key={index} value={gameName}>
-                    {gameName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {selectedGame && (
-              <div>
-                <button>Create New Room</button>
-                {roomList &&
-                  roomList.map(({ gameID }) => (
-                    <div key={gameID}>
-                      {gameID}
-                      <button>Join</button>
-                    </div>
-                  ))}
-              </div>
-            )}
-          </div>
-        </div>
+  const onSuccess = useCallback(
+    (gameID: string) => {
+      history.push(
+        generatePath(PATHS.ROOM, {
+          gameName: selectedGame,
+          gameID
+        })
       );
-    }
+    },
+    [history, selectedGame]
+  );
 
-    return null;
-  }
-
-  return <Username initialValue={username} onSubmit={setUsername} />;
-}
-
-export function Home() {
-  const { data: gameList } = useRxAsync(wrappedGetAllGames);
+  const { loading, run } = useRxAsync(req, { defer: true, onSuccess });
 
   return (
     <div className="home">
-      <Content gameList={gameList} />
+      <div>
+        <h4>Select a game</h4>
+        <div className="row">
+          <div>Game:</div>
+          <div>
+            <select
+              name="games"
+              value={selectedGame}
+              onChange={evt => selectGame(evt.target.value)}
+            >
+              <option value="" disabled>
+                Select a game
+              </option>
+              {games.map(name => (
+                <option value={name} key={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="row">
+          <div>Number of players :</div>
+          <div>
+            <select
+              name="numPlayers"
+              value={numPlayers}
+              onChange={evt => setNumPlayers(Number(evt.target.value))}
+              disabled={selectedGame === ''}
+            >
+              <option value={-1} disabled>
+                ---
+              </option>
+              {Array.from(
+                { length: maxPlayers - minPlayers + 1 },
+                (_, index) => (
+                  <option value={minPlayers + index} key={index}>
+                    {minPlayers + index}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+        </div>
+
+        <div className="row">
+          <div />
+          <div>
+            <button disabled={loading} onClick={run}>
+              New Game
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

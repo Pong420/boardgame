@@ -53,6 +53,7 @@
     "react-spring": "^9.0.0-beta.34",
     "react-use-gesture": "^6.0.1",
     "resize-observer-polyfill": "^1.5.1",
+    "rxjs": "^6.5.3",
     "use-rx-hooks": "^1.0.4"
   },
   "husky": {

@@ -103,12 +103,22 @@ export interface Params$LeaveRoom {
   credentials: string;
 }
 
+export interface Params$GetGame {
+  name: string;
+  gameID: string;
+}
+
 export interface Params$GetAllRoom {
   name: string;
 }
 
 export interface Params$GetRoom extends Params$GetAllRoom {
   roomID: string;
+}
+
+export interface Response$GetGame {
+  roomID: string;
+  players: Array<{ id: number }>;
 }
 
 export interface Response$GetAllRoom {
