@@ -1,3 +1,14 @@
+type Action<State, R = State> = (G: State, ctx: Schema$Context) => R;
+
+export interface Schema$Game<State> {
+  name: string;
+  setup: (ctx: Schema$Context, setUpData: any) => State;
+  moves?: Schema$Moves<State>;
+  seed?: string;
+  turn?: Schema$Turn<State>;
+  endIf?: Action<State, any>;
+}
+
 export interface Schema$Context {
   numPlayers: number;
   turn: number;
@@ -23,38 +34,69 @@ export interface Schema$Context {
   };
 }
 
-export type Schema$Move<State> = (
+export interface Schema$Turn<State> {
+  order?: any;
+  onBegin?: Action<State>;
+  onEnd?: Action<State>;
+  endIf?: Action<State, any>;
+  onMove?: Action<State>;
+  moveLimit?: number;
+  activePlayers?: any;
+  stages?: Schema$Stage<State>;
+}
+
+export type Schema$MoveFn<State> = (
   G: State,
   ctx: Schema$Context,
   ...args: any[]
 ) => any;
 
+export type Schema$Move<State> =
+  | Schema$MoveFn<State>
+  | {
+      move: Schema$MoveFn<State>;
+      undoable: boolean;
+      redact: boolean;
+    };
+
 export type Schema$Moves<State> = Record<string, Schema$Move<State>>;
 
-interface SharedProps<State> {
-  turn?: any;
-  endTurnIf?: (G: State, ctx: Schema$Context) => boolean | object;
-  endGameIf?: (G: State, ctx: Schema$Context) => any;
-  onTurnBegin?: (G: State, ctx: Schema$Context) => State;
-  onTurnEnd?: (G: State, ctx: Schema$Context) => State;
-  onMove?: (G: State, ctx: Schema$Context) => State;
+export interface Schema$Phase<State> {
+  start?: boolean;
+  next?: string;
+  onBegin?: Action<State>;
+  onEnd?: Action<State>;
+  endIf?: Action<State, any>;
+  moves?: Schema$Moves<State>;
+  turn?: Schema$Turn<State>;
 }
 
-export interface Schema$Phase<State> extends SharedProps<State> {
-  start?: boolean;
-  allowedMoves?: string[];
-  undoableMoves?: string[];
+export interface Schema$Stage<State> {
+  moves?: Schema$Moves<State>;
   next?: string;
-  endPhaseIf?: (G: State, ctx: Schema$Context) => any;
-  onPhaseBegin?: (G: State, ctx: Schema$Context) => State;
-  onPhaseEnd?: (G: State, ctx: Schema$Context) => State;
-  moves?: Record<string, Schema$Move<State>>;
 }
 
 export interface Schema$Events {
   endTurn(): void;
+  endPhase(): void;
   endGame(): void;
   endPhase(): void;
+  endStage(): void;
+  setPhase(phases: string): void;
+  setStage(stages: string): void;
+  setActivePlayers(
+    options?:
+      | {
+          player?: string;
+          others?: string;
+          all?: string;
+          value?: Record<string, string>;
+          moveLimit?: number;
+          revert?: boolean;
+          next?: any;
+        }
+      | string[]
+  ): void;
 }
 
 export interface BoardComponentProps<State> {
@@ -62,15 +104,18 @@ export interface BoardComponentProps<State> {
   ctx: Schema$Context;
   events: Schema$Events;
   moves: Record<string, (...args: any[]) => void>;
-  isActive: boolean;
   redo(): void;
   undo(): void;
   reset(): void;
   step?: any;
+  log: any;
   gameID: string;
-  credentials: string | null;
   playerID: string;
+  gameMetadata: any;
+  isActive: boolean;
   isConnected: boolean;
+  isMultiplayer: boolean;
+  credentials: string | null;
 }
 
 export type Schema$PlayerView<State> = (

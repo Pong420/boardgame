@@ -2,8 +2,7 @@ import { State, Schema$Phase } from '../../typings';
 
 export const draw: Schema$Phase<State> = {
   next: 'start',
-  allowedMoves: [],
-  onPhaseBegin(G, ctx) {
+  onEnd(G, ctx) {
     const poker = ctx.random
       .Shuffle(G.secret!.deck)
       .slice(0, ctx.numPlayers * 13);
@@ -16,5 +15,5 @@ export const draw: Schema$Phase<State> = {
 
     return G;
   },
-  endPhaseIf: () => true
+  endIf: () => true
 };

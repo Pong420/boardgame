@@ -1,14 +1,19 @@
-import { TurnOrder } from 'boardgame.io/core';
+import { ActivePlayers } from 'boardgame.io/core';
 import { setup } from '../setup';
+import { moves } from '../moves';
 import { State, Schema$Phase } from '../../typings';
 
 export const start: Schema$Phase<State> = {
   next: 'ready',
-  allowedMoves: ['playCard', 'pass', 'sort', 'setHand'],
-  turn: {
-    order: TurnOrder.ALL
+  moves: {
+    playCard: moves.playCard,
+    setHand: moves.setHand,
+    pass: moves.pass
   },
-  endPhaseIf: (G, ctx) => {
+  turn: {
+    activePlayers: ActivePlayers.ALL
+  },
+  endIf: (G, ctx) => {
     for (let i = 0; i < ctx.numPlayers; i++) {
       if (G.players[i].hand.length === 0) {
         return true;
