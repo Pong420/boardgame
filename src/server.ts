@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import serve from 'koa-static';
 import dotenv from 'dotenv';
+import { historyApiFallback } from 'koa2-connect-history-api-fallback';
 import { Server, Mongo } from 'boardgame.io/server';
 import { BigTwo } from './games/BigTwo/game';
 
@@ -29,6 +30,8 @@ const server = Server({
 const { app } = server;
 
 const root = path.join(__dirname, '../');
+
+app.use(historyApiFallback({ index: 'index.html' }));
 
 app.use(serve(root));
 

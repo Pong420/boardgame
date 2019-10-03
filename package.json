@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node build/server/server.js",
     "dev": "yarn app:dev & yarn server:dev",
-    "build": "yarn app:build & yarn server:build",
+    "build": "yarn app:build && yarn server:build",
     "app:dev": "react-scripts start",
     "app:build": "react-scripts build",
     "server:dev": "nodemon -- --config nodemon.json",
@@ -45,6 +45,7 @@
     "boardgame.io": "^0.33.1",
     "dotenv": "^8.1.0",
     "koa-static": "^5.0.0",
+    "koa2-connect-history-api-fallback": "^0.1.2",
     "lodash": "^4.17.15",
     "lodash-es": "^4.17.15",
     "mongodb": "^3.3.2",

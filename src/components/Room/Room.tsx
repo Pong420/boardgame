@@ -75,7 +75,7 @@ export function Room({ match, history }: RouteComponentProps<MatchParams>) {
     if (playerID && credentials) {
       const { game, board } = config;
       const ClientComponent = Client({
-        debug: true,
+        debug: false,
         game,
         board,
         multiplayer: {
