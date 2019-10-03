@@ -1,9 +1,12 @@
-import { BigTwo, BigTwoBoard } from './BigTwo';
+import { BigTwoName, BigTwo, BigTwoBoard } from './BigTwo';
 
-export const games = ['Big Two'];
+// Name should not contain space and capital letter
+// https://github.com/nicolodavis/boardgame.io/issues/459
 
-export const gameConfig: Record<typeof games[number], any> = {
-  'Big Two': {
+export const games = [BigTwoName];
+
+export const gameConfig: Record<string, any> = {
+  [BigTwoName]: {
     game: BigTwo,
     board: BigTwoBoard,
     maxPlayers: 4,

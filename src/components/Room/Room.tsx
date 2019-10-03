@@ -6,8 +6,6 @@ import { getGame, joinRoom } from '../../services';
 import { PATHS, server } from '../../constants';
 import { useRxAsync } from '../../hooks/useRxAsync';
 
-console.log(server);
-
 interface MatchParams {
   gameName: string;
   gameID: string;
@@ -77,7 +75,7 @@ export function Room({ match, history }: RouteComponentProps<MatchParams>) {
     if (playerID && credentials) {
       const { game, board } = config;
       const ClientComponent = Client({
-        debug: false,
+        debug: true,
         game,
         board,
         multiplayer: {
@@ -90,6 +88,7 @@ export function Room({ match, history }: RouteComponentProps<MatchParams>) {
           gameID={gameID}
           playerID={playerID}
           credentials={credentials}
+          playerName={`${gameID}/${playerID}`}
         />
       );
     }

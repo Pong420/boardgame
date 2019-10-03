@@ -4,8 +4,10 @@ import { flow } from './flow';
 import { playerView } from './playerView';
 import { moves } from './moves';
 
+export const BigTwoName = 'big-two';
+
 export const BigTwo = Game({
-  name: 'Big Two',
+  name: BigTwoName,
   flow,
   moves,
   setup,

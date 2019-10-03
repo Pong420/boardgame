@@ -20,7 +20,7 @@ export function BigTwoBoard(props: BoardComponentProps<State>) {
     if (player.ready) {
       content = (
         <div>
-          Waiting for Player
+          Waiting for Player{' '}
           {opponents
             .filter(({ ready }) => !ready)
             .map(({ id }) => id)

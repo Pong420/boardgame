@@ -32,7 +32,7 @@ export type Schema$Move<State> = (
 export type Schema$Moves<State> = Record<string, Schema$Move<State>>;
 
 interface SharedProps<State> {
-  turnOrder?: any;
+  turn?: any;
   endTurnIf?: (G: State, ctx: Schema$Context) => boolean | object;
   endGameIf?: (G: State, ctx: Schema$Context) => any;
   onTurnBegin?: (G: State, ctx: Schema$Context) => State;
@@ -53,6 +53,7 @@ export interface Schema$Phase<State> extends SharedProps<State> {
   endPhaseIf?: (G: State, ctx: Schema$Context) => any;
   onPhaseBegin?: (G: State, ctx: Schema$Context) => State;
   onPhaseEnd?: (G: State, ctx: Schema$Context) => State;
+  moves?: Record<string, Schema$Move<State>>;
 }
 
 export interface Schema$Events {

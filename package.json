@@ -46,6 +46,7 @@
     "koa-static": "^5.0.0",
     "lodash": "^4.17.15",
     "lodash-es": "^4.17.15",
+    "mongodb": "^3.3.2",
     "pokersolver": "Pong420/pokersolver#38f2e64",
     "react": "^16.10.1",
     "react-dom": "^16.10.1",

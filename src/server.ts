@@ -1,18 +1,34 @@
+import fs from 'fs';
 import path from 'path';
 import serve from 'koa-static';
 import dotenv from 'dotenv';
-import { Server } from 'boardgame.io/server';
+import { Server, Mongo } from 'boardgame.io/server';
 import { BigTwo } from './games/BigTwo/game';
 
-dotenv.config({
-  path: '.env.development'
-});
+dotenv.config();
 
-const PORT = process.env.REACT_APP_SERVER_PORT || process.env.PORT || 8080;
-const server = Server({ games: [BigTwo] });
+try {
+  ['.env.local', '.env.development'].forEach(path => {
+    const envConfig = dotenv.parse(fs.readFileSync(path));
+    for (const k in envConfig) {
+      process.env[k] = envConfig[k];
+    }
+  });
+} catch (e) {}
+
+const { REACT_APP_SERVER_PORT, MONGODB_URI = '' } = process.env;
+
+const PORT = REACT_APP_SERVER_PORT || process.env.PORT || 8080;
+const server = Server({
+  games: [BigTwo],
+  db: new Mongo({
+    url: MONGODB_URI,
+    dbname: MONGODB_URI.replace(/^.*\//, '')
+  })
+});
 const { app } = server;
 
-const root = path.join(__dirname, '../build');
+const root = path.join(__dirname, '../');
 
 app.use(serve(root));
 

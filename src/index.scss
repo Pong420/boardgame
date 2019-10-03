@@ -29,3 +29,11 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+.bgio-client {
+  @include sq-dimen(100%);
+}
+
+.debug-ui {
+  z-index: 100000;
+}

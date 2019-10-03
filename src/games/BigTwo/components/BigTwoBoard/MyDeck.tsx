@@ -167,7 +167,7 @@ export function MyDeck({ deck, setHand, pass, playCard }: Props) {
         <button onClick={pass}>Pass</button>
         <button onClick={playCardCallback}>Play Cards</button>
       </div>
-      <div className="cards">
+      <div className="cards" style={{ maxWidth: width * deck.length }}>
         {springs.map(({ zIndex, shadow, x, y, scale }, i) => {
           const poker = initialDeck.current[i];
           if (deck.includes(poker)) {

@@ -72,6 +72,11 @@ $grid-template: $grid-corner-size calc(100% - #{$grid-corner-size * 2})
             margin-left: 10px;
           }
         }
+
+        .cards {
+          @include dimen(100%);
+          margin: auto;
+        }
       }
 
       &.other-deck {
