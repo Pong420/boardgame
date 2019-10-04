@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { RouteComponentProps, generatePath } from 'react-router-dom';
 import { games, gameConfig } from '../../games';
-import { useRxAsync } from '../../hooks/useRxAsync';
+import { useRxAsync } from 'use-rx-hooks';
 import { createRoom } from '../../services';
 import { PATHS } from '../../constants';
 

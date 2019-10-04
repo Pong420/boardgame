@@ -4,7 +4,7 @@ import { Client } from 'boardgame.io/react';
 import { gameConfig } from '../../games';
 import { getGame, joinRoom } from '../../services';
 import { PATHS, server } from '../../constants';
-import { useRxAsync } from '../../hooks/useRxAsync';
+import { useRxAsync } from 'use-rx-hooks';
 
 interface MatchParams {
   gameName: string;
