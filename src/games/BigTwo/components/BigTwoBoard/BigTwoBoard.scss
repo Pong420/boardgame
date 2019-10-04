@@ -97,8 +97,8 @@ $grid-template: $grid-corner-size calc(100% - #{$grid-corner-size * 2})
           max-width: $card-width * 13 + 10 * 13;
         }
 
-        .left,
-        .right {
+        &.left,
+        &.right {
           .cards {
             display: grid;
             grid-template-columns: repeat(1, auto);
