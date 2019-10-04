@@ -84,8 +84,7 @@ export function MyDeck({ isActive, deck, setHand, pass, playCard }: Props) {
   const [sortByPoints, sortBySuits] = useMemo(() => {
     const handler = (...args: Parameters<typeof sortBy>) => () => {
       const sort = sortBy(...args);
-      const newHand = sort(deck);
-      setHand(newHand);
+      setHand(sort(deck));
     };
     return [handler('points'), handler('suits')];
   }, [deck, setHand]);
@@ -118,7 +117,10 @@ export function MyDeck({ isActive, deck, setHand, pass, playCard }: Props) {
         setSprings(
           fn({ width, order: newOrder, down, originalIndex, curIndex, x, y })
         );
-        if (!down) order.current = newOrder;
+        if (!down) {
+          order.current = newOrder;
+          setHand(newOrder.map(index => initialDeck.current[index]));
+        }
       }
     }
   );

@@ -67,7 +67,7 @@ $grid-template: $grid-corner-size calc(100% - #{$grid-corner-size * 2})
         @include relative();
 
         .big-two-control {
-          @include absolute(-5px);
+          @include absolute(-15px);
           @include dimen(100%);
           @include flex(center, center);
           transform: translateY(-100%);
@@ -94,6 +94,7 @@ $grid-template: $grid-corner-size calc(100% - #{$grid-corner-size * 2})
 
           width: 100%;
           margin: auto;
+          max-width: $card-width * 13 + 10 * 13;
         }
 
         .left,

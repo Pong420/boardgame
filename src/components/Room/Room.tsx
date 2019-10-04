@@ -53,9 +53,11 @@ function Join({
 
   return (
     <div className="inviate">
-      <pre>Inviate other players by sharing this url</pre>
-      <pre>{window.location.href}</pre>
-      <button onClick={run}>Join</button>
+      <div>
+        <pre>Inviate other players by sharing this url</pre>
+        <pre>{window.location.href}</pre>
+        <button onClick={run}>Join</button>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,5 @@
+.inviate {
+  @include flex(center, center);
+  @include sq-dimen(100%);
+  text-align: center;
+}
