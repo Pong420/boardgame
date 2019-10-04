@@ -1,0 +1,13 @@
+{
+  "name": "Boardgame",
+  "repository": "https://github.com/Pong420/Boardgame",
+  "addons": [
+    {
+      "plan": "scheduler:standard"
+    },
+    {
+      "plan": "mongolab:sandbox",
+      "as": "MONGODB"
+    }
+  ]
+}
