@@ -8,6 +8,7 @@ import { PATHS } from '../../constants';
 export function Home({ history }: RouteComponentProps) {
   const [selectedGame, selectGame] = useState('');
   const [numPlayers, setNumPlayers] = useState(-1);
+  const [local, setLocal] = useState(false);
   const { maxPlayers = 0, minPlayers = 0 } = useMemo(
     () => gameConfig[selectedGame] || {},
     [selectedGame]
@@ -25,14 +26,23 @@ export function Home({ history }: RouteComponentProps) {
 
   const onSuccess = useCallback(
     (gameID: string) => {
-      history.push(
-        generatePath(PATHS.ROOM, {
-          gameName: selectedGame,
-          gameID
-        })
-      );
+      if (local) {
+        history.push(
+          generatePath(PATHS.LOCAL, {
+            gameName: selectedGame,
+            numPlayers
+          })
+        );
+      } else {
+        history.push(
+          generatePath(PATHS.ROOM, {
+            gameName: selectedGame,
+            gameID
+          })
+        );
+      }
     },
-    [history, selectedGame]
+    [local, numPlayers, history, selectedGame]
   );
 
   const { loading, run } = useRxAsync(req, { defer: true, onSuccess });
@@ -82,6 +92,17 @@ export function Home({ history }: RouteComponentProps) {
                 )
               )}
             </select>
+          </div>
+        </div>
+
+        <div className="row">
+          <div>Local:</div>
+          <div>
+            <input
+              type="checkbox"
+              checked={local}
+              onChange={evt => setLocal(evt.target.checked)}
+            />
           </div>
         </div>
 

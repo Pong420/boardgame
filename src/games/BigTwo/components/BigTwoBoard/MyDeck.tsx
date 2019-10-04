@@ -150,6 +150,8 @@ export function MyDeck({ isActive, deck, setHand, pass, playCard }: Props) {
     selected.current = [];
   }, [playCard, deck]);
 
+  const passCallback = useCallback(() => pass(), [pass]);
+
   // resize
   useEffect(() => {
     setSprings(fn({ width, order: order.current }));
@@ -165,7 +167,7 @@ export function MyDeck({ isActive, deck, setHand, pass, playCard }: Props) {
       <div className="big-two-control">
         <button onClick={sortByPoints}>Sort by Points</button>
         <button onClick={sortBySuits}>Sort by Suits</button>
-        <button onClick={pass} disabled={!isActive}>
+        <button onClick={passCallback} disabled={!isActive}>
           Pass
         </button>
         <button onClick={playCardCallback} disabled={!isActive}>

@@ -1,6 +1,6 @@
 {
-  "name": "create-react-app",
-  "version": "0.0.0",
+  "name": "boardgame",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node build/server/server.js",

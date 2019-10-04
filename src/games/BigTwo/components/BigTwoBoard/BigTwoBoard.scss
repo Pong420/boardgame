@@ -41,14 +41,18 @@ $grid-template: $grid-corner-size calc(100% - #{$grid-corner-size * 2})
       }
 
       &.center {
+        grid-column: 2;
+        grid-row: 2;
+        text-align: center;
+
         &,
         .last-hand {
           @include flex(center, center);
         }
 
-        grid-column: 2;
-        grid-row: 2;
-        text-align: center;
+        .message {
+          margin-top: 10px;
+        }
       }
 
       &.my-deck,
@@ -82,8 +86,7 @@ $grid-template: $grid-corner-size calc(100% - #{$grid-corner-size * 2})
       &.other-deck {
         @include relative();
 
-        // top
-        &:nth-child(odd) .cards {
+        &.top .cards {
           display: grid;
           grid-template-columns: repeat(13, calc(100% / 13));
           grid-template-rows: repeat(1, auto);
@@ -93,25 +96,27 @@ $grid-template: $grid-corner-size calc(100% - #{$grid-corner-size * 2})
           margin: auto;
         }
 
-        // left, right
-        &:nth-child(even) .cards {
-          display: grid;
-          grid-template-columns: repeat(1, auto);
-          grid-template-rows: repeat(13, calc(100% / 13));
-          align-items: center;
+        .left,
+        .right {
+          .cards {
+            display: grid;
+            grid-template-columns: repeat(1, auto);
+            grid-template-rows: repeat(13, calc(100% / 13));
+            align-items: center;
 
-          height: 100%;
-          margin: auto;
-          position: absolute;
-          top: 0;
-          bottom: 0;
+            height: 100%;
+            margin: auto;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+          }
         }
       }
     }
   }
 }
 
-#big-two-local {
+.local.big-two {
   @include sq-dimen(100%);
   display: grid;
   grid-template-columns: 50% 50%;
