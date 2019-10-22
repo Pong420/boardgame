@@ -11831,10 +11831,17 @@ use-memo-one@^1.1.0:
   resolved "https://registry.yarnpkg.com/use-memo-one/-/use-memo-one-1.1.1.tgz#39e6f08fe27e422a7d7b234b5f9056af313bd22c"
   integrity sha512-oFfsyun+bP7RX8X2AskHNTxu+R3QdE/RC5IefMbqptmACAA/gfol1KDD5KRzPsGMa62sWxGZw+Ui43u6x4ddoQ==
 
-use-rx-hooks@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/use-rx-hooks/-/use-rx-hooks-1.0.7.tgz#16176c4f4173ed1aa673fd3adb9ad9ed0ee4fb06"
-  integrity sha512-GYjO2DEHCWvsG6y9icN0G37SXxqUnPwcRKcTgpNiSJweWOQhg7D5nvgv/5aMFg1K4c6TVzkfdgN68Js80pgPIw==
+use-rx-async@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/use-rx-async/-/use-rx-async-1.0.0.tgz#b86b558e17796ef9a78c5d936fc6dad29a3751a4"
+  integrity sha512-4mfij4+JBI7Us09RbI1yMucNFNujGfYasueoBi7JkmlCHcCpdkLFsfzVhofDKrvfzqAwMZL0bzFwPucf43spuA==
+
+use-rx-hooks@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/use-rx-hooks/-/use-rx-hooks-1.3.1.tgz#70fe097874980d2d948f1b6ef4ac86a330c2eb71"
+  integrity sha512-osdrO4ZdLPWZmAZVUsAUZp5cHYLzaETZBunL4JUH5/bJyi5h05y011o0CUfcTrrW15fYdiJYphs9d6Yx0vVzOA==
+  dependencies:
+    use-rx-async "^1.0.0"
 
 use@^3.1.0:
   version "3.1.1"

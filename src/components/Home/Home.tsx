@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { RouteComponentProps, generatePath } from 'react-router-dom';
-import { games, gameConfig } from '../../games';
 import { useRxAsync } from 'use-rx-hooks';
+import { games, gameConfig } from '../../games';
 import { createRoom } from '../../services';
 import { PATHS } from '../../constants';
 
@@ -25,23 +25,14 @@ export function Home({ history }: RouteComponentProps) {
   );
 
   const onSuccess = useCallback(
-    (gameID: string) => {
-      if (local) {
-        history.push(
-          generatePath(PATHS.LOCAL, {
-            gameName: selectedGame,
-            numPlayers
-          })
-        );
-      } else {
-        history.push(
-          generatePath(PATHS.ROOM, {
-            gameName: selectedGame,
-            gameID
-          })
-        );
-      }
-    },
+    (gameID: string) =>
+      local
+        ? history.push(
+            generatePath(PATHS.LOCAL, { gameName: selectedGame, numPlayers })
+          )
+        : history.push(
+            generatePath(PATHS.ROOM, { gameName: selectedGame, gameID })
+          ),
     [local, numPlayers, history, selectedGame]
   );
 

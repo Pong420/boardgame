@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react';
 import { RouteComponentProps, generatePath } from 'react-router-dom';
 import { Client } from 'boardgame.io/react';
+import { useRxAsync } from 'use-rx-hooks';
 import { gameConfig } from '../../games';
 import { getGame, joinRoom } from '../../services';
 import { PATHS, server } from '../../constants';
-import { useRxAsync } from 'use-rx-hooks';
 
 interface MatchParams {
   gameName: string;
@@ -35,17 +35,20 @@ function Join({
           playerID: player.id,
           playerName: String(Math.random())
         });
-        return Promise.resolve<Required<MatchParams>>({
+
+        const result: Required<MatchParams> = {
           gameName,
           gameID,
           playerID: String(player.id),
           credentials: res.data.playerCredentials
-        });
+        };
+
+        return result;
       } catch (err) {
-        return Promise.reject(err);
+        throw new Error(err);
       }
     } else {
-      return Promise.reject('full');
+      throw new Error('full');
     }
   }, [gameID, gameName]);
 
