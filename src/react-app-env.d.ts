@@ -35,9 +35,10 @@ declare interface Window {
   };
 }
 
-// https://codesandbox.io/s/github/piotrwitek/typesafe-actions-todo-app
-declare interface NodeModule {
-  hot?: { accept: (path?: string, callback?: () => void) => void };
+declare namespace NodeJS {
+  interface Module {
+    hot?: { accept: (path?: string, callback?: () => void) => void };
+  }
 }
 
 declare interface System {
