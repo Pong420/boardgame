@@ -45,7 +45,7 @@
     "dotenv": "^8.2.0",
     "koa-static": "^5.0.0",
     "koa2-connect-history-api-fallback": "^0.1.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "lodash-es": "^4.17.15",
     "mongodb": "^3.3.2",
     "pokersolver": "Pong420/pokersolver#38f2e64",
