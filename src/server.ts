@@ -17,14 +17,15 @@ try {
   });
 } catch (e) {}
 
-const { REACT_APP_SERVER_PORT, MONGODB_URI = '' } = process.env;
+const { REACT_APP_SERVER_PORT, MONGODB_URI = '', DB_NAME = '' } = process.env;
 
 const PORT = REACT_APP_SERVER_PORT || process.env.PORT || 8080;
+
 const server = Server({
   games: [BigTwo],
   db: new Mongo({
     url: MONGODB_URI,
-    dbname: MONGODB_URI.replace(/^.*\//, '')
+    dbname: DB_NAME
   })
 });
 const { app } = server;
