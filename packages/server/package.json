@@ -1,0 +1,24 @@
+{
+  "name": "@boardgame/server",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node dist",
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/koa-static": "^4.0.1",
+    "@types/node": "^14.0.27",
+    "dotenv": "^8.2.0",
+    "typescript": "3.9.7"
+  },
+  "dependencies": {
+    "@boardgame/big-two": "1.0.0",
+    "bgio-postgres": "^1.0.7",
+    "boardgame.io": "^0.40.0",
+    "koa-static": "^5.0.0",
+    "koa2-connect-history-api-fallback": "^0.1.2"
+  }
+}
