@@ -1,24 +1,40 @@
-import esbuild from 'rollup-plugin-esbuild'
-import commonjs from '@rollup/plugin-commonjs'
-import json from '@rollup/plugin-json'
+import esbuild from 'rollup-plugin-esbuild';
+import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
+import scss from 'rollup-plugin-scss';
 
-export default {
-  input: './src/index.ts',
-  output: {
-    file: './dist/index.js',
-    format: 'es'
+const plugins = [
+  json(),
+  commonjs(),
+  scss({
+    sass: require('sass')
+  }),
+  esbuild({
+    include: /\.[jt]sx?$/,
+    watch: !!process.env.ROLLUP_WATCH,
+    minify: process.env.NODE_ENV === 'production',
+    loaders: {
+      '.json': 'json',
+      '.js': 'jsx'
+    }
+  })
+];
+
+export default [
+  {
+    input: './src/game/index.ts',
+    output: {
+      file: './dist/game/index.js',
+      format: 'commonjs'
+    },
+    plugins
   },
-  plugins: [
-    json(),
-    commonjs(),
-    esbuild({
-      include: /\.[jt]sx?$/,
-      watch: !!process.env.ROLLUP_WATCH,
-      minify: process.env.NODE_ENV === 'production',
-      loaders: {
-        '.json': 'json',
-        '.js': 'jsx'
-      }
-    }),
-  ],
-}
+  {
+    input: './src/components/index.ts',
+    output: {
+      file: './dist/board/index.js',
+      format: 'commonjs'
+    },
+    plugins
+  }
+];

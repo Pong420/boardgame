@@ -13,8 +13,6 @@
     "@rollup/plugin-json": "^4.1.0",
     "@types/lodash": "^4.14.161",
     "@types/react": "^16.9.49",
-    "@typescript-eslint/eslint-plugin": "^3.9.1",
-    "@typescript-eslint/parser": "^3.9.1",
     "esbuild": "^0.6.23",
     "rimraf": "^3.0.2",
     "rollup": "^2.23.0",
@@ -31,10 +29,9 @@
     "boardgame.io": "0.40.0",
     "lodash": "^4.17.20",
     "pokersolver": "Pong420/pokersolver#38f2e64",
-    "react": "17.0.0-rc.1",
-    "react-router-dom": "^5.2.0",
-    "react-spring": "^9.0.0-rc.3",
-    "react-use-gesture": "^7.0.16",
+    "react": "^17.0.0-rc.1",
+    "react-spring": "9.0.0-rc.3",
+    "react-use-gesture": "7.0.16",
     "rxjs": "^6.6.2",
     "use-rx-hooks": "^1.6.0"
   }

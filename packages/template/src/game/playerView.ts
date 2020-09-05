@@ -1,7 +1,7 @@
 import { PlayerView } from 'boardgame.io/core';
-import { BigTwoPlayerView } from '../typings';
+import { Prefix_PlayerView } from '../typings';
 
-export const playerView: BigTwoPlayerView = (G, ctx, playerID) => {
+export const playerView: Prefix_PlayerView = (G, ctx, playerID) => {
   let R = { ...G };
   const { numPlayers } = ctx;
   const isLocalGamePlay = R.secret !== undefined;
@@ -12,11 +12,9 @@ export const playerView: BigTwoPlayerView = (G, ctx, playerID) => {
       while (opponents.length < numPlayers - 1) {
         idx = (numPlayers + idx + 1) % numPlayers;
 
-        const player = G.players[String(idx)];
-
+        // const player =  G.players[String(idx);
         opponents.push({
-          id: String(idx),
-          numOfCards: player.hand.length
+          id: String(idx)
         });
       }
 
@@ -25,10 +23,10 @@ export const playerView: BigTwoPlayerView = (G, ctx, playerID) => {
   } else {
     R = {
       ...R,
-      opponents: R.opponents.map(({ hand, ...rest }) => rest)
+      // TODO: remove secret values
+      opponents: R.opponents.map(({ ...rest }) => rest)
     };
   }
 
-  // console.log(ctx.player);
   return PlayerView.STRIP_SECRETS(R, ctx, playerID);
 };

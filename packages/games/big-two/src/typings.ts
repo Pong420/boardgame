@@ -6,13 +6,13 @@ export type OmitArg<F> = F extends (
   G: any,
   ctx: any,
   ...args: infer P
-) => infer R
+) => infer R // eslint-disable-line @typescript-eslint/no-unused-vars
   ? (...args: P) => R
   : never;
 
 export interface BigTwoState {
   players: Record<string, BigTwoPlayer>;
-  opponents: Opponent[];
+  opponents: BigTwoOpponent[];
   secret?: BigTwoSecret;
   previous: {
     hand: string[] | null;
@@ -29,8 +29,8 @@ export interface BigTwoPlayer {
   hand: string[];
 }
 
-export interface Opponent extends Partial<BigTwoPlayer> {
-  id: number;
+export interface BigTwoOpponent extends Partial<BigTwoPlayer> {
+  id: string;
   numOfCards: number;
 }
 

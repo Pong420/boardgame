@@ -7,11 +7,14 @@
   "author": "Pong <samfunghp@gmail.com>",
   "scripts": {
     "dev": "lerna run dev --stream --parallel",
+    "server": "yarn workspace @boardgame/server",
+    "template": "yarn workspace @boardgame/template",
     "postinstall": "lerna run postinstall --stream --parallel",
     "heroku-postbuild": "yarn build --ignore @fullstack/app"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "packages/games/*"
   ],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.0.1",
