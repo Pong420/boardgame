@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import { RouteComponentProps, Redirect, generatePath } from 'react-router-dom';
+import { Button } from '@blueprintjs/core';
 import { Game } from 'boardgame.io';
 import { Client } from 'boardgame.io/react';
 import { SocketIO } from 'boardgame.io/multiplayer';
@@ -11,32 +12,37 @@ export interface PlaygroundRouteState {
   credentials: string;
 }
 
-const getClint = () =>
-  Promise.all([
-    import(`@boardgame/big-two/dist/game`).then(({ BigTwo }) => BigTwo as Game),
-    import(`@boardgame/big-two/dist/board`).then(
-      ({ BigTwoBoard }) => BigTwoBoard
-    )
-  ]).then(([game, board]) => ({
-    default: Client({
-      debug: false,
-      game,
-      board,
-      multiplayer: SocketIO({ server })
-    })
-  }));
-
 interface Props
   extends RouteComponentProps<{}, {}, PlaygroundRouteState | undefined> {}
 
 export function Playground({ location }: Props) {
   if (location.state) {
-    const { playerID, credentials } = location.state;
-    const ClientComponent = React.lazy(() => getClint());
+    const { name, playerID, credentials } = location.state;
+    const ClientComponent = React.lazy(() =>
+      Promise.all([
+        import(`@boardgame/${name}/dist/game`).then(
+          ({ BigTwo }) => BigTwo as Game
+        ),
+        import(`@boardgame/${name}/dist/board`).then(
+          ({ BigTwoBoard }) => BigTwoBoard
+        )
+      ]).then(([game, board]) => ({
+        default: Client({
+          debug: false,
+          game,
+          board,
+          multiplayer: SocketIO({ server })
+        })
+      }))
+    );
 
     return (
       <div className="playground">
-        <div className="playgroud-header">{/*  */}</div>
+        <div className="playgroud-header">
+          <Button icon="arrow-left" />
+          <div />
+          <div />
+        </div>
         <div className="playground-content">
           <Suspense fallback={null}>
             <ClientComponent playerID={playerID} credentials={credentials} />
