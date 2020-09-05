@@ -1490,10 +1490,6 @@ JSONStream@^1.0.4, JSONStream@^1.3.4:
     jsonparse "^1.2.0"
     through ">=2.2.7 <3"
 
-Poker.JS@Tairraos/Poker.JS#5f53c9a:
-  version "0.0.0"
-  resolved "https://codeload.github.com/Tairraos/Poker.JS/tar.gz/5f53c9a218e5882efbbe6cf223d8da744f64dbf1"
-
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -6261,6 +6257,10 @@ please-upgrade-node@^3.2.0:
   integrity sha512-gQR3WpIgNIKwBMVLkpMUeR3e1/E1y42bqDQZfql+kDeXd8COYfM8PQA4X6y7a8u9Ua9FHmsrrmirW2vHs45hWg==
   dependencies:
     semver-compare "^1.0.0"
+
+pokerjs@Pong420/Poker.JS#5f53c9a:
+  version "0.0.0"
+  resolved "https://codeload.github.com/Pong420/Poker.JS/tar.gz/5f53c9a218e5882efbbe6cf223d8da744f64dbf1"
 
 pokersolver@Pong420/pokersolver#38f2e64:
   version "2.1.2"

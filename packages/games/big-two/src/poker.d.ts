@@ -13,7 +13,7 @@ declare module 'pokersolver' {
   export const Hand: Hand;
 }
 
-declare module 'Poker.JS/release/poker.min.js';
+declare module 'pokerjs/release/poker.min.js';
 
 declare interface Window {
   Poker: {

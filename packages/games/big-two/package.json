@@ -24,10 +24,10 @@
   "dependencies": {
     "@blueprintjs/core": "^3.31.0",
     "@boardgame/scss": "1.0.0",
-    "Poker.JS": "Tairraos/Poker.JS#5f53c9a",
     "array-move": "^3.0.1",
     "boardgame.io": "0.40.0",
     "lodash": "^4.17.20",
+    "pokerjs": "Pong420/Poker.JS#5f53c9a",
     "pokersolver": "Pong420/pokersolver#38f2e64",
     "react": "^17.0.0-rc.1",
     "react-spring": "9.0.0-rc.3",
