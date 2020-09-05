@@ -1,0 +1,47 @@
+.#{$ns}-icon {
+  color: var(--icon-color) !important;
+}
+
+.#{$ns}-popover.#{$ns}-popover {
+  .#{$ns}-popover-arrow-fill {
+    fill: var(--main-diff1-color);
+  }
+  .#{$ns}-popover-content {
+    background-color: var(--main-diff1-color);
+    color: var(--text-color);
+  }
+}
+
+[data-theme^='dark'] {
+  .#{$ns}-input-group {
+    input {
+      background-color: var(--main-diff1-color);
+      color: var(--text-color);
+    }
+  }
+
+  .#{$ns}-card {
+    background-color: var(--main-diff1-color);
+  }
+}
+
+.#{$ns}-menu.#{$ns}-menu {
+  background-color: var(--main-diff1-color);
+}
+
+.#{$ns}-dialog.#{$ns}-dialog {
+  @include dimen(auto);
+  border-radius: 4px;
+  background-color: var(--main-diff1-color);
+  min-width: 300px;
+  overflow: hidden;
+  padding-bottom: 10px;
+}
+
+.#{$ns}-drawer.#{$ns}-drawer {
+  background-color: var(--main-diff1-color);
+}
+
+.#{$ns}-dialog-container {
+  height: 100%;
+}

@@ -1,5 +1,6 @@
 :root {
   --main-color: #fff;
+  --main-diff1-color: #f6f6f6;
   --accent-color: #{get-color(blue)};
   --accent-light-color: #{get-color(blue, light)};
   --accent-dark-color: #{get-color(blue, dark)};
@@ -15,6 +16,7 @@
 
 [data-theme^='dark'] {
   --main-color: #222;
+  --main-diff1-color: #{lighten(#222, 5%)};
   --text-color: #dfdedb;
   --text-light-color: #a09c97;
   --icon-color: #{darken(#dfdedb, 30%)};
