@@ -1,0 +1,7 @@
+.matches {
+  @include sq-dimen(100%);
+}
+
+.matches-header {
+  @include header();
+}

@@ -1,0 +1,6 @@
+.button-popover {
+  .#{$ns}-popover-content {
+    padding: $pt-grid-size/2 $pt-grid-size;
+    white-space: nowrap;
+  }
+}
