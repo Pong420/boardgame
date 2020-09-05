@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const rimraf = require('rimraf');
 
 const name = process.argv
   .slice(2)
@@ -31,6 +30,10 @@ if (!fs.existsSync(dist)) {
       let content = fs.readFileSync(fullPath, 'utf-8');
       content = content.replace(new RegExp('Prefix_', 'g'), name);
       content = content.replace(new RegExp('game-name', 'g'), gameName);
+      content = content.replace(
+        new RegExp('Game Name', 'g'),
+        name.split(/(?=[A-Z])/).join(' ')
+      );
       content = content.replace(
         new RegExp('@boardgame/template', 'g'),
         `@boardgame/${gameName}`
