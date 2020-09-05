@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^14.0.0",
+    "@rollup/plugin-image": "^2.0.5",
     "@rollup/plugin-json": "^4.1.0",
     "@types/react": "^16.9.49",
     "esbuild": "^0.6.23",

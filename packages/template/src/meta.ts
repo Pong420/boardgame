@@ -1,5 +1,3 @@
-import pkg from '../package.json';
-
 interface Meta {
   version: string;
   name: string;
@@ -11,7 +9,7 @@ interface Meta {
 }
 
 export const Prefix_Meta: Meta = {
-  version: pkg.version,
+  version: __VERSION__,
   name: 'Game Name',
   icon: '',
   numberOfPlayers: [],

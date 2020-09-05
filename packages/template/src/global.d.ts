@@ -1,5 +1,7 @@
 /// <reference types="node" />
 
+declare const __VERSION__: string;
+
 declare namespace NodeJS {
   interface ProcessEnv {
     readonly NODE_ENV: 'development' | 'production' | 'test';
