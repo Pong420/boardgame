@@ -30,7 +30,7 @@
     "lodash": "^4.17.20",
     "pokerjs": "Pong420/Poker.JS#5f53c9a",
     "pokersolver": "Pong420/pokersolver#38f2e64",
-    "react": "^17.0.0-rc.1",
+    "react": "17.0.0-rc.1",
     "react-spring": "9.0.0-rc.3",
     "react-use-gesture": "7.0.16",
     "rxjs": "^6.6.2",

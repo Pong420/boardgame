@@ -5,17 +5,3 @@
 @import './mixins/position';
 @import './mixins/size';
 @import './mixins/textOverflow';
-
-@mixin header() {
-  @include dimen(100%, $header-height);
-  @include flex(center, center);
-  @include padding-x(15px);
-  border-bottom: $divider;
-
-  .header-title {
-    flex: 1 1 auto;
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 0;
-  }
-}

@@ -1,25 +1,37 @@
-$error-color: #db3737;
+$error-color: $pt-intent-danger;
 $help-line-height: 1em;
 
-.rc-form-item {
-  @include dimen(100%);
-  @include flex($flex-direction: column);
+.rc-form {
+  &.inline {
+    @include flex(flex-start);
 
-  .rc-form-item-label:not(:empty) {
-    margin-bottom: 5px;
+    .rc-form-item {
+      margin-bottom: 0;
+      + .rc-form-item {
+        margin-left: 10px;
+      }
+    }
+  }
+
+  &:not(.inline) {
+    .rc-form-item-label:not(:empty) {
+      display: block;
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.rc-form-item {
+  + .rc-form-item {
+    margin-top: 15px;
   }
 
   .rc-form-item-help {
     color: $error-color;
     margin-top: 3px;
     font-size: 14px;
-    height: $help-line-height;
+    min-height: $help-line-height;
     line-height: $help-line-height;
-  }
-
-  .bp3-file-input input {
-    min-width: 0;
-    width: 100%;
   }
 }
 

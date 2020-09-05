@@ -1,4 +1,9 @@
-export interface Match<T = any> {
+export interface SetupData {
+  matchName: string;
+  numOfPlayers: number;
+}
+
+export interface Match<T extends SetupData = SetupData> {
   gameName: string;
   players: Player[];
   setupData: T | null;
@@ -24,7 +29,7 @@ export interface Params$GetMatch {
   matchID: string;
 }
 
-export interface Params$CreateMatch<T = any> {
+export interface Params$CreateMatch<T extends SetupData = SetupData> {
   name: string;
   numPlayers: number;
   setupData?: T;
@@ -39,7 +44,7 @@ export interface Params$JoinMatch<T = any> {
   data?: T;
 }
 
-export interface Params$UpdatePlayerMeta<T = any> {
+export interface Params$UpdatePlayerMeta<T extends SetupData = SetupData> {
   name: string;
   matchID: string;
   playerID: string;
@@ -55,7 +60,7 @@ export interface Params$LeaveMatch {
   credentials: string;
 }
 
-export interface Params$PlayAgain<T = any> {
+export interface Params$PlayAgain<T extends SetupData = SetupData> {
   name: string;
   matchID: string;
   playerID: string;
@@ -64,8 +69,8 @@ export interface Params$PlayAgain<T = any> {
   setupData?: T;
 }
 
-export interface Response$GetMatches<T = any> {
+export interface Response$GetMatches<T extends SetupData = SetupData> {
   matches: Match<T>[];
 }
 
-export type Response$GetMatch<T = any> = Match<T>;
+export type Response$GetMatch<T extends SetupData = SetupData> = Match<T>;

@@ -3,6 +3,7 @@
   @include flex($flex-direction: column);
   max-width: 320px;
   border-right: $divider;
+  flex: 0 0 auto;
 }
 
 .game-list-header {

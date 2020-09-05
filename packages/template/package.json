@@ -24,6 +24,6 @@
   "dependencies": {
     "@boardgame/scss": "1.0.0",
     "boardgame.io": "0.40.0",
-    "react": "^17.0.0-rc.1"
+    "react": "17.0.0-rc.1"
   }
 }

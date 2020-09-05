@@ -7,6 +7,7 @@
   "author": "Pong <samfunghp@gmail.com>",
   "scripts": {
     "dev": "lerna run dev --stream --parallel",
+    "web": "yarn workspace @boardgame/web",
     "server": "yarn workspace @boardgame/server",
     "template": "yarn workspace @boardgame/template",
     "postinstall": "lerna run postinstall --stream --parallel",

@@ -24,14 +24,14 @@
     "typescript": "3.9.7"
   },
   "dependencies": {
-    "@boardgame/scss": "1.0.0",
-    "@boardgame/big-two": "1.0.0",
     "@blueprintjs/core": "^3.31.0",
+    "@boardgame/big-two": "1.0.0",
+    "@boardgame/scss": "1.0.0",
     "axios": "^0.20.0",
     "boardgame.io": "0.40.0",
     "rc-field-form": "^1.10.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "17.0.0-rc.1",
+    "react-dom": "17.0.0-rc.1",
     "react-router-dom": "^5.2.0",
     "rxjs": "^6.6.2",
     "typeface-muli": "^1.1.3",

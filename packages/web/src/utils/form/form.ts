@@ -254,6 +254,7 @@ export function createForm<S extends {} = Store, V = S>({
         beforeSubmit,
         initialValues,
         transoformInitialValues,
+        className,
         ...props
       },
       ref
@@ -263,6 +264,7 @@ export function createForm<S extends {} = Store, V = S>({
         {
           ...props,
           ref,
+          className: ['rc-form', className].filter(Boolean).join(' '),
           initialValues:
             initialValues && transoformInitialValues
               ? transoformInitialValues(initialValues)

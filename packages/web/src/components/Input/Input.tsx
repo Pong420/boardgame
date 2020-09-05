@@ -17,6 +17,7 @@ export const unitProps = (unit: string) => ({
 export function Input(props?: InputProps) {
   return (
     <InputGroup
+      fill
       autoComplete="off"
       {...props}
       {...(props &&

@@ -1,3 +1,4 @@
 {
-  "HOME": "/:name?"
+  "HOME": "/:name?",
+  "PLAYGROUND": "/playground"
 }
