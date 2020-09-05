@@ -8,8 +8,6 @@ import { Server } from 'boardgame.io/server';
 import { PostgresStore } from 'bgio-postgres';
 import { BigTwo } from '@boardgame/big-two/dist/game';
 
-dotenv.config();
-
 [
   '.env',
   '.env.local',

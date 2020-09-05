@@ -1,0 +1,4 @@
+{
+  "restartable": "rs",
+  "exec": "yarn build && yarn start"
+}
