@@ -1,20 +1,26 @@
+// @ts-check
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import esbuild from 'rollup-plugin-esbuild';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import image from '@rollup/plugin-image';
-import scss from 'rollup-plugin-scss';
+import styles from 'rollup-plugin-styles';
 import pkg from './package.json';
 
+/** @type {import('rollup').RollupOptions['plugins']} */
 const plugins = [
   json(),
   image(),
-  commonjs(),
-  scss({
-    sass: require('sass')
+  styles({
+    sass: {
+      data: `@import "~@boardgame/scss/index.scss";`
+    }
   }),
+  commonjs(),
   esbuild({
-    include: /\.[jt]sx?$/,
+    // @ts-ignore
     watch: !!process.env.ROLLUP_WATCH,
+    include: /\.[jt]sx?$/,
     minify: process.env.NODE_ENV === 'production',
     define: {
       __VERSION__: `"${pkg.version}"`
@@ -26,10 +32,12 @@ const plugins = [
   })
 ];
 
-export default [
+/** @type {import('rollup').RollupOptions[]} */
+const config = [
   {
     input: './src/meta.ts',
     output: {
+      exports: 'auto',
       file: './dist/meta.js',
       format: 'cjs'
     },
@@ -52,3 +60,5 @@ export default [
     plugins
   }
 ];
+
+export default config;

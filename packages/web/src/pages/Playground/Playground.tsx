@@ -16,9 +16,7 @@ const getClint = () =>
     import(`@boardgame/big-two/dist/game`).then(({ BigTwo }) => BigTwo as Game),
     import(`@boardgame/big-two/dist/board`).then(
       ({ BigTwoBoard }) => BigTwoBoard
-    ),
-    // @ts-ignore
-    import(`@boardgame/big-two/dist/board/index.css`)
+    )
   ]).then(([game, board]) => ({
     default: Client({
       debug: false,
