@@ -5,17 +5,19 @@ interface Meta {
   name: string;
   icon: string;
   author: string;
-  numberOfPlayers: string;
+  numOfPlayers: string;
   description?: string;
   guide: string[];
 }
 
-export const BigTwoMeta: Meta = {
+const BigTowMeta: Meta = {
   version: __VERSION__,
   name: 'Big Two',
   icon,
-  numberOfPlayers: `2 - 4 players`,
+  numOfPlayers: `2 - 4 players`,
   author: 'Pong420',
   description: '',
   guide: []
 };
+
+export default BigTowMeta;

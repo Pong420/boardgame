@@ -3,17 +3,19 @@ interface Meta {
   name: string;
   icon: string;
   author: string;
-  numberOfPlayers: number[];
+  numOfPlayers: number[];
   description?: string;
   guide: string[];
 }
 
-export const Prefix_Meta: Meta = {
+const Prefix_Meta: Meta = {
   version: __VERSION__,
   name: 'Game Name',
   icon: '',
-  numberOfPlayers: [],
+  numOfPlayers: [],
   author: '',
   description: '',
   guide: []
 };
+
+export default Prefix_Meta;

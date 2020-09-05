@@ -45,3 +45,10 @@
 .#{$ns}-dialog-container {
   height: 100%;
 }
+
+a,
+a:hover,
+.#{$ns}-dark a,
+.#{$ns}-dark a:hover {
+  color: inherit;
+}
