@@ -5,3 +5,47 @@
 .lobby-header {
   @include header();
 }
+
+.lobby-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-gap: 20px;
+  padding: 20px;
+}
+
+$padding: 10px;
+
+.match {
+  @include flex($flex-direction: column);
+  padding-bottom: $padding;
+}
+
+.match-header {
+  @include flex(center, space-between);
+
+  .match-name {
+    font-weight: bold;
+    font-size: 16px;
+  }
+}
+
+.match-description {
+  color: var(--text-light-color);
+  flex: 1 1 auto;
+  margin-top: 5px;
+  word-break: break-all;
+}
+
+.match-footer {
+  @include flex(center, space-between);
+  @include padding-x(5px);
+  @include margin-x(-$padding);
+  @include padding-x($padding);
+  border-top: $divider;
+  margin-top: $padding;
+  padding-top: $padding;
+
+  .#{$ns}-button {
+    min-width: 44px;
+  }
+}

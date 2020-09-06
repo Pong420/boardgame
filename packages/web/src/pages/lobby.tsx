@@ -2,13 +2,18 @@ import React from 'react';
 import { graphql } from 'gatsby';
 import { RouteComponentProps, GameMeta } from '@/typings';
 import { Lobby } from '@/components/Lobby';
+import { MatchesProvider } from '@/components/Lobby/MatchesProvider';
 
 interface Context {
   gameMeta: GameMeta;
 }
 
 export default function (props: RouteComponentProps<Context>) {
-  return <Lobby meta={props.data.gameMeta} />;
+  return (
+    <MatchesProvider>
+      <Lobby meta={props.data.gameMeta} />;
+    </MatchesProvider>
+  );
 }
 
 export const query = graphql`
