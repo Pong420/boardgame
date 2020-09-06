@@ -1,0 +1,7 @@
+.lobby {
+  @include sq-dimen(100%);
+}
+
+.lobby-header {
+  @include header();
+}
