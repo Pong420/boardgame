@@ -18,7 +18,7 @@ export interface BigTwoMeta {
   gameName: string;
   icon: string;
   author: string;
-  numOfPlayers: string;
+  numOfPlayers: number[];
   description?: string;
 }
 

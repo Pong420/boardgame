@@ -18,7 +18,7 @@ export interface Prefix_Meta {
   gameName: string;
   icon: string;
   author: string;
-  numOfPlayers: string;
+  numOfPlayers: [];
   description?: string;
 }
 
