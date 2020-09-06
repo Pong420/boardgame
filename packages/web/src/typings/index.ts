@@ -29,7 +29,7 @@ export interface GameMeta {
   gameName: string;
   icon: string;
   author: string;
-  numOfPlayers: string;
+  numOfPlayers: number[];
   description?: string;
 }
 

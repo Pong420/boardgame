@@ -12,7 +12,8 @@ interface ItemProps {
 const gameIconFallback = <div className="game-icon-fallback" />;
 
 export function GameListItem({ name }: ItemProps) {
-  const { gameName, icon, numOfPlayers, version } = useGameMeta(name) || {};
+  const { gameName, icon, numOfPlayers = [], version } =
+    useGameMeta(name) || {};
 
   return (
     <Link
@@ -25,7 +26,9 @@ export function GameListItem({ name }: ItemProps) {
       </div>
       <div className="game-list-item-content">
         <div className="game-name">{gameName}</div>
-        <div>{numOfPlayers}</div>
+        <div>
+          {numOfPlayers.join(numOfPlayers.length === 2 ? ' - ' : ' / ')} players
+        </div>
       </div>
       <div className="game-version">v{version}</div>
     </Link>

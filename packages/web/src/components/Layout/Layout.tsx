@@ -4,6 +4,11 @@ import { RouteComponentProps } from '@/typings';
 import { SEO } from '../SEO';
 import { GameList } from '../GameList';
 
+import 'typeface-muli';
+import 'normalize.css';
+import '@blueprintjs/core/lib/css/blueprint.css';
+import '@blueprintjs/icons/lib/css/blueprint-icons.css';
+
 interface LayoutProps extends RouteComponentProps {
   children?: ReactNode;
 }

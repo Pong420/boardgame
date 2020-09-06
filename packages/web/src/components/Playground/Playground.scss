@@ -1,0 +1,12 @@
+.playground {
+  @include sq-dimen(100%);
+  @include flex($flex-direction: column);
+
+  .bgio-client {
+    @include sq-dimen(100%);
+  }
+}
+
+.playground-header {
+  @include header();
+}

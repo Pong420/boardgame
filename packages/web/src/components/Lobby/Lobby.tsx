@@ -9,9 +9,9 @@ interface Props {
 export function Lobby({ meta }: Props) {
   return (
     <div className="lobby">
-      <LobbyHeader />
+      <LobbyHeader meta={meta} />
       <div className="lobby-content">
-        <pre>{JSON.stringify(meta, null, 2)}</pre>
+        {/* <pre>{JSON.stringify(meta, null, 2)}</pre> */}
       </div>
     </div>
   );
