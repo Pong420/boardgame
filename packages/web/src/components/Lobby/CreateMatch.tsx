@@ -4,7 +4,7 @@ import { map, switchMap, catchError } from 'rxjs/operators';
 import { navigate } from 'gatsby';
 import { HTMLSelect } from '@blueprintjs/core';
 import { createForm, FormProps, validators } from '@/utils/form';
-import { PlayerName } from '@/utils/playerName';
+import { PlayerName } from '@/utils/storage';
 import { Params$CreateMatch } from '@/typings';
 import { createMatch, joinMatch } from '@/services';
 import { Input, TextArea, Checkbox } from '../Input';
@@ -129,7 +129,9 @@ export function CreateMatch({ name, gameGame, numOfPlayers }: Props) {
             <CreateMatchForm
               form={form}
               initialValues={{ name, playerName: PlayerName.get() }}
-              onValuesChange={(_, { playerName }) => PlayerName.set(playerName)}
+              onValuesChange={(_, { playerName }) =>
+                PlayerName.save(playerName)
+              }
               numPlayersOps={
                 numOfPlayers.length === 2
                   ? Array.from(
