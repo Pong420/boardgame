@@ -37,7 +37,6 @@ const config = [
   {
     input: './src/meta.ts',
     output: {
-      exports: 'auto',
       file: './dist/meta.js',
       format: 'cjs'
     },

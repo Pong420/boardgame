@@ -6,7 +6,7 @@ import { historyApiFallback } from 'koa2-connect-history-api-fallback';
 import { Game } from 'boardgame.io';
 import { Server } from 'boardgame.io/server';
 import { PostgresStore } from 'bgio-postgres';
-import { BigTwo } from '@boardgame/big-two/dist/game';
+import { game as BigTwo } from '@boardgame/big-two/dist/game';
 
 [
   '.env',

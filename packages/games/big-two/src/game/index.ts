@@ -4,10 +4,8 @@ import { playerView } from './playerView';
 import { moves } from './moves';
 import { BigTwoGame } from '../typings';
 
-export const BigTwoName = 'big-two';
-
-export const BigTwo: BigTwoGame = {
-  name: BigTwoName,
+export const game: BigTwoGame = {
+  name: 'big-two',
   phases,
   moves,
   setup,

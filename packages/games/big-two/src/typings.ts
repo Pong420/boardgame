@@ -10,6 +10,18 @@ export type OmitArg<F> = F extends (
   ? (...args: P) => R
   : never;
 
+type Name = 'big-two';
+
+export interface BigTwoMeta {
+  version: string;
+  name: Name;
+  gameName: string;
+  icon: string;
+  author: string;
+  numOfPlayers: string;
+  description?: string;
+}
+
 export interface BigTwoState {
   players: Record<string, BigTwoPlayer>;
   opponents: BigTwoOpponent[];
@@ -43,7 +55,7 @@ export interface BigTwoCtx extends Ctx {
   random: NonNullable<Ctx['random']>;
 }
 
-export type BigTwoGame = Game<BigTwoState, BigTwoCtx>;
+export type BigTwoGame = Game<BigTwoState, BigTwoCtx> & { name: Name };
 export type BigTwoPlayerView = BigTwoGame['playerView'];
 export type BigTwoPhaseConfig = PhaseConfig<BigTwoState, BigTwoCtx>;
 export type BigTwoBoardProps = BoardProps<BigTwoState> & {

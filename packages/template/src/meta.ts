@@ -1,21 +1,11 @@
-interface Meta {
-  version: string;
-  name: string;
-  icon: string;
-  author: string;
-  numOfPlayers: number[];
-  description?: string;
-  guide: string[];
-}
+import { Prefix_Meta } from './typings';
 
-const Prefix_Meta: Meta = {
+export const meta: Prefix_Meta = {
   version: __VERSION__,
-  name: 'Game Name',
+  name: 'game-name',
+  gameName: 'Game Name',
   icon: '',
-  numOfPlayers: [],
+  numOfPlayers: '',
   author: '',
-  description: '',
-  guide: []
+  description: ''
 };
-
-export default Prefix_Meta;
