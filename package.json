@@ -14,10 +14,16 @@
     "postinstall": "lerna run postinstall --stream --parallel",
     "heroku-postbuild": "yarn build --ignore @fullstack/app"
   },
-  "workspaces": [
-    "packages/*",
-    "packages/games/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "packages/games/*"
+    ],
+    "nohoist": [
+      "react-dom",
+      "react-dom/**"
+    ]
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.3.0",
     "@typescript-eslint/parser": "^3.3.0",
