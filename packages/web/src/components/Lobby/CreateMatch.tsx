@@ -7,7 +7,7 @@ import { createForm, FormProps, validators } from '@/utils/form';
 import { PlayerName } from '@/utils/playerName';
 import { Params$CreateMatch } from '@/typings';
 import { createMatch, joinMatch } from '@/services';
-import { Input, Checkbox } from '../Input';
+import { Input, TextArea, Checkbox } from '../Input';
 import { ButtonPopover } from '../ButtonPopover';
 import { openConfirmDialog } from '../ConfirmDialog';
 
@@ -61,7 +61,7 @@ function CreateMatchForm({
         name={['setupData', 'matchName']}
         validators={[
           validators.required('Please input the match name'),
-          validators.maxLength(20, 'The match name too long')
+          validators.maxLength(10, 'Match name cannot longer than 10')
         ]}
       >
         <Input />
@@ -78,6 +78,16 @@ function CreateMatchForm({
             <option key={index} value={num} label={String(num)} />
           ))}
         </HTMLSelect>
+      </FormItem>
+
+      <FormItem
+        label="Description ( Optional )"
+        name={['setupData', 'description']}
+        validators={[
+          validators.maxLength(50, 'Description name cannot longer than 50')
+        ]}
+      >
+        <TextArea />
       </FormItem>
 
       <FormItem name={['unlisted']} valuePropName="checked">

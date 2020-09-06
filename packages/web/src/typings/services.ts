@@ -1,6 +1,7 @@
 export interface SetupData {
   matchName: string;
   numOfPlayers: number;
+  description?: string;
 }
 
 export interface Match<T extends SetupData = SetupData> {
