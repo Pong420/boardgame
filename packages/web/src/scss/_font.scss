@@ -1,8 +1,0 @@
-@font-face {
-  font-family: 'ink-painting';
-  src: url('../assets/ink-painting.ttf');
-}
-
-@mixin ink-painting {
-  font-family: 'ink-painting', #{$pt-font-family};
-}
