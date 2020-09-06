@@ -55,4 +55,12 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
       component: require.resolve(`./src/pages/lobby.tsx`)
     });
   });
+
+  nodes.forEach(({ name }) => {
+    actions.createPage({
+      path: `/playground/${name}`,
+      context: { name },
+      component: require.resolve(`./src/pages/playground.tsx`)
+    });
+  });
 };
