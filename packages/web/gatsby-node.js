@@ -2,7 +2,7 @@
 const path = require('path');
 
 /** @type {import('gatsby').GatsbyNode['onCreateWebpackConfig']} */
-exports.onCreateWebpackConfig = ({ stage, actions }) => {
+exports.onCreateWebpackConfig = ({ actions }) => {
   actions.setWebpackConfig({
     resolve: {
       alias: {
@@ -10,16 +10,6 @@ exports.onCreateWebpackConfig = ({ stage, actions }) => {
       }
     }
   });
-
-  if (stage.startsWith('develop')) {
-    actions.setWebpackConfig({
-      resolve: {
-        alias: {
-          'react-dom': '@hot-loader/react-dom'
-        }
-      }
-    });
-  }
 };
 
 exports.sourceNodes = props => {
