@@ -16,10 +16,9 @@ export function GameListItem({ name }: ItemProps) {
 
   return (
     <Link
-      to={`/lobby/${name}`}
+      to={`/lobby/${name}/`}
       className="game-list-item"
       activeClassName="active"
-      state={{ asdasd: 'qweqewqe' }}
     >
       <div className="game-icon">
         {icon ? <img src={icon} alt={icon} /> : gameIconFallback}

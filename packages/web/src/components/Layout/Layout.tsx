@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { GameMetaProvider } from '@/store/gameMeta';
 import { RouteComponentProps } from '@/typings';
 import { SEO } from '../SEO';
-import GameList from '../GameList';
+import { GameList } from '../GameList';
 
 interface LayoutProps extends RouteComponentProps {
   children?: ReactNode;
