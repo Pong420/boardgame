@@ -25,6 +25,13 @@ export const gotoMatch = (state: PlayerState) => {
   return navigate(`/match/${state.name}`, { state, replace: true });
 };
 
+export const spectate = ({
+  name,
+  matchID
+}: Pick<PlayerState, 'name' | 'matchID'>) => {
+  return navigate(`/spectate/${name}/${matchID}`);
+};
+
 export const matchStorage = createLocalStorage<PlayerState | null>(Key, null);
 
 const pointerEvents = (value: string) => {

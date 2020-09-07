@@ -54,13 +54,18 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
       context: { name },
       component: require.resolve(`./src/pages/lobby.tsx`)
     });
-  });
 
-  nodes.forEach(({ name }) => {
     actions.createPage({
       path: `/match/${name}/`,
       context: { name },
       component: require.resolve(`./src/pages/match.tsx`)
+    });
+
+    actions.createPage({
+      path: `/spectate/${name}/*`,
+      matchPath: `/spectate/${name}/:matchID`,
+      context: { name },
+      component: require.resolve(`./src/pages/spectate.tsx`)
     });
   });
 };

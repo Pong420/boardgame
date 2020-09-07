@@ -1,4 +1,4 @@
-import { Location } from '@reach/router';
+import { HistoryLocation } from '@reach/router';
 
 export interface RouteComponentProps<
   Data = any,
@@ -6,7 +6,7 @@ export interface RouteComponentProps<
   LocationState = {}
 > {
   path: string;
-  location: Location & { state: LocationState };
+  location: HistoryLocation & { state: LocationState };
   pageResources: {
     json: {
       pageContext: Context;

@@ -6,8 +6,9 @@ import { MatchHeader } from './MatchHeader';
 
 interface Props {
   name: string;
-  playerID: string;
-  credentials: string;
+  matchID?: string;
+  playerID?: string;
+  credentials?: string;
 }
 
 const handleImport = (name: string) =>
@@ -28,7 +29,7 @@ const handleImport = (name: string) =>
     })
   }));
 
-export function Match({ name, playerID, credentials }: Props) {
+export function Match({ name, matchID, playerID, credentials }: Props) {
   const ClientComponent = useMemo(() => React.lazy(() => handleImport(name)), [
     name
   ]);
@@ -44,7 +45,11 @@ export function Match({ name, playerID, credentials }: Props) {
       <MatchHeader />
       <div className="match-content">
         <Suspense fallback={null}>
-          <ClientComponent playerID={playerID} credentials={credentials} />
+          <ClientComponent
+            matchID={matchID}
+            playerID={playerID}
+            credentials={credentials}
+          />
         </Suspense>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button } from '@blueprintjs/core';
+import { Card } from '@blueprintjs/core';
 import { useMatch } from './MatchesProvider';
 import { JoinMatch } from './JoinMatch';
 import { Player } from '@/typings';
@@ -46,9 +46,7 @@ export function LobbyItem({ name, matchID }: Props) {
                 matchID={matchID}
                 playerID={String(nextPlayers[0]?.id)}
               />
-            ) : (
-              <Button text="Spectate" />
-            )}
+            ) : null}
           </div>
         </div>
       </Card>
