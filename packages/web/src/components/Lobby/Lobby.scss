@@ -1,5 +1,5 @@
 .lobby {
-  @include sq-dimen(100%);
+  @include dimen(100%);
 }
 
 .lobby-header {
@@ -45,5 +45,17 @@ $padding: 12.5px;
 
   .#{$ns}-button {
     min-width: 44px;
+  }
+}
+
+.no-matches {
+  @include flex(center, center);
+  @include sq-dimen(100%);
+  text-align: center;
+
+  .message {
+    @include ink-painting;
+    font-size: 60px;
+    margin-bottom: 30px;
   }
 }

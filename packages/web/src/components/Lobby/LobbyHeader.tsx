@@ -18,8 +18,11 @@ export function LobbyHeader({ meta }: Props) {
       <div className="header-title"></div>
       <ButtonGroup>
         <CreateMatch
+          minimal
+          icon="plus"
+          content="Create Match"
           name={meta.name}
-          gameGame={meta.gameName}
+          gameName={meta.gameName}
           numOfPlayers={meta.numOfPlayers}
         />
       </ButtonGroup>

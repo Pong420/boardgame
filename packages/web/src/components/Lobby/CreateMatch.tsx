@@ -12,7 +12,7 @@ import {
   matchStorage
 } from '@/services';
 import { Input, TextArea, Checkbox } from '../Input';
-import { ButtonPopover } from '../ButtonPopover';
+import { ButtonPopover, ButtonPopoverProps } from '../ButtonPopover';
 import { openConfirmDialog } from '../ConfirmDialog';
 import { PlayerNameControl } from '../PlayerNameControl';
 
@@ -21,11 +21,13 @@ interface Store extends Params$CreateMatch {
   local?: boolean;
 }
 
-interface Props {
+export interface Create {
   name: string;
-  gameGame: string;
+  gameName: string;
   numOfPlayers: number[];
 }
+
+interface Props extends Create, ButtonPopoverProps {}
 
 const { Form, FormItem, useForm } = createForm<Store>();
 
@@ -111,18 +113,16 @@ function CreateMatchForm({
   );
 }
 
-export function CreateMatch({ name, gameGame, numOfPlayers }: Props) {
+export function CreateMatch({ name, gameName, numOfPlayers, ...props }: Props) {
   const [form] = useForm();
   const [{ playerName }, updatePrefrences] = usePreferences();
 
   return (
     <ButtonPopover
-      minimal
-      icon="plus"
-      content={`Create Match`}
+      {...props}
       onClick={() =>
         openConfirmDialog({
-          title: `Create ${gameGame} Match`,
+          title: `Create ${gameName} Match`,
           onConfirm: async () => {
             const store = await form.validateFields();
             const payload = await createAndJoinMatch({

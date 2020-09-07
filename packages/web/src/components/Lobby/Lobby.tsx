@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { GameMeta, Match } from '@/typings';
-import { LobbyHeader } from './LobbyHeader';
-import { LobbyItem } from './LobbyItem';
-import { getMatches, usePreferencesState } from '@/services';
 import { defer, interval, empty } from 'rxjs';
 import { repeatWhen, map, catchError } from 'rxjs/operators';
+import { GameMeta, Match } from '@/typings';
+import { getMatches, usePreferencesState } from '@/services';
+import { LobbyHeader } from './LobbyHeader';
+import { LobbyItem } from './LobbyItem';
+import { NoMatches } from './NoMatches';
 
 interface Props {
   meta: GameMeta;
@@ -31,11 +32,19 @@ export function Lobby({ meta }: Props) {
   return (
     <div className="lobby">
       <LobbyHeader meta={meta} />
-      <div className="lobby-content">
-        {state.map(match => (
-          <LobbyItem key={match.matchID} name={name} {...match} />
-        ))}
-      </div>
+      {state.length ? (
+        <div className="lobby-content">
+          {state.map(match => (
+            <LobbyItem key={match.matchID} name={name} {...match} />
+          ))}
+        </div>
+      ) : (
+        <NoMatches
+          name={name}
+          gameName={meta.gameName}
+          numOfPlayers={meta.numOfPlayers}
+        />
+      )}
     </div>
   );
 }
