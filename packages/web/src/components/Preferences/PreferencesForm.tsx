@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Switch } from '@/components/Input';
 import { createForm } from '@/utils/form';
 import {
   Theme,
@@ -40,10 +41,16 @@ export function PreferencesForm() {
         updatePreferences(state => ({ ...state, ...changes }))
       }
     >
-      <div className="preferences-section" data-type="Uesr">
+      <div className="preferences-section" data-type="Lobby">
         <Row label="Your Name">
           <FormItem name="playerName" noStyle>
             <PlayerNameControl minimal />
+          </FormItem>
+        </Row>
+
+        <Row label="Polling">
+          <FormItem name="polling" valuePropName="checked" noStyle>
+            <Switch large />
           </FormItem>
         </Row>
       </div>
@@ -55,7 +62,7 @@ export function PreferencesForm() {
           </FormItem>
         </Row>
 
-        <Row label="Fixed Width">
+        <Row label="Screen Width">
           <FormItem name="screenWidth" noStyle>
             <ScreenWidthSelect minimal />
           </FormItem>

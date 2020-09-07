@@ -8,6 +8,7 @@ export interface PreferencesState {
   theme: Theme;
   screenWidth: ScreenWidth;
   playerName: string;
+  polling?: boolean;
 }
 
 export const BOARDGAME_THEME = 'BOARDGAME_THEME';
@@ -16,7 +17,12 @@ export const themeStorage = createLocalStorage<Theme>(BOARDGAME_THEME, 'dark');
 
 export const preferencesStorage = createLocalStorage<PreferencesState>(
   'BOARDGAME_PREFERENCE',
-  { playerName: '', screenWidth: 'limited', theme: themeStorage.get() }
+  {
+    playerName: '',
+    screenWidth: 'limited',
+    polling: true,
+    theme: themeStorage.get()
+  }
 );
 
 export function handleTheme(theme: Theme) {
