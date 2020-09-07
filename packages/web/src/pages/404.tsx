@@ -1,5 +1,6 @@
-import React from 'react';
+import { navigate } from 'gatsby';
 
 export default function () {
-  return <div>404</div>;
+  navigate('/');
+  return null;
 }
