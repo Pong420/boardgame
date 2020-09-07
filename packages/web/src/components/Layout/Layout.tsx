@@ -1,26 +1,28 @@
 import React, { ReactNode } from 'react';
-import { GameMetaProvider } from '@/store/gameMeta';
 import { RouteComponentProps } from '@/typings';
 import { SEO } from '../SEO';
 import { GameList } from '../GameList';
-
-import 'typeface-muli';
-import 'normalize.css';
-import '@blueprintjs/core/lib/css/blueprint.css';
-import '@blueprintjs/icons/lib/css/blueprint-icons.css';
+import { usePreferencesState } from '@/services';
 
 interface LayoutProps extends RouteComponentProps {
   children?: ReactNode;
 }
 
 export const Layout = ({ children, path }: LayoutProps) => {
+  const { screenWidth } = usePreferencesState();
+
   return (
-    <GameMetaProvider>
+    <>
       <SEO />
-      <div className="layout">
-        {(path === '/' || path.startsWith('/lobby/')) && <GameList />}
+      <div
+        className="layout"
+        style={{ maxWidth: screenWidth === 'limited' ? 1280 : undefined }}
+      >
+        {(path === '' || path === '/' || path.startsWith('/lobby/')) && (
+          <GameList />
+        )}
         {children}
       </div>
-    </GameMetaProvider>
+    </>
   );
 };

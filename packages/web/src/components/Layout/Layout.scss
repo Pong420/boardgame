@@ -46,7 +46,6 @@ a:hover {
 .layout {
   @include sq-dimen(100%);
   @include flex();
-  max-width: 1280px;
   margin: auto;
   border-left: $divider;
   border-right: $divider;

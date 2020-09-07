@@ -12,19 +12,6 @@
   }
 }
 
-[data-theme^='dark'] {
-  .#{$ns}-input-group {
-    input {
-      background-color: var(--main-diff1-color);
-      color: var(--text-color);
-    }
-  }
-
-  .#{$ns}-card {
-    background-color: var(--main-diff1-color);
-  }
-}
-
 .#{$ns}-menu.#{$ns}-menu {
   background-color: var(--main-diff1-color);
 }
@@ -36,14 +23,15 @@
   min-width: 300px;
   overflow: hidden;
   padding-bottom: 10px;
-}
 
-.#{$ns}-drawer.#{$ns}-drawer {
-  background-color: var(--main-diff1-color);
-}
+  .#{$ns}-dialog-header {
+    background-color: var(--main-color);
+    min-height: 50px;
 
-.#{$ns}-dialog-container {
-  height: 100%;
+    .bp3-heading {
+      font-size: 16px;
+    }
+  }
 }
 
 a,
@@ -51,4 +39,10 @@ a:hover,
 .#{$ns}-dark a,
 .#{$ns}-dark a:hover {
   color: inherit;
+}
+
+[data-theme^='dark'] {
+  .#{$ns}-card {
+    background-color: var(--main-diff1-color);
+  }
 }

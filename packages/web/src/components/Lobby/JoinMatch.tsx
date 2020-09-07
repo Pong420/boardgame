@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRxAsync } from 'use-rx-hooks';
 import { Button } from '@blueprintjs/core';
-import { joinMatch, PlayerName, gotoMatch, PlayerState } from '@/services';
+import { joinMatch, gotoMatch, PlayerState, usePreferences } from '@/services';
 import { Params$JoinMatch } from '@/typings';
 import { getPlayerName } from '../PlayerNameControl';
 
@@ -15,20 +15,21 @@ function _joinMatch(params: Params$JoinMatch) {
 }
 
 export function JoinMatch(params: Props) {
+  const [{ playerName }, updatePrefrences] = usePreferences();
+
   const [{ loading }, { fetch }] = useRxAsync(_joinMatch, {
     defer: true,
     onSuccess: gotoMatch
   });
 
   function handleJoinMatch() {
-    const playerName = PlayerName.get();
-
     if (playerName) {
       fetch({ ...params, playerName });
     } else {
-      getPlayerName().then(playerName =>
-        _joinMatch({ playerName, ...params }).then(gotoMatch)
-      );
+      getPlayerName().then(playerName => {
+        updatePrefrences(state => ({ ...state, playerName }));
+        return _joinMatch({ playerName, ...params }).then(gotoMatch);
+      });
     }
   }
 

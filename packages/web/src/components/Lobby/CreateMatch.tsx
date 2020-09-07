@@ -4,7 +4,7 @@ import { map, switchMap, catchError } from 'rxjs/operators';
 import { HTMLSelect } from '@blueprintjs/core';
 import { createForm, FormProps, validators } from '@/utils/form';
 import { Params$CreateMatch } from '@/typings';
-import { gotoMatch, createMatch, joinMatch, PlayerName } from '@/services';
+import { gotoMatch, createMatch, joinMatch, usePreferences } from '@/services';
 import { Input, TextArea, Checkbox } from '../Input';
 import { ButtonPopover } from '../ButtonPopover';
 import { openConfirmDialog } from '../ConfirmDialog';
@@ -41,10 +41,17 @@ const createAndJoinMatch = ({ playerName, local, name, ...reset }: Store) =>
 
 function CreateMatchForm({
   numPlayersOps,
+  initialValues,
   ...props
 }: FormProps<Store> & { numPlayersOps: number[] }) {
   return (
-    <Form {...props}>
+    <Form
+      {...props}
+      initialValues={{
+        ...initialValues,
+        numPlayers: numPlayersOps[0]
+      }}
+    >
       <FormItem
         label="Your Name"
         name="playerName"
@@ -54,7 +61,7 @@ function CreateMatchForm({
           fill
           alignText="left"
           rightIcon="edit"
-          placehodler="Click and type your name"
+          placehodler="Click to type your name"
         />
       </FormItem>
 
@@ -74,12 +81,7 @@ function CreateMatchForm({
         name={['numPlayers']}
         validators={[validators.required('Please select number of players')]}
       >
-        <HTMLSelect fill>
-          <option value="" label="---" />
-          {numPlayersOps.map((num, index) => (
-            <option key={index} value={num} label={String(num)} />
-          ))}
-        </HTMLSelect>
+        <HTMLSelect fill options={numPlayersOps} />
       </FormItem>
 
       <FormItem
@@ -105,6 +107,8 @@ function CreateMatchForm({
 
 export function CreateMatch({ name, gameGame, numOfPlayers }: Props) {
   const [form] = useForm();
+  const [{ playerName }, updatePrefrences] = usePreferences();
+
   return (
     <ButtonPopover
       minimal
@@ -128,9 +132,10 @@ export function CreateMatch({ name, gameGame, numOfPlayers }: Props) {
           children: (
             <CreateMatchForm
               form={form}
-              initialValues={{ name, playerName: PlayerName.get() }}
-              onValuesChange={(_, { playerName }) =>
-                PlayerName.save(playerName)
+              initialValues={{ name, playerName }}
+              onValuesChange={({ playerName }) =>
+                typeof playerName !== 'undefined' &&
+                updatePrefrences(state => ({ ...state, playerName }))
               }
               numPlayersOps={
                 numOfPlayers.length === 2

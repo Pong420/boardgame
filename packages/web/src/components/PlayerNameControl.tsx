@@ -70,7 +70,7 @@ export function PlayerNameControl({
       text={value || placehodler}
       onClick={() =>
         getPlayerName({
-          title: value ? 'Rename' : 'Configure',
+          title: value ? 'Rename' : 'Configure Player Name',
           initialValues: { playerName: value || '' }
         }).then(onChange)
       }
