@@ -11140,6 +11140,11 @@ node-object-hash@^2.0.0:
   resolved "https://registry.yarnpkg.com/node-object-hash/-/node-object-hash-2.0.0.tgz#9971fcdb7d254f05016bd9ccf508352bee11116b"
   integrity sha512-VZR0zroAusy1ETZMZiGeLkdu50LGjG5U1KHZqTruqtTyQ2wfWhHG2Ow4nsUbfTFGlaREgNHcCWoM/OzEm6p+NQ==
 
+node-persist@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/node-persist/-/node-persist-3.1.0.tgz#9d4b03950bba70d37d13d3d3551840e25fd17e09"
+  integrity sha512-/j+fd/u71wNgKf3V2bx4tnDm+3GvLnlCuvf2MXbJ3wern+67IAb6zN9Leu1tCWPlPNZ+v1hLSibVukkPK2HqJw==
+
 node-releases@^1.1.60:
   version "1.1.60"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.60.tgz#6948bdfce8286f0b5d0e5a88e8384e954dfe7084"

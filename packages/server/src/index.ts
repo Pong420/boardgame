@@ -4,7 +4,7 @@ import serve from 'koa-static';
 import dotenv from 'dotenv';
 import { historyApiFallback } from 'koa2-connect-history-api-fallback';
 import { Game } from 'boardgame.io';
-import { Server } from 'boardgame.io/server';
+import { Server, FlatFile } from 'boardgame.io/server';
 import { PostgresStore } from 'bgio-postgres';
 import { game as BigTwo } from '@boardgame/big-two/dist/game';
 
@@ -54,7 +54,10 @@ const db = parsed.every(Boolean)
           }
         : {})
     })
-  : undefined;
+  : new FlatFile({
+      dir: path.resolve(__dirname, '../match-storage'),
+      logging: true
+    });
 
 const server = Server({
   db,

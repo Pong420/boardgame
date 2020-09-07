@@ -33,11 +33,4 @@ tsconfig.tsbuildinfo
 !.yarn/versions
 .pnp.*
 
-_upload
-
-stub
-
-packages/common/utils
-packages/common/constants
-packages/common/service
-packages/common/hooks
+match-storage
