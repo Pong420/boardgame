@@ -1,6 +1,6 @@
 import { JSONParse } from './JSONParse';
 
-export interface Storage<T extends {}> {
+export interface Storage<T> {
   get(): T;
   save(value: T): void;
 }
@@ -11,19 +11,25 @@ function createStorage<T>(storage?: WebStorage) {
   const _storage = storage!;
 
   return (key: string, defaultValue: T): Storage<T> => {
-    function get(): T {
-      const val = _storage.getItem(key);
-      return (val && JSONParse(val)) || defaultValue;
+    class _Storage<T> implements Storage<T> {
+      constructor(private value: T) {}
+
+      get() {
+        if (typeof _storage !== 'undefined') {
+          this.value = JSONParse<T>(_storage.getItem(key) || '', this.value);
+        }
+        return this.value;
+      }
+
+      save(newValue: T) {
+        if (typeof _storage !== 'undefined') {
+          _storage.setItem(key, JSON.stringify(newValue));
+        }
+        this.value = newValue;
+      }
     }
 
-    function save(value: T) {
-      _storage.setItem(key, JSON.stringify(value));
-    }
-
-    return {
-      get,
-      save
-    };
+    return new _Storage(defaultValue);
   };
 }
 
