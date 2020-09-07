@@ -58,9 +58,9 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
 
   nodes.forEach(({ name }) => {
     actions.createPage({
-      path: `/playground/${name}`,
+      path: `/match/${name}`,
       context: { name },
-      component: require.resolve(`./src/pages/playground.tsx`)
+      component: require.resolve(`./src/pages/match.tsx`)
     });
   });
 };

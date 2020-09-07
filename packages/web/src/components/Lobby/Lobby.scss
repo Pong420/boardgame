@@ -15,28 +15,28 @@
 
 $padding: 10px;
 
-.match {
+.lobby-item {
   @include flex($flex-direction: column);
   padding-bottom: $padding;
 }
 
-.match-header {
+.lobby-item-header {
   @include flex(center, space-between);
 
-  .match-name {
+  .lobby-item-name {
     font-weight: bold;
     font-size: 16px;
   }
 }
 
-.match-description {
+.lobby-item-description {
   color: var(--text-light-color);
   flex: 1 1 auto;
   margin-top: 5px;
   word-break: break-all;
 }
 
-.match-footer {
+.lobby-item-footer {
   @include flex(center, space-between);
   @include padding-x(5px);
   @include margin-x(-$padding);

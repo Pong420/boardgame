@@ -2,9 +2,9 @@ import React, { useCallback } from 'react';
 import { useRxAsync } from 'use-rx-hooks';
 import { GameMeta } from '@/typings';
 import { getMatches } from '@/services';
-import { LobbyHeader } from './LobbyHeader';
 import { useMatches } from './MatchesProvider';
-import { Match } from './Match';
+import { LobbyHeader } from './LobbyHeader';
+import { LobbyItem } from './LobbyItem';
 
 interface Props {
   meta: GameMeta;
@@ -27,7 +27,7 @@ export function Lobby({ meta }: Props) {
       <LobbyHeader meta={meta} />
       <div className="lobby-content">
         {state.ids.map(matchID => (
-          <Match key={matchID} name={name} matchID={matchID} />
+          <LobbyItem key={matchID} name={name} matchID={matchID} />
         ))}
       </div>
     </div>

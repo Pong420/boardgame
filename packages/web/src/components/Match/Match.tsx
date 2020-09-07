@@ -27,7 +27,7 @@ const handleImport = (name: string) =>
     })
   }));
 
-export function Playground({ name, playerID, credentials }: Props) {
+export function Match({ name, playerID, credentials }: Props) {
   const ClientComponent = useMemo(() => React.lazy(() => handleImport(name)), [
     name
   ]);
@@ -39,8 +39,8 @@ export function Playground({ name, playerID, credentials }: Props) {
   }
 
   return (
-    <div className="playground">
-      <div className="playground-header"></div>
+    <div className="match">
+      <div className="match-header"></div>
       <Suspense fallback={null}>
         <ClientComponent playerID={playerID} credentials={credentials} />
       </Suspense>

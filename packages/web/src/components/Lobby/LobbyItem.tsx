@@ -9,7 +9,7 @@ interface Props {
   matchID: string;
 }
 
-export function Match({ name, matchID }: Props) {
+export function LobbyItem({ name, matchID }: Props) {
   const { setupData, updatedAt, players } = useMatch(matchID);
   const [nextPlayers, playerJoined] = players.reduce(
     (result, p) => {
@@ -22,15 +22,17 @@ export function Match({ name, matchID }: Props) {
   if (setupData) {
     const { matchName, description, numOfPlayers } = setupData;
     return (
-      <Card className="match" elevation={1}>
-        <div className="match-header">
-          <div className="match-name">{matchName.slice(0, 10)}</div>
+      <Card className="lobby-item" elevation={1}>
+        <div className="lobby-item-header">
+          <div className="lobby-item-name">{matchName.slice(0, 10)}</div>
           <div>
             {playerJoined.length} / {numOfPlayers}
           </div>
         </div>
-        <div className="match-description">{description?.slice(0, 50)}</div>
-        <div className="match-footer">
+        <div className="lobby-item-description">
+          {description?.slice(0, 50)}
+        </div>
+        <div className="lobby-item-footer">
           <div>
             {new Date(updatedAt)
               .toISOString()
@@ -53,5 +55,5 @@ export function Match({ name, matchID }: Props) {
     );
   }
 
-  return <Card className="match">Invlid Match</Card>;
+  return <Card className="lobby-item">Invlid Match</Card>;
 }

@@ -1,4 +1,4 @@
-.playground {
+.match {
   @include sq-dimen(100%);
   @include flex($flex-direction: column);
 
@@ -7,6 +7,6 @@
   }
 }
 
-.playground-header {
+.match-header {
   @include header();
 }

@@ -118,7 +118,7 @@ export function CreateMatch({ name, gameGame, numOfPlayers }: Props) {
                 numOfPlayers: store.numPlayers
               }
             }).toPromise();
-            await navigate(`/playground/${name}`, {
+            await navigate(`/match/${name}`, {
               state: { credentials, playerID: '0' }
             });
           },

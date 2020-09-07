@@ -1,7 +1,7 @@
 import React from 'react';
 import { navigate } from 'gatsby';
 import { RouteComponentProps } from '@/typings';
-import { Playground } from '@/components/Playground';
+import { Match } from '@/components/Match';
 
 interface Context {
   name: string;
@@ -21,5 +21,5 @@ export default function (
     navigate('/');
   }
 
-  return <Playground name={props.pageContext.name} {...state} />;
+  return <Match name={props.pageContext.name} {...state} />;
 }
