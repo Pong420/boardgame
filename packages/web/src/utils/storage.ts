@@ -36,5 +36,3 @@ export const createSessionStorage: <T>(
   key: string,
   defaultValue: T
 ) => Storage<T> = createStorage(sessionStorage);
-
-export const PlayerName = createLocalStorage('BOARDGAME_PLAYER_NAME', '');

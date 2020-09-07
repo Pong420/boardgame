@@ -27,7 +27,7 @@ export function Lobby({ meta }: Props) {
       <LobbyHeader meta={meta} />
       <div className="lobby-content">
         {state.ids.map(matchID => (
-          <Match key={matchID} matchID={matchID} />
+          <Match key={matchID} name={name} matchID={matchID} />
         ))}
       </div>
     </div>

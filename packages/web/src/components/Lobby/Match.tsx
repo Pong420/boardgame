@@ -1,14 +1,23 @@
 import React from 'react';
 import { Card, Button } from '@blueprintjs/core';
 import { useMatch } from './MatchesProvider';
+import { JoinMatch } from './JoinMatch';
+import { Player } from '@/typings';
 
 interface Props {
+  name: string;
   matchID: string;
 }
 
-export function Match({ matchID }: Props) {
+export function Match({ name, matchID }: Props) {
   const { setupData, updatedAt, players } = useMatch(matchID);
-  const playerJoined = players.filter(p => typeof p.name !== 'undefined');
+  const [nextPlayers, playerJoined] = players.reduce(
+    (result, p) => {
+      result[typeof p.name === 'undefined' ? 0 : 1].push(p);
+      return result;
+    },
+    [[], []] as [Player[], Player[]]
+  );
 
   if (setupData) {
     const { matchName, description, numOfPlayers } = setupData;
@@ -29,7 +38,15 @@ export function Match({ matchID }: Props) {
               .replace(/\..*/, '')}
           </div>
           <div>
-            <Button small intent="primary" text="Join" />
+            {nextPlayers.length ? (
+              <JoinMatch
+                name={name}
+                matchID={matchID}
+                playerID={String(nextPlayers[0]?.id)}
+              />
+            ) : (
+              <Button text="Spectate" />
+            )}
           </div>
         </div>
       </Card>

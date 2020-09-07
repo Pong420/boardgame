@@ -4,7 +4,7 @@ import { map, switchMap, catchError } from 'rxjs/operators';
 import { navigate } from 'gatsby';
 import { HTMLSelect } from '@blueprintjs/core';
 import { createForm, FormProps, validators } from '@/utils/form';
-import { PlayerName } from '@/utils/storage';
+import { PlayerName, PlayerNameValidators } from '@/utils/playerName';
 import { Params$CreateMatch } from '@/typings';
 import { createMatch, joinMatch } from '@/services';
 import { Input, TextArea, Checkbox } from '../Input';
@@ -48,10 +48,7 @@ function CreateMatchForm({
       <FormItem
         label="Your Name"
         name={['playerName']}
-        validators={[
-          validators.required('Please input yout name'),
-          validators.maxLength(20, 'Your name too long')
-        ]}
+        validators={PlayerNameValidators}
       >
         <Input />
       </FormItem>
