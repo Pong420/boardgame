@@ -11,7 +11,7 @@ interface Context {
 export default function (props: RouteComponentProps<Context>) {
   return (
     <MatchesProvider>
-      <Lobby meta={props.data.gameMeta} />;
+      <Lobby meta={props.data.gameMeta} />
     </MatchesProvider>
   );
 }
