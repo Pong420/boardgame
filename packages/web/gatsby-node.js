@@ -68,4 +68,11 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
       component: require.resolve(`./src/pages/spectate.tsx`)
     });
   });
+
+  actions.createPage({
+    path: `/error/*`,
+    matchPath: `/error/:message`,
+    context: {},
+    component: require.resolve(`./src/pages/error.tsx`)
+  });
 };

@@ -50,3 +50,33 @@ a:hover {
   border-left: $divider;
   border-right: $divider;
 }
+
+.layout .error-page {
+  @include flex($flex-direction: column);
+  @include ink-painting;
+  @include dimen(100%);
+
+  .error-page-header {
+    @include header();
+    flex: 0 0 auto;
+  }
+
+  .error-page-content {
+    @include flex(center, center);
+    @include sq-dimen(100%);
+
+    @media (max-width: 768px) {
+      @include padding-x(5vw);
+      font-size: 10vw;
+    }
+
+    @media (min-width: 769px) {
+      @include padding-x(60px);
+      font-size: 100px;
+    }
+
+    max-width: 768px;
+    margin: auto;
+    text-align: center;
+  }
+}
