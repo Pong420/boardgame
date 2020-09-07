@@ -4,16 +4,11 @@ import { map, switchMap, catchError } from 'rxjs/operators';
 import { HTMLSelect } from '@blueprintjs/core';
 import { createForm, FormProps, validators } from '@/utils/form';
 import { Params$CreateMatch } from '@/typings';
-import {
-  gotoMatch,
-  createMatch,
-  joinMatch,
-  PlayerName,
-  PlayerNameValidators
-} from '@/services';
+import { gotoMatch, createMatch, joinMatch, PlayerName } from '@/services';
 import { Input, TextArea, Checkbox } from '../Input';
 import { ButtonPopover } from '../ButtonPopover';
 import { openConfirmDialog } from '../ConfirmDialog';
+import { PlayerNameControl } from '../PlayerNameControl';
 
 interface Store extends Params$CreateMatch {
   playerName: string;
@@ -52,10 +47,15 @@ function CreateMatchForm({
     <Form {...props}>
       <FormItem
         label="Your Name"
-        name={['playerName']}
-        validators={PlayerNameValidators}
+        name="playerName"
+        validators={[validators.required('Please input your name')]}
       >
-        <Input />
+        <PlayerNameControl
+          fill
+          alignText="left"
+          rightIcon="edit"
+          placehodler="Click and type your name"
+        />
       </FormItem>
 
       <FormItem

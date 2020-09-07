@@ -13,7 +13,6 @@ import {
   IDialogProps,
   Intent
 } from '@blueprintjs/core';
-import { DIALOG_FOOTER_ACTIONS } from '@blueprintjs/core/lib/esm/common/classes';
 import { useRxAsync } from 'use-rx-hooks';
 import { useBoolean } from '../hooks/useBoolean';
 import { createOpenDialog } from '../utils/openDialog';
@@ -67,7 +66,7 @@ export const ConfirmDialogProvider: React.FC = ({ children }) => {
 };
 
 export function ConfirmDialog({
-  className,
+  className = '',
   children,
   onClose,
   onConfirm,
@@ -85,11 +84,11 @@ export function ConfirmDialog({
       onClose={onClose}
       canEscapeKeyClose={!loading}
       canOutsideClickClose={!loading}
-      className={`async-dialog ${className}`.trim()}
+      className={`confirm-dialog ${className}`.trim()}
     >
       <div className={Classes.DIALOG_BODY}>{children}</div>
       <div className={Classes.DIALOG_FOOTER}>
-        <div className={DIALOG_FOOTER_ACTIONS}>
+        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
           <Button onClick={onClose} disabled={loading}>
             Cancel
           </Button>
