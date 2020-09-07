@@ -1,7 +1,13 @@
 import React from 'react';
 import { useRxAsync } from 'use-rx-hooks';
 import { Button } from '@blueprintjs/core';
-import { joinMatch, PlayerName, PlayerNameValidators } from '@/services';
+import {
+  joinMatch,
+  PlayerName,
+  PlayerNameValidators,
+  gotoMatch,
+  PlayerState
+} from '@/services';
 import { Params$JoinMatch } from '@/typings';
 import { createForm, FormProps } from '@/utils/form';
 import { Input } from '../Input';
@@ -34,9 +40,20 @@ function PlayerNameForm(props: FormProps<Store>) {
   );
 }
 
+function _joinMatch(params: Params$JoinMatch) {
+  return joinMatch(params).then<PlayerState>(res => ({
+    ...params,
+    credentials: res.data.playerCredentials
+  }));
+}
+
 export function JoinMatch(params: Props) {
   const [form] = useForm();
-  const [{ loading }, { fetch }] = useRxAsync(joinMatch, { defer: true });
+
+  const [{ loading }, { fetch }] = useRxAsync(_joinMatch, {
+    defer: true,
+    onSuccess: gotoMatch
+  });
 
   function handleJoinMatch() {
     const playerName = PlayerName.get();
@@ -50,7 +67,9 @@ export function JoinMatch(params: Props) {
         onConfirm: () =>
           form
             .validateFields()
-            .then(({ playerName }) => joinMatch({ playerName, ...params }))
+            .then(({ playerName }) =>
+              _joinMatch({ playerName, ...params }).then(gotoMatch)
+            )
       });
     }
   }

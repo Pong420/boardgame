@@ -1,25 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { navigate } from 'gatsby';
 import { RouteComponentProps } from '@/typings';
 import { Match } from '@/components/Match';
-
-interface Context {
-  name: string;
-}
-
-interface State {
-  playerID: string;
-  credentials: string;
-}
+import { matchStorage, PlayerState } from '@/services';
 
 export default function (
-  props: RouteComponentProps<undefined, Context, State>
+  props: RouteComponentProps<undefined, unknown, PlayerState>
 ) {
   const { state } = props.location;
 
-  if (!state) {
-    navigate('/');
-  }
+  useEffect(() => {
+    state ? matchStorage.save(state) : navigate('/');
+  }, [state]);
 
-  return <Match name={props.pageContext.name} {...state} />;
+  return state ? <Match {...state} /> : null;
 }

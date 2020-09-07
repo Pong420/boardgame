@@ -1,23 +1,23 @@
+import { JSONParse } from './JSONParse';
+
 export interface Storage<T extends {}> {
   get(): T;
   save(value: T): void;
 }
 
-function createStorage<T>(
-  storage: typeof localStorage | typeof sessionStorage
-) {
-  return (key: string, defaultValue: T): Storage<T> => {
-    let value = (storage.getItem(key) || defaultValue) as T;
+type WebStorage = typeof localStorage | typeof sessionStorage;
 
+function createStorage<T>(storage?: WebStorage) {
+  const _storage = storage!;
+
+  return (key: string, defaultValue: T): Storage<T> => {
     function get(): T {
-      return value;
+      const val = _storage.getItem(key);
+      return (val && JSONParse(val)) || defaultValue;
     }
 
-    function save(newValue: T) {
-      value = newValue;
-      try {
-        storage.setItem(key, JSON.stringify(value));
-      } catch (error) {}
+    function save(value: T) {
+      _storage.setItem(key, JSON.stringify(value));
     }
 
     return {
@@ -30,9 +30,13 @@ function createStorage<T>(
 export const createLocalStorage: <T>(
   key: string,
   defaultValue: T
-) => Storage<T> = createStorage(localStorage);
+) => Storage<T> = createStorage(
+  typeof localStorage === 'undefined' ? undefined : localStorage
+);
 
 export const createSessionStorage: <T>(
   key: string,
   defaultValue: T
-) => Storage<T> = createStorage(sessionStorage);
+) => Storage<T> = createStorage(
+  typeof sessionStorage === 'undefined' ? undefined : sessionStorage
+);

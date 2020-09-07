@@ -2,6 +2,7 @@ import React, { useMemo, Suspense } from 'react';
 import { Game } from 'boardgame.io';
 import { Client } from 'boardgame.io/react';
 import { SocketIO } from 'boardgame.io/multiplayer';
+import { MatchHeader } from './MatchHeader';
 
 interface Props {
   name: string;
@@ -40,7 +41,7 @@ export function Match({ name, playerID, credentials }: Props) {
 
   return (
     <div className="match">
-      <div className="match-header"></div>
+      <MatchHeader />
       <Suspense fallback={null}>
         <ClientComponent playerID={playerID} credentials={credentials} />
       </Suspense>

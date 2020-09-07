@@ -1,11 +1,11 @@
 import React from 'react';
 import { defer, empty } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { navigate } from 'gatsby';
 import { HTMLSelect } from '@blueprintjs/core';
 import { createForm, FormProps, validators } from '@/utils/form';
 import { Params$CreateMatch } from '@/typings';
 import {
+  gotoMatch,
   createMatch,
   joinMatch,
   PlayerName,
@@ -30,17 +30,18 @@ const { Form, FormItem, useForm } = createForm<Store>();
 
 const createAndJoinMatch = ({ playerName, local, name, ...reset }: Store) =>
   defer(() => createMatch({ name, ...reset })).pipe(
-    switchMap(res =>
-      defer(() =>
-        joinMatch({
-          name,
-          playerName,
-          playerID: '0',
-          matchID: res.data.matchID
-        })
-      ).pipe(catchError(() => empty()))
-    ),
-    map(res => res.data.playerCredentials)
+    switchMap(res => {
+      const { matchID } = res.data;
+      return defer(() =>
+        joinMatch({ name, matchID, playerName, playerID: '0' })
+      ).pipe(
+        map(res => ({
+          matchID,
+          credentials: res.data.playerCredentials
+        })),
+        catchError(() => empty())
+      );
+    })
   );
 
 function CreateMatchForm({
@@ -114,7 +115,7 @@ export function CreateMatch({ name, gameGame, numOfPlayers }: Props) {
           title: `Create ${gameGame} Match`,
           onConfirm: async () => {
             const store = await form.validateFields();
-            const credentials = await createAndJoinMatch({
+            const payload = await createAndJoinMatch({
               ...store,
               name,
               setupData: {
@@ -122,9 +123,7 @@ export function CreateMatch({ name, gameGame, numOfPlayers }: Props) {
                 numOfPlayers: store.numPlayers
               }
             }).toPromise();
-            await navigate(`/match/${name}`, {
-              state: { credentials, playerID: '0' }
-            });
+            await gotoMatch({ ...payload, playerID: '0', name });
           },
           children: (
             <CreateMatchForm
