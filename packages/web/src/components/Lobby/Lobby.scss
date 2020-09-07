@@ -13,11 +13,12 @@
   padding: 20px;
 }
 
-$padding: 10px;
+$padding: 12.5px;
 
 .lobby-item {
   @include flex($flex-direction: column);
-  padding-bottom: $padding;
+  @include padding-y($padding);
+  @include padding-x(20px);
 }
 
 .lobby-item-header {
@@ -38,10 +39,7 @@ $padding: 10px;
 
 .lobby-item-footer {
   @include flex(center, space-between);
-  @include padding-x(5px);
-  @include margin-x(-$padding);
-  @include padding-x($padding);
-  border-top: $divider;
+  border-top: 1px solid var(--accent-color);
   margin-top: $padding;
   padding-top: $padding;
 

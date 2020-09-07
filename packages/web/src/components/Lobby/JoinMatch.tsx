@@ -26,7 +26,7 @@ export function JoinMatch(params: Props) {
     if (playerName) {
       fetch({ ...params, playerName });
     } else {
-      getPlayerName().then(playerName => {
+      getPlayerName({ title: 'Player Name' }).then(playerName => {
         updatePrefrences(state => ({ ...state, playerName }));
         return _joinMatch({ playerName, ...params }).then(gotoMatch);
       });
@@ -35,9 +35,8 @@ export function JoinMatch(params: Props) {
 
   return (
     <Button
-      small
-      intent="primary"
       text="Join"
+      intent="primary"
       loading={loading}
       onClick={handleJoinMatch}
     />

@@ -50,7 +50,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   const nodes = result.data.allGameMeta.nodes;
   nodes.forEach(({ name }) => {
     actions.createPage({
-      path: `/lobby/${name}`,
+      path: `/lobby/${name}/`,
       context: { name },
       component: require.resolve(`./src/pages/lobby.tsx`)
     });
@@ -58,7 +58,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
 
   nodes.forEach(({ name }) => {
     actions.createPage({
-      path: `/match/${name}`,
+      path: `/match/${name}/`,
       context: { name },
       component: require.resolve(`./src/pages/match.tsx`)
     });

@@ -17,6 +17,9 @@
 [data-theme^='dark'] {
   --main-color: #222;
   --main-diff1-color: #{lighten(#222, 5%)};
+  --accent-color: #{get-color(amber)};
+  --accent-light-color: #{get-color(amber, light)};
+  --accent-dark-color: #{get-color(amber, dark)};
   --text-color: #dfdedb;
   --text-light-color: #a09c97;
   --icon-color: #{darken(#dfdedb, 30%)};

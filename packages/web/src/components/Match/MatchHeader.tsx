@@ -10,7 +10,12 @@ export function MatchHeader({ title }: Props) {
   return (
     <div className="match-header">
       <div>
-        <ButtonPopover text="Leave match" onClick={confirmLeaveMatch} />
+        <ButtonPopover
+          minimal
+          icon="arrow-left"
+          content="Leave match"
+          onClick={confirmLeaveMatch}
+        />
       </div>
       <div className="header-title">{title}</div>
       <div></div>

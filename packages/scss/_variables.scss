@@ -2,6 +2,10 @@ $header-height: 50px;
 
 $divider: 1px solid var(--divider-color);
 
+@function get-color($color, $tone: primary) {
+  @return map-get(map-get($accent-colors, $color), $tone);
+}
+
 $base-colors: (
   red: #ef5350,
   blue: #4285f4,

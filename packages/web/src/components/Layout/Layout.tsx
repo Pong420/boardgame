@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { RouteComponentProps } from '@/typings';
 import { SEO } from '../SEO';
 import { GameList } from '../GameList';
-import { usePreferencesState } from '@/services';
+import { usePreferencesState, matchStorage, gotoMatch } from '@/services';
 
 interface LayoutProps extends RouteComponentProps {
   children?: ReactNode;
@@ -10,6 +10,14 @@ interface LayoutProps extends RouteComponentProps {
 
 export const Layout = ({ children, path }: LayoutProps) => {
   const { screenWidth } = usePreferencesState();
+
+  if (!path.startsWith('/match')) {
+    const match = matchStorage.get();
+    if (match) {
+      gotoMatch(match);
+      return null;
+    }
+  }
 
   return (
     <>

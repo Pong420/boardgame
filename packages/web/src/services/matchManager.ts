@@ -37,7 +37,8 @@ export const confirmLeaveMatch = () => {
     return new Promise((resolve, reject) =>
       leaveMatch(state)
         .then(() => {
-          navigate('/');
+          matchStorage.save(null);
+          navigate(`/lobby/${state.name}/`);
           resolve();
         })
         .catch(reject)

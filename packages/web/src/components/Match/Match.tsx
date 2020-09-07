@@ -42,9 +42,11 @@ export function Match({ name, playerID, credentials }: Props) {
   return (
     <div className="match">
       <MatchHeader />
-      <Suspense fallback={null}>
-        <ClientComponent playerID={playerID} credentials={credentials} />
-      </Suspense>
+      <div className="match-content">
+        <Suspense fallback={null}>
+          <ClientComponent playerID={playerID} credentials={credentials} />
+        </Suspense>
+      </div>
     </div>
   );
 }
