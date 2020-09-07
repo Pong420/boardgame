@@ -4,7 +4,13 @@ import { map, switchMap, catchError } from 'rxjs/operators';
 import { HTMLSelect } from '@blueprintjs/core';
 import { createForm, FormProps, validators } from '@/utils/form';
 import { Params$CreateMatch } from '@/typings';
-import { gotoMatch, createMatch, joinMatch, usePreferences } from '@/services';
+import {
+  gotoMatch,
+  createMatch,
+  joinMatch,
+  usePreferences,
+  matchStorage
+} from '@/services';
 import { Input, TextArea, Checkbox } from '../Input';
 import { ButtonPopover } from '../ButtonPopover';
 import { openConfirmDialog } from '../ConfirmDialog';
@@ -127,7 +133,9 @@ export function CreateMatch({ name, gameGame, numOfPlayers }: Props) {
                 numOfPlayers: store.numPlayers
               }
             }).toPromise();
-            await gotoMatch({ ...payload, playerID: '0', name });
+            const state = { ...payload, playerID: '0', name };
+            matchStorage.save(state);
+            await gotoMatch(state);
           },
           children: (
             <CreateMatchForm

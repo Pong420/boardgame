@@ -1,6 +1,7 @@
 import { JSONParse } from './JSONParse';
 
 export interface Storage<T> {
+  key: string;
   get(): T;
   save(value: T): void;
 }
@@ -10,8 +11,10 @@ type WebStorage = typeof localStorage | typeof sessionStorage;
 function createStorage<T>(storage?: WebStorage) {
   const _storage = storage!;
 
-  return (key: string, defaultValue: T): Storage<T> => {
+  return (key: string, defaultValue: T) => {
     class _Storage<T> implements Storage<T> {
+      key = key;
+
       constructor(private value: T) {}
 
       get() {

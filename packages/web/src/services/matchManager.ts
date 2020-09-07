@@ -1,18 +1,16 @@
 import { navigate } from 'gatsby';
-import { fromEvent, defer, empty } from 'rxjs';
+import { fromEvent, defer, empty, timer, throwError } from 'rxjs';
 import {
   filter,
   exhaustMap,
-  tap,
   retryWhen,
-  delay,
-  catchError
+  catchError,
+  switchMap
 } from 'rxjs/operators';
 import { JSONParse } from '@/utils/JSONParse';
 import { createLocalStorage } from '@/utils/storage';
 import { leaveMatch } from './services';
-
-const Key = 'BOARDGAME_PLAYER';
+import isEqual from 'lodash/isEqual';
 
 export interface PlayerState {
   name: string;
@@ -25,54 +23,65 @@ export const gotoMatch = (state: PlayerState) => {
   return navigate(`/match/${state.name}`, { state, replace: true });
 };
 
-export const spectate = ({
+export const gotoSpectate = ({
   name,
   matchID
 }: Pick<PlayerState, 'name' | 'matchID'>) => {
   return navigate(`/spectate/${name}/${matchID}`);
 };
 
-export const matchStorage = createLocalStorage<PlayerState | null>(Key, null);
+export const matchStorage = createLocalStorage<PlayerState | null>(
+  'BOARDGAME_PLAYER',
+  null
+);
 
-const pointerEvents = (value: string) => {
-  document.documentElement.style.pointerEvents = value;
-};
+export function leaveMatchAndRedirect(): undefined;
+export function leaveMatchAndRedirect(state: PlayerState): Promise<void>;
+export function leaveMatchAndRedirect(
+  state?: PlayerState | null
+): Promise<any> | undefined {
+  matchStorage.save(null);
 
-export const confirmLeaveMatch = () => {
-  const state = matchStorage.get();
   if (state) {
-    return new Promise((resolve, reject) =>
-      leaveMatch(state)
-        .then(() => {
-          matchStorage.save(null);
-          navigate(`/lobby/${state.name}/`);
-          resolve();
-        })
-        .catch(reject)
-    );
+    navigate(`/lobby/${state.name}/`);
+
+    return defer(() => leaveMatch(state))
+      .pipe(
+        retryWhen(error$ =>
+          error$.pipe(
+            switchMap((error, index) =>
+              index < 3 ? timer(1000) : throwError(error)
+            )
+          )
+        )
+      )
+      .toPromise();
   }
-  throw new Error('You have not join any match');
+
+  navigate(`/`);
+}
+
+const getState = (payload: string | null): PlayerState | null => {
+  let state = payload
+    ? JSONParse<(PlayerState & { key: string }) | null>(payload)
+    : undefined;
+  delete state?.key;
+  return state || null;
 };
 
 if (typeof window !== 'undefined') {
   fromEvent<StorageEvent>(window, 'storage')
     .pipe(
-      filter(event => event.key === Key),
+      filter(event => event.key === matchStorage.key),
       exhaustMap(event => {
-        const oldState =
-          event.oldValue && JSONParse<PlayerState | null>(event.oldValue);
-        return oldState
-          ? defer(() => leaveMatch(oldState)).pipe(
-              tap(() => pointerEvents('none')),
-              retryWhen(error$ => error$.pipe(delay(1000)))
-            )
+        const oldState = getState(event.oldValue);
+        const newState = getState(event.newValue);
+
+        return oldState && !isEqual(oldState, newState)
+          ? leaveMatchAndRedirect(oldState)
           : empty();
       }),
       catchError(() => empty())
     )
-    .subscribe(() => {
-      pointerEvents('auto');
-      matchStorage.save(null);
-      navigate('/');
-    });
+    .subscribe();
 }
