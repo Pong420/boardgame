@@ -13,32 +13,38 @@ export function createOpenDialog<T extends DialogProps>(
     const div = document.createElement('div');
     document.body.appendChild(div);
     // eslint-disable-next-line no-use-before-define
-    let currentConfig: Partial<T> = { ...config, onClose: close, isOpen: true };
+    let currentConfig: Partial<T> = {
+      ...config,
+      onClose: close,
+      onClosed: (...args) => {
+        config.onClosed && config.onClosed(...args);
+        destroy();
+      },
+      isOpen: true
+    };
 
-    function destroy(...args: any[]) {
+    function destroy() {
       const unmountResult = ReactDOM.unmountComponentAtNode(div);
       if (unmountResult && div.parentNode) {
         div.parentNode.removeChild(div);
       }
-      if (config.onClose) {
-        config.onClose(...args);
-      }
     }
 
     function render({ children, ...props }: any) {
-      setTimeout(() => {
-        ReactDOM.render(
-          React.createElement(DialogComponent, props, children),
-          div
-        );
-      });
+      ReactDOM.render(
+        React.createElement(
+          DialogComponent,
+          { ...props, usePortal: false, portalContainer: div },
+          children
+        ),
+        div
+      );
     }
 
-    function close(...args: any[]) {
+    function close() {
       currentConfig = {
         ...currentConfig,
-        isOpen: false,
-        onClosed: destroy.bind(null, ...args)
+        isOpen: false
       };
       render(currentConfig);
     }
