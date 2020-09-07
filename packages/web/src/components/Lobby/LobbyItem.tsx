@@ -1,16 +1,19 @@
 import React from 'react';
 import { Card } from '@blueprintjs/core';
-import { useMatch } from './MatchesProvider';
 import { JoinMatch } from './JoinMatch';
-import { Player } from '@/typings';
+import { Player, Match } from '@/typings';
 
-interface Props {
+interface Props extends Match {
   name: string;
-  matchID: string;
 }
 
-export function LobbyItem({ name, matchID }: Props) {
-  const { setupData, updatedAt, players } = useMatch(matchID);
+export function LobbyItem({
+  name,
+  matchID,
+  setupData,
+  updatedAt,
+  players
+}: Props) {
   const [nextPlayers, playerJoined] = players.reduce(
     (result, p) => {
       result[typeof p.name === 'undefined' ? 0 : 1].push(p);
