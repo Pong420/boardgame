@@ -1,12 +1,11 @@
 import React from 'react';
+import { useRxAsync } from 'use-rx-hooks';
 import { Button } from '@blueprintjs/core';
+import { joinMatch, PlayerName, PlayerNameValidators } from '@/services';
 import { Params$JoinMatch } from '@/typings';
 import { createForm, FormProps } from '@/utils/form';
-import { PlayerName, PlayerNameValidators } from '@/utils/playerName';
 import { Input } from '../Input';
 import { openConfirmDialog } from '../ConfirmDialog';
-import { joinMatch } from '@/services';
-import { useRxAsync } from 'use-rx-hooks';
 
 interface Props extends Omit<Params$JoinMatch, 'playerName'> {}
 

@@ -4,9 +4,13 @@ import { map, switchMap, catchError } from 'rxjs/operators';
 import { navigate } from 'gatsby';
 import { HTMLSelect } from '@blueprintjs/core';
 import { createForm, FormProps, validators } from '@/utils/form';
-import { PlayerName, PlayerNameValidators } from '@/utils/playerName';
 import { Params$CreateMatch } from '@/typings';
-import { createMatch, joinMatch } from '@/services';
+import {
+  createMatch,
+  joinMatch,
+  PlayerName,
+  PlayerNameValidators
+} from '@/services';
 import { Input, TextArea, Checkbox } from '../Input';
 import { ButtonPopover } from '../ButtonPopover';
 import { openConfirmDialog } from '../ConfirmDialog';
