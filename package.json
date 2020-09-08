@@ -10,9 +10,11 @@
     "web": "yarn workspace @boardgame/web",
     "server": "yarn workspace @boardgame/server",
     "template": "yarn workspace @boardgame/template",
+    "build": "yarn build:games && yarn build:core",
+    "build:core": "lerna run build --stream --parallel --scope '@boardgame/{server,web}'",
     "build:games": "lerna run build --stream --parallel --ignore '@boardgame/{server,web,template,scss}'",
     "postinstall": "lerna run postinstall --stream --parallel",
-    "heroku-postbuild": "yarn build --ignore @fullstack/app"
+    "heroku-postbuild": "yarn build"
   },
   "workspaces": {
     "packages": [
