@@ -66,13 +66,11 @@ const server = Server({
 
 const { app } = server;
 
-const root = path.join(__dirname, '../');
-
 app.use(
   historyApiFallback({ index: 'index.html', whiteList: ['/api', '/games'] })
 );
 
-app.use(serve(root));
+app.use(serve(path.join(__dirname, '../../web/public')));
 
 server.run(PORT, () => {
   // eslint-disable-next-line
