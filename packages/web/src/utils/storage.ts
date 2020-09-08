@@ -36,16 +36,33 @@ function createStorage<T>(storage?: WebStorage) {
   };
 }
 
+export function storageSupport() {
+  const mod = 'BOARDGAME_TEST_STORAGE';
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(mod, mod);
+      localStorage.removeItem(mod);
+      return true;
+    }
+  } catch (e) {}
+
+  return false;
+}
+
 export const createLocalStorage: <T>(
   key: string,
   defaultValue: T
 ) => Storage<T> = createStorage(
-  typeof localStorage === 'undefined' ? undefined : localStorage
+  !storageSupport() || typeof localStorage === 'undefined'
+    ? undefined
+    : localStorage
 );
 
 export const createSessionStorage: <T>(
   key: string,
   defaultValue: T
 ) => Storage<T> = createStorage(
-  typeof sessionStorage === 'undefined' ? undefined : sessionStorage
+  !storageSupport() || typeof sessionStorage === 'undefined'
+    ? undefined
+    : sessionStorage
 );

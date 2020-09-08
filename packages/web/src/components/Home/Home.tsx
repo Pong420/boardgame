@@ -1,5 +1,5 @@
 import React from 'react';
-import Github from '../../assets/github.svg';
+import { Github } from '../Github';
 
 export function Home() {
   return (
@@ -11,14 +11,8 @@ export function Home() {
           <br />
           Boardgame
         </div>
-        <a
-          href="https://github.com/Pong420/Boardgame"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="github"
-        >
-          <Github />
-        </a>
+
+        <Github />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
 import { navigate } from 'gatsby';
-import ButtonPopover from '@/components/ButtonPopover';
+import { ButtonPopover } from '@/components/ButtonPopover';
+import { Github } from '@/components/Github';
 
 interface MatchParams {
   message?: string;
@@ -17,13 +18,18 @@ export default function ({ message }: MatchParams) {
         <ButtonPopover
           minimal
           icon="arrow-left"
-          content="Go Back"
-          onClick={() => navigate(-1)}
+          content="Back to home"
+          onClick={() => navigate('/')}
         />
         <div className="header-title"></div>
         <div />
       </div>
-      <div className="error-page-content">{message}</div>
+      <div className="error-page-content">
+        <div>
+          <div className="message">{message}</div>
+          <Github />
+        </div>
+      </div>
     </div>
   );
 }

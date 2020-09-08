@@ -64,19 +64,27 @@ a:hover {
   .error-page-content {
     @include flex(center, center);
     @include sq-dimen(100%);
+    margin: auto;
+    text-align: center;
 
     @media (max-width: 768px) {
       @include padding-x(5vw);
-      font-size: 10vw;
+      .message {
+        font-size: 8vw;
+      }
     }
 
     @media (min-width: 769px) {
       @include padding-x(60px);
-      font-size: 100px;
+      .message {
+        font-size: 65px;
+      }
     }
 
-    max-width: 768px;
-    margin: auto;
-    text-align: center;
+    .github {
+      display: block;
+      font-size: 40px;
+      margin-top: 20px;
+    }
   }
 }
