@@ -1,6 +1,6 @@
 import { navigate } from 'gatsby';
 
 export default function () {
-  navigate('/');
+  typeof window !== 'undefined' && navigate('/');
   return null;
 }

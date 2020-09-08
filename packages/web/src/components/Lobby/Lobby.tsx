@@ -41,15 +41,11 @@ export function Lobby({ meta }: Props) {
       {state.length ? (
         <div className="lobby-content">
           {state.map(match => (
-            <LobbyItem key={match.matchID} name={name} {...match} />
+            <LobbyItem key={match.matchID} meta={meta} {...match} />
           ))}
         </div>
       ) : loading ? null : (
-        <NoMatches
-          name={name}
-          gameName={meta.gameName}
-          numPlayers={meta.numPlayers}
-        />
+        <NoMatches meta={meta} />
       )}
     </div>
   );

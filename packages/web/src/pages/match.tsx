@@ -10,8 +10,9 @@ export default function (
   const { state } = props.location;
 
   if (!state) {
-    navigate('/');
+    typeof window !== 'undefined' && navigate('/');
+    return null;
   }
 
-  return state ? <Match {...state} /> : null;
+  return <Match {...state} />;
 }

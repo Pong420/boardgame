@@ -1,16 +1,15 @@
 import React from 'react';
 import { Card } from '@blueprintjs/core';
 import { JoinMatch } from './JoinMatch';
-import { Player, Match } from '@/typings';
+import { Player, Match, GameMeta } from '@/typings';
 
 interface Props extends Match {
-  name: string;
+  meta: GameMeta;
 }
 
 export function LobbyItem({
-  name,
+  meta,
   matchID,
-  gameName,
   setupData,
   updatedAt,
   players
@@ -22,9 +21,11 @@ export function LobbyItem({
     },
     [[], []] as [Player[], Player[]]
   );
+  const numPlayers = players.length;
+  const { name } = meta;
 
   if (setupData) {
-    const { matchName, description, numPlayers } = setupData;
+    const { matchName, description } = setupData;
     return (
       <Card className="lobby-item" elevation={1}>
         <div className="lobby-item-header">
@@ -46,11 +47,10 @@ export function LobbyItem({
           <div>
             {nextPlayers.length ? (
               <JoinMatch
+                meta={meta}
                 name={name}
                 matchID={matchID}
                 matchName={matchName}
-                gameName={gameName}
-                numPlayers={numPlayers}
                 playerID={String(nextPlayers[0]?.id)}
               />
             ) : null}

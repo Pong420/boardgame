@@ -4,29 +4,32 @@ import { Button } from '@blueprintjs/core';
 import {
   joinMatch,
   gotoMatch,
-  MultiMatchState,
   usePreferences,
-  matchStorage
+  matchStorage,
+  MultiMatchState
 } from '@/services';
-import { Params$JoinMatch } from '@/typings';
+import { Params$JoinMatch, GameMeta } from '@/typings';
 import { getPlayerName } from '../PlayerNameControl';
 
-interface Meta {
-  gameName: string;
+export interface Join {
+  meta: GameMeta;
   matchName: string;
-  numPlayers: number;
 }
 
-interface Props extends Meta, Omit<Params$JoinMatch, 'playerName'> {}
+interface Props extends Join, Omit<Params$JoinMatch, 'playerName'> {}
 
-function _joinMatch(params: Meta & Params$JoinMatch) {
+function _joinMatch({ meta, matchName, ...params }: Join & Params$JoinMatch) {
   return joinMatch(params).then<MultiMatchState>(res => ({
-    ...params,
+    matchName,
+    gameMeta: meta,
+    name: params.name,
+    matchID: params.matchID,
+    playerID: params.playerID,
     credentials: res.data.playerCredentials
   }));
 }
 
-export function JoinMatch(params: Props) {
+export function JoinMatch({ meta, ...params }: Props) {
   const [{ playerName }, updatePrefrences] = usePreferences();
 
   const [{ loading }, { fetch }] = useRxAsync(_joinMatch, {
@@ -36,11 +39,11 @@ export function JoinMatch(params: Props) {
 
   function handleJoinMatch() {
     if (playerName) {
-      fetch({ ...params, playerName });
+      fetch({ ...params, meta, playerName });
     } else {
       getPlayerName({ title: 'Player Name' }).then(playerName => {
         updatePrefrences(state => ({ ...state, playerName }));
-        return _joinMatch({ playerName, ...params }).then(state => {
+        return _joinMatch({ ...params, meta, playerName }).then(state => {
           matchStorage.save(state);
           gotoMatch(state);
         });

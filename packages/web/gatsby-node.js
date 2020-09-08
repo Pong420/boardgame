@@ -63,7 +63,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
 
     actions.createPage({
       path: `/spectate/${name}/*`,
-      matchPath: `/spectate/${name}/:matchID`,
+      matchPath: `/spectate/${name}/:matchName/:matchID/`,
       context: { name },
       component: require.resolve(`./src/pages/spectate.tsx`)
     });

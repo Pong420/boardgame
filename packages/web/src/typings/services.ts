@@ -1,6 +1,5 @@
 export interface SetupData {
   matchName: string;
-  numPlayers: number;
   description?: string;
 }
 

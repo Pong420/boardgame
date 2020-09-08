@@ -8,7 +8,7 @@ interface MatchParams {
 }
 
 export default function ({ message }: MatchParams) {
-  if (!message) {
+  if (typeof window !== 'undefined' && !message) {
     navigate('/');
   }
 

@@ -11,36 +11,39 @@ import {
 } from 'rxjs/operators';
 import { JSONParse } from '@/utils/JSONParse';
 import { createLocalStorage } from '@/utils/storage';
+import { GameMeta } from '@/typings';
 import { leaveMatch } from './services';
 import isEqual from 'lodash/isEqual';
 
 interface Common {
   name: string;
-  numPlayers: number;
-  gameName: string;
   matchName: string;
+  gameMeta: GameMeta;
 }
 
 export interface LocalMatchState extends Common {
   local: boolean;
+  numPlayers: number;
 }
 
 export interface MultiMatchState extends Common {
   matchID: string;
   playerID: string;
   credentials: string;
+  numPlayers?: number;
 }
 
-export type MatchState = LocalMatchState | MultiMatchState;
+export interface SpectatorState extends Common {
+  matchID: string;
+}
+
+export type MatchState = LocalMatchState | MultiMatchState | SpectatorState;
 
 export const gotoMatch = (state: MatchState) => {
   return navigate(`/match/${state.name}`, { state, replace: true });
 };
 
-export const gotoSpectate = ({
-  name,
-  matchID
-}: Pick<MultiMatchState, 'name' | 'matchID'>) => {
+export const gotoSpectate = ({ name, matchID }: SpectatorState) => {
   return navigate(`/spectate/${name}/${matchID}`);
 };
 
@@ -78,21 +81,25 @@ export function leaveMatchAndRedirect(
   matchStorage.save(null);
 }
 
-const getState = (payload: string | null): MultiMatchState | null => {
-  let state = payload
-    ? JSONParse<(MultiMatchState & { key: string }) | null>(payload)
-    : undefined;
-  delete state?.key;
-  return state || null;
-};
-
+// leave match if user try to delete the matchStorage
 if (typeof window !== 'undefined') {
+  const parse = (payload: string | null): MultiMatchState | null => {
+    const state = payload
+      ? JSONParse<(MultiMatchState & { key: string }) | null>(payload)
+      : undefined;
+    if (state) {
+      const { key, ...rest } = state;
+      return rest;
+    }
+    return null;
+  };
+
   fromEvent<StorageEvent>(window, 'storage')
     .pipe(
       filter(event => event.key === matchStorage.key),
       exhaustMap(event => {
-        const oldState = getState(event.oldValue);
-        const newState = getState(event.newValue);
+        const oldState = parse(event.oldValue);
+        const newState = parse(event.newValue);
 
         return oldState && !isEqual(oldState, newState)
           ? leaveMatchAndRedirect(oldState)

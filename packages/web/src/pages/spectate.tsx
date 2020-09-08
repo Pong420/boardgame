@@ -1,9 +1,12 @@
 import React from 'react';
+import { navigate } from 'gatsby';
 import { RouteComponentProps } from '@/typings';
 import { Match } from '@/components/Match';
+import { useGameMeta } from '@/store/gameMeta';
 
 interface MatchParams {
-  matchID: string;
+  matchID?: string;
+  matchName?: string;
 }
 
 interface Context {
@@ -12,7 +15,22 @@ interface Context {
 
 export default function ({
   matchID,
-  pageContext
+  matchName,
+  pageContext: { name }
 }: RouteComponentProps<unknown, Context> & MatchParams) {
-  return <Match name={pageContext.name} matchID={matchID} />;
+  const meta = useGameMeta(name);
+
+  if (!meta || !matchID || !matchName) {
+    typeof window !== 'undefined' && navigate('/');
+    return null;
+  }
+
+  return (
+    <Match
+      name={name}
+      matchID={matchID}
+      matchName={matchName}
+      gameMeta={meta}
+    />
+  );
 }

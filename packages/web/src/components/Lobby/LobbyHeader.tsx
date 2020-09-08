@@ -17,14 +17,7 @@ export function LobbyHeader({ meta }: Props) {
       </Link>
       <div className="header-title">{meta.gameName} Lobby</div>
       <ButtonGroup>
-        <CreateMatch
-          minimal
-          icon="plus"
-          content="Create Match"
-          name={meta.name}
-          gameName={meta.gameName}
-          numPlayers={meta.numPlayers}
-        />
+        <CreateMatch minimal icon="plus" content="Create Match" meta={meta} />
       </ButtonGroup>
     </div>
   );

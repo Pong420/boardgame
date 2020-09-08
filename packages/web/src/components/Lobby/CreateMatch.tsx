@@ -1,13 +1,14 @@
 import React from 'react';
 import { HTMLSelect } from '@blueprintjs/core';
 import { createForm, FormProps, validators, FormItemProps } from '@/utils/form';
-import { Params$CreateMatch } from '@/typings';
+import { Params$CreateMatch, GameMeta } from '@/typings';
 import {
   gotoMatch,
   createMatch,
   joinMatch,
   usePreferences,
-  matchStorage
+  matchStorage,
+  MultiMatchState
 } from '@/services';
 import { Input, TextArea, Checkbox } from '../Input';
 import { ButtonPopover, ButtonPopoverProps } from '../ButtonPopover';
@@ -20,9 +21,7 @@ interface Store extends Params$CreateMatch {
 }
 
 export interface Create {
-  name: string;
-  gameName: string;
-  numPlayers: number[];
+  meta: GameMeta;
 }
 
 interface Props extends Create, ButtonPopoverProps {}
@@ -119,9 +118,37 @@ function CreateMatchForm({
   );
 }
 
-export function CreateMatch({ name, numPlayers, gameName, ...props }: Props) {
+export function CreateMatch({ meta, ...props }: Props) {
   const [form] = useForm();
   const [{ playerName }, updatePrefrences] = usePreferences();
+  const { name, gameName, numPlayers } = meta;
+
+  async function onConfirm() {
+    const store = await form.validateFields();
+    if (store.setupData) {
+      const { matchName } = store.setupData;
+      if (store.local) {
+        await gotoMatch({
+          ...store,
+          matchName,
+          local: true,
+          gameMeta: meta
+        });
+      } else {
+        const payload = await createAndJoinMatch(store);
+        const state: MultiMatchState = {
+          ...payload,
+          name,
+          matchName,
+          playerID: '0',
+          gameMeta: meta,
+          numPlayers: store.numPlayers
+        };
+        await gotoMatch(state);
+        matchStorage.save(state);
+      }
+    }
+  }
 
   return (
     <ButtonPopover
@@ -129,35 +156,7 @@ export function CreateMatch({ name, numPlayers, gameName, ...props }: Props) {
       onClick={() =>
         openConfirmDialog({
           title: `Create ${gameName} Match`,
-          onConfirm: async () => {
-            const store = await form.validateFields();
-            if (store.local) {
-              await gotoMatch({
-                ...store,
-                gameName,
-                local: true,
-                matchName: 'Local'
-              });
-            } else {
-              const payload = await createAndJoinMatch({
-                ...store,
-                setupData: {
-                  ...store.setupData!,
-                  numPlayers: store.numPlayers
-                }
-              });
-              const state = {
-                ...payload,
-                name,
-                gameName,
-                playerID: '0',
-                numPlayers: store.numPlayers,
-                matchName: store.setupData!.matchName
-              };
-              await gotoMatch(state);
-              matchStorage.save(state);
-            }
-          },
+          onConfirm,
           children: (
             <CreateMatchForm
               form={form}
