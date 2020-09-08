@@ -40,11 +40,11 @@ export interface SpectatorState extends Common {
 export type MatchState = LocalMatchState | MultiMatchState | SpectatorState;
 
 export const gotoMatch = (state: MatchState) => {
-  return navigate(`/match/${state.name}`, { state, replace: true });
+  return navigate(`/match/${state.name}/`, { state, replace: true });
 };
 
-export const gotoSpectate = ({ name, matchID }: SpectatorState) => {
-  return navigate(`/spectate/${name}/${matchID}`);
+export const gotoSpectate = ({ name, matchID, matchName }: SpectatorState) => {
+  return navigate(`/spectate/${name}/${matchID}/${matchName}/`);
 };
 
 export const matchStorage = createLocalStorage<MultiMatchState | null>(
