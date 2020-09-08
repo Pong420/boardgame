@@ -30,7 +30,7 @@ function LeaveMatchButton({ name, local }: Pick<Props, 'local' | 'name'>) {
         if (state) {
           return fetch(state);
         } else {
-          onFailure('State is not defined');
+          // onFailure('State is not defined');
         }
         navigate(`/lobby/${name}/`);
       }}

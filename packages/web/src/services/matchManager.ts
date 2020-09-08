@@ -44,7 +44,7 @@ export const gotoMatch = (state: MatchState) => {
 };
 
 export const gotoSpectate = ({ name, matchID, matchName }: SpectatorState) => {
-  return navigate(`/spectate/${name}/${matchID}/${matchName}/`);
+  return navigate(`/spectate/${name}/${matchName}/${matchID}/`);
 };
 
 export const matchStorage = createLocalStorage<MultiMatchState | null>(
