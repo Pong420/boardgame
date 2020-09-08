@@ -32,17 +32,18 @@ export const Layout = ({ children, path }: LayoutProps) => {
   }
 
   return (
-    <>
+    <div
+      className="layout"
+      style={{ maxWidth: screenWidth === 'limited' ? 1280 : undefined }}
+    >
       <SEO />
-      <div
-        className="layout"
-        style={{ maxWidth: screenWidth === 'limited' ? 1280 : undefined }}
-      >
-        {(path === '' || path === '/' || path.startsWith('/lobby/')) && (
-          <GameList />
-        )}
-        {children}
-      </div>
-    </>
+
+      {(path === '' ||
+        path === '/' ||
+        path === '/*' ||
+        path.startsWith('/lobby/')) && <GameList />}
+
+      {children}
+    </div>
   );
 };
