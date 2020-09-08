@@ -1,6 +1,4 @@
 import React from 'react';
-import { defer, empty } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
 import { HTMLSelect } from '@blueprintjs/core';
 import { createForm, FormProps, validators } from '@/utils/form';
 import { Params$CreateMatch } from '@/typings';
@@ -31,21 +29,20 @@ interface Props extends Create, ButtonPopoverProps {}
 
 const { Form, FormItem, useForm } = createForm<Store>();
 
-const createAndJoinMatch = ({ playerName, local, name, ...reset }: Store) =>
-  defer(() => createMatch({ name, ...reset })).pipe(
-    switchMap(res => {
-      const { matchID } = res.data;
-      return defer(() =>
-        joinMatch({ name, matchID, playerName, playerID: '0' })
-      ).pipe(
-        map(res => ({
-          matchID,
-          credentials: res.data.playerCredentials
-        })),
-        catchError(() => empty())
-      );
-    })
-  );
+async function createAndJoinMatch({
+  playerName,
+  local,
+  name,
+  ...reset
+}: Store) {
+  const create = await createMatch({ name, ...reset });
+  const { matchID } = create.data;
+  const join = await joinMatch({ name, matchID, playerName, playerID: '0' });
+  return {
+    matchID,
+    credentials: join.data.playerCredentials
+  };
+}
 
 function CreateMatchForm({
   numPlayersOps,
@@ -102,10 +99,6 @@ function CreateMatchForm({
         <TextArea />
       </FormItem>
 
-      <FormItem name={['unlisted']} valuePropName="checked">
-        <Checkbox>Private</Checkbox>
-      </FormItem>
-
       <FormItem name={['local']} valuePropName="checked">
         <Checkbox>Local</Checkbox>
       </FormItem>
@@ -132,10 +125,10 @@ export function CreateMatch({ name, gameName, numOfPlayers, ...props }: Props) {
                 ...store.setupData!,
                 numOfPlayers: store.numPlayers
               }
-            }).toPromise();
+            });
             const state = { ...payload, playerID: '0', name };
-            matchStorage.save(state);
             await gotoMatch(state);
+            matchStorage.save(state);
           },
           children: (
             <CreateMatchForm
