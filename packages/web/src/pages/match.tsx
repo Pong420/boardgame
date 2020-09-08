@@ -1,11 +1,10 @@
 import React from 'react';
 import { navigate } from 'gatsby';
 import { RouteComponentProps } from '@/typings';
-import { Match } from '@/components/Match';
-import { PlayerState } from '@/services';
+import { Match, MatchProps } from '@/components/Match';
 
 export default function (
-  props: RouteComponentProps<undefined, unknown, PlayerState>
+  props: RouteComponentProps<undefined, unknown, MatchProps>
 ) {
   const { state } = props.location;
 

@@ -6,7 +6,7 @@ export const meta: BigTwoMeta = {
   name: 'big-two',
   gameName: 'Big Two',
   icon,
-  numOfPlayers: [2, 4],
+  numPlayers: [2, 4],
   author: 'Pong420',
   description: ''
 };

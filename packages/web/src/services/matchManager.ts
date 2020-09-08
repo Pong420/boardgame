@@ -12,33 +12,40 @@ import { createLocalStorage } from '@/utils/storage';
 import { leaveMatch } from './services';
 import isEqual from 'lodash/isEqual';
 
-export interface PlayerState {
+export type LocalMatchState = {
+  name: string;
+  local: boolean;
+  numPlayers: number;
+};
+export type MultiMatchState = {
   name: string;
   matchID: string;
   playerID: string;
   credentials: string;
-}
+};
 
-export const gotoMatch = (state: PlayerState) => {
+export type MatchState = LocalMatchState | MultiMatchState;
+
+export const gotoMatch = (state: MatchState) => {
   return navigate(`/match/${state.name}`, { state, replace: true });
 };
 
 export const gotoSpectate = ({
   name,
   matchID
-}: Pick<PlayerState, 'name' | 'matchID'>) => {
+}: Pick<MultiMatchState, 'name' | 'matchID'>) => {
   return navigate(`/spectate/${name}/${matchID}`);
 };
 
-export const matchStorage = createLocalStorage<PlayerState | null>(
-  'BOARDGAME_PLAYER',
+export const matchStorage = createLocalStorage<MultiMatchState | null>(
+  'BOARDGAME_MATCH_STATE',
   null
 );
 
 export function leaveMatchAndRedirect(): undefined;
-export function leaveMatchAndRedirect(state: PlayerState): Promise<void>;
+export function leaveMatchAndRedirect(state: MultiMatchState): Promise<void>;
 export function leaveMatchAndRedirect(
-  state?: PlayerState | null
+  state?: MultiMatchState | null
 ): Promise<any> | undefined {
   matchStorage.save(null);
 
@@ -61,9 +68,9 @@ export function leaveMatchAndRedirect(
   navigate(`/`);
 }
 
-const getState = (payload: string | null): PlayerState | null => {
+const getState = (payload: string | null): MultiMatchState | null => {
   let state = payload
-    ? JSONParse<(PlayerState & { key: string }) | null>(payload)
+    ? JSONParse<(MultiMatchState & { key: string }) | null>(payload)
     : undefined;
   delete state?.key;
   return state || null;

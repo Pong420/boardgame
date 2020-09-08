@@ -22,7 +22,7 @@ interface Store extends Params$CreateMatch {
 export interface Create {
   name: string;
   gameName: string;
-  numOfPlayers: number[];
+  numPlayers: number[];
 }
 
 interface Props extends Create, ButtonPopoverProps {}
@@ -83,7 +83,7 @@ function CreateMatchForm({
 
       <FormItem
         label="Number of Players"
-        name={['numPlayers']}
+        name="numPlayers"
         validators={[validators.required('Please select number of players')]}
       >
         <HTMLSelect fill options={numPlayersOps} />
@@ -99,14 +99,18 @@ function CreateMatchForm({
         <TextArea />
       </FormItem>
 
-      <FormItem name={['local']} valuePropName="checked">
+      <FormItem name="local" valuePropName="checked">
         <Checkbox>Local</Checkbox>
+      </FormItem>
+
+      <FormItem name="name" noStyle>
+        <div hidden />
       </FormItem>
     </Form>
   );
 }
 
-export function CreateMatch({ name, gameName, numOfPlayers, ...props }: Props) {
+export function CreateMatch({ name, gameName, numPlayers, ...props }: Props) {
   const [form] = useForm();
   const [{ playerName }, updatePrefrences] = usePreferences();
 
@@ -118,17 +122,20 @@ export function CreateMatch({ name, gameName, numOfPlayers, ...props }: Props) {
           title: `Create ${gameName} Match`,
           onConfirm: async () => {
             const store = await form.validateFields();
-            const payload = await createAndJoinMatch({
-              ...store,
-              name,
-              setupData: {
-                ...store.setupData!,
-                numOfPlayers: store.numPlayers
-              }
-            });
-            const state = { ...payload, playerID: '0', name };
-            await gotoMatch(state);
-            matchStorage.save(state);
+            if (store.local) {
+              await gotoMatch({ ...store, local: true });
+            } else {
+              const payload = await createAndJoinMatch({
+                ...store,
+                setupData: {
+                  ...store.setupData!,
+                  numPlayers: store.numPlayers
+                }
+              });
+              const state = { ...payload, name, playerID: '0' };
+              await gotoMatch(state);
+              matchStorage.save(state);
+            }
           },
           children: (
             <CreateMatchForm
@@ -139,12 +146,12 @@ export function CreateMatch({ name, gameName, numOfPlayers, ...props }: Props) {
                 updatePrefrences(state => ({ ...state, playerName }))
               }
               numPlayersOps={
-                numOfPlayers.length === 2
+                numPlayers.length === 2
                   ? Array.from(
-                      { length: numOfPlayers[1] - numOfPlayers[0] + 1 },
-                      (_, idx) => numOfPlayers[0] + idx
+                      { length: numPlayers[1] - numPlayers[0] + 1 },
+                      (_, idx) => numPlayers[0] + idx
                     )
-                  : numOfPlayers
+                  : numPlayers
               }
             />
           )

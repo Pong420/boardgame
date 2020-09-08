@@ -1,38 +1,43 @@
 import React, { useMemo, Suspense } from 'react';
 import { Game } from 'boardgame.io';
 import { Client } from 'boardgame.io/react';
-import { SocketIO } from 'boardgame.io/multiplayer';
+import { SocketIO, Local } from 'boardgame.io/multiplayer';
+import { MatchState } from '@/services';
 import { MatchHeader } from './MatchHeader';
 
-interface Props {
+export interface MatchProps {
   name: string;
-  matchID?: string;
-  playerID?: string;
-  credentials?: string;
 }
 
 const handleImport = (name: string) =>
   Promise.all([
     import(`@boardgame/${name}/dist/game`),
     import(`@boardgame/${name}/dist/board`)
-  ]).then(([{ game }, { Board }]) => ({
-    default: Client({
-      debug: false,
-      game: game as Game,
-      board: Board,
-      multiplayer: SocketIO({
-        server:
-          process.env.NODE_ENV === 'development'
-            ? `http://localhost:8080`
-            : window.location.origin
-      })
-    })
-  }));
-
-export function Match({ name, matchID, playerID, credentials }: Props) {
-  const ClientComponent = useMemo(() => React.lazy(() => handleImport(name)), [
-    name
   ]);
+
+export function Match(state: MatchProps & MatchState) {
+  const ClientComponent = useMemo(
+    () =>
+      React.lazy(() =>
+        handleImport(state.name).then(([{ game }, { Board }]) => ({
+          default: Client({
+            debug: false,
+            game: game as Game,
+            board: Board,
+            multiplayer:
+              'local' in state
+                ? (Local() as any) // FIXME:
+                : SocketIO({
+                    server:
+                      process.env.NODE_ENV === 'development'
+                        ? `http://localhost:8080`
+                        : window.location.origin
+                  })
+          })
+        }))
+      ),
+    [state]
+  );
 
   const isSSR = typeof window === 'undefined';
 
@@ -42,14 +47,32 @@ export function Match({ name, matchID, playerID, credentials }: Props) {
 
   return (
     <div className="match">
-      <MatchHeader />
-      <div className="match-content">
+      <MatchHeader name={state.name} local={'local' in state} />
+      <div
+        className={[
+          'match-content',
+          'local' in state ? 'local' : 'multi',
+          state.name
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         <Suspense fallback={null}>
-          <ClientComponent
-            matchID={matchID}
-            playerID={playerID}
-            credentials={credentials}
-          />
+          {'local' in state ? (
+            Array.from({ length: state.numPlayers || 0 }, (_, index) => (
+              <ClientComponent
+                key={index}
+                playerID={`${index}`}
+                matchID={`${state.name}-local`}
+              />
+            ))
+          ) : (
+            <ClientComponent
+              matchID={state.matchID}
+              playerID={state.playerID}
+              credentials={state.credentials}
+            />
+          )}
         </Suspense>
       </div>
     </div>

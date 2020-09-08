@@ -5,7 +5,7 @@ export const meta: Prefix_Meta = {
   name: 'game-name',
   gameName: 'Game Name',
   icon: '',
-  numOfPlayers: [],
+  numPlayers: [],
   author: '',
   description: ''
 };

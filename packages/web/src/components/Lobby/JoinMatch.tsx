@@ -4,7 +4,7 @@ import { Button } from '@blueprintjs/core';
 import {
   joinMatch,
   gotoMatch,
-  PlayerState,
+  MultiMatchState,
   usePreferences,
   matchStorage
 } from '@/services';
@@ -14,7 +14,7 @@ import { getPlayerName } from '../PlayerNameControl';
 interface Props extends Omit<Params$JoinMatch, 'playerName'> {}
 
 function _joinMatch(params: Params$JoinMatch) {
-  return joinMatch(params).then<PlayerState>(res => ({
+  return joinMatch(params).then<MultiMatchState>(res => ({
     ...params,
     credentials: res.data.playerCredentials
   }));

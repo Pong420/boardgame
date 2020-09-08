@@ -23,7 +23,7 @@ export function LobbyHeader({ meta }: Props) {
           content="Create Match"
           name={meta.name}
           gameName={meta.gameName}
-          numOfPlayers={meta.numOfPlayers}
+          numPlayers={meta.numPlayers}
         />
       </ButtonGroup>
     </div>

@@ -19,7 +19,7 @@ export const query = graphql`
       gameName
       icon
       name
-      numOfPlayers
+      numPlayers
       version
     }
   }

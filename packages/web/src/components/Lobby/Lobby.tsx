@@ -40,7 +40,7 @@ export function Lobby({ meta }: Props) {
         <NoMatches
           name={name}
           gameName={meta.gameName}
-          numOfPlayers={meta.numOfPlayers}
+          numPlayers={meta.numPlayers}
         />
       )}
     </div>

@@ -23,13 +23,13 @@ export function LobbyItem({
   );
 
   if (setupData) {
-    const { matchName, description, numOfPlayers } = setupData;
+    const { matchName, description, numPlayers } = setupData;
     return (
       <Card className="lobby-item" elevation={1}>
         <div className="lobby-item-header">
           <div className="lobby-item-name">{matchName.slice(0, 10)}</div>
           <div>
-            {playerJoined.length} / {numOfPlayers}
+            {playerJoined.length} / {numPlayers}
           </div>
         </div>
         <div className="lobby-item-description">

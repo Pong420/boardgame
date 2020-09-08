@@ -2,10 +2,6 @@
   @include dimen(100%);
   @include flex($flex-direction: column);
   overflow: hidden;
-
-  .bgio-client {
-    @include sq-dimen(100%);
-  }
 }
 
 .match-header {
@@ -16,4 +12,10 @@
 .match-content {
   @include sq-dimen(100%);
   flex: 1 1 auto;
+
+  &.multi {
+    .bgio-client {
+      @include sq-dimen(100%);
+    }
+  }
 }
