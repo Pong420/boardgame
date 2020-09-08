@@ -1,6 +1,6 @@
 import React from 'react';
 import { HTMLSelect } from '@blueprintjs/core';
-import { createForm, FormProps, validators } from '@/utils/form';
+import { createForm, FormProps, validators, FormItemProps } from '@/utils/form';
 import { Params$CreateMatch } from '@/typings';
 import {
   gotoMatch,
@@ -44,6 +44,14 @@ async function createAndJoinMatch({
   };
 }
 
+function HiddenIfLocal(props: FormItemProps<Store>) {
+  return (
+    <FormItem deps={['local']} noStyle>
+      {({ local }) => (local ? <div /> : <FormItem {...props} />)}
+    </FormItem>
+  );
+}
+
 function CreateMatchForm({
   numPlayersOps,
   initialValues,
@@ -57,7 +65,11 @@ function CreateMatchForm({
         numPlayers: numPlayersOps[0]
       }}
     >
-      <FormItem
+      <FormItem name="local" valuePropName="checked">
+        <Checkbox>Local</Checkbox>
+      </FormItem>
+
+      <HiddenIfLocal
         label="Your Name"
         name="playerName"
         validators={[validators.required('Please input your name')]}
@@ -68,9 +80,9 @@ function CreateMatchForm({
           rightIcon="edit"
           placehodler="Click to type your name"
         />
-      </FormItem>
+      </HiddenIfLocal>
 
-      <FormItem
+      <HiddenIfLocal
         label="Match Name"
         name={['setupData', 'matchName']}
         validators={[
@@ -79,7 +91,7 @@ function CreateMatchForm({
         ]}
       >
         <Input />
-      </FormItem>
+      </HiddenIfLocal>
 
       <FormItem
         label="Number of Players"
@@ -90,7 +102,7 @@ function CreateMatchForm({
         <HTMLSelect fill options={numPlayersOps} />
       </FormItem>
 
-      <FormItem
+      <HiddenIfLocal
         label="Description ( Optional )"
         name={['setupData', 'description']}
         validators={[
@@ -98,11 +110,7 @@ function CreateMatchForm({
         ]}
       >
         <TextArea />
-      </FormItem>
-
-      <FormItem name="local" valuePropName="checked">
-        <Checkbox>Local</Checkbox>
-      </FormItem>
+      </HiddenIfLocal>
 
       <FormItem name="name" noStyle>
         <div hidden />
@@ -111,7 +119,7 @@ function CreateMatchForm({
   );
 }
 
-export function CreateMatch({ name, gameName, numPlayers, ...props }: Props) {
+export function CreateMatch({ name, numPlayers, gameName, ...props }: Props) {
   const [form] = useForm();
   const [{ playerName }, updatePrefrences] = usePreferences();
 
@@ -124,7 +132,12 @@ export function CreateMatch({ name, gameName, numPlayers, ...props }: Props) {
           onConfirm: async () => {
             const store = await form.validateFields();
             if (store.local) {
-              await gotoMatch({ ...store, local: true });
+              await gotoMatch({
+                ...store,
+                gameName,
+                local: true,
+                matchName: 'Local'
+              });
             } else {
               const payload = await createAndJoinMatch({
                 ...store,
@@ -136,8 +149,10 @@ export function CreateMatch({ name, gameName, numPlayers, ...props }: Props) {
               const state = {
                 ...payload,
                 name,
+                gameName,
                 playerID: '0',
-                numPlayers: store.numPlayers
+                numPlayers: store.numPlayers,
+                matchName: store.setupData!.matchName
               };
               await gotoMatch(state);
               matchStorage.save(state);

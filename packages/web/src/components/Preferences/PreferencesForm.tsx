@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, ReactNode } from 'react';
+import { Tooltip } from '@blueprintjs/core';
 import { Switch } from '@/components/Input';
 import { createForm } from '@/utils/form';
 import {
@@ -18,7 +19,7 @@ interface Strore extends PreferencesState {
 
 const { Form, FormItem, useForm } = createForm<Strore>();
 
-const Row: React.FC<{ label?: string }> = ({ label, children }) => (
+const Row: React.FC<{ label?: ReactNode }> = ({ label, children }) => (
   <div className="preferences-row">
     <div className="preferences-row-label">{label}</div>
     <div className="preferences-row-value">{children}</div>
@@ -48,7 +49,13 @@ export function PreferencesForm() {
           </FormItem>
         </Row>
 
-        <Row label="Polling">
+        <Row
+          label={
+            <Tooltip content="Automatically refresh lobby every 5 seconds">
+              Polling
+            </Tooltip>
+          }
+        >
           <FormItem name="polling" valuePropName="checked" noStyle>
             <Switch large />
           </FormItem>

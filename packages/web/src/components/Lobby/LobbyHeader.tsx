@@ -15,7 +15,7 @@ export function LobbyHeader({ meta }: Props) {
       <Link to="/">
         <ButtonPopover icon="arrow-left" content="Leave" minimal />
       </Link>
-      <div className="header-title"></div>
+      <div className="header-title">{meta.gameName} Lobby</div>
       <ButtonGroup>
         <CreateMatch
           minimal

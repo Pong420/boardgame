@@ -1,4 +1,5 @@
 import { navigate } from 'gatsby';
+import { AxiosError } from 'axios';
 import { fromEvent, defer, empty, timer, throwError } from 'rxjs';
 import {
   filter,
@@ -12,20 +13,23 @@ import { JSONParse } from '@/utils/JSONParse';
 import { createLocalStorage } from '@/utils/storage';
 import { leaveMatch } from './services';
 import isEqual from 'lodash/isEqual';
-import { AxiosError } from 'axios';
 
-export type LocalMatchState = {
+interface Common {
   name: string;
+  numPlayers: number;
+  gameName: string;
+  matchName: string;
+}
+
+export interface LocalMatchState extends Common {
   local: boolean;
-  numPlayers: number;
-};
-export type MultiMatchState = {
-  name: string;
-  numPlayers: number;
+}
+
+export interface MultiMatchState extends Common {
   matchID: string;
   playerID: string;
   credentials: string;
-};
+}
 
 export type MatchState = LocalMatchState | MultiMatchState;
 

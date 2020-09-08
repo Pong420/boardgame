@@ -11,9 +11,15 @@ import {
 import { Params$JoinMatch } from '@/typings';
 import { getPlayerName } from '../PlayerNameControl';
 
-interface Props extends Omit<Params$JoinMatch, 'playerName'> {}
+interface Meta {
+  gameName: string;
+  matchName: string;
+  numPlayers: number;
+}
 
-function _joinMatch(params: Params$JoinMatch) {
+interface Props extends Meta, Omit<Params$JoinMatch, 'playerName'> {}
+
+function _joinMatch(params: Meta & Params$JoinMatch) {
   return joinMatch(params).then<MultiMatchState>(res => ({
     ...params,
     credentials: res.data.playerCredentials

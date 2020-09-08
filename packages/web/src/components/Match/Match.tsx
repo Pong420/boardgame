@@ -44,7 +44,11 @@ export function Match(state: MatchState) {
 
   return (
     <div className="match">
-      <MatchHeader name={state.name} local={'local' in state} />
+      <MatchHeader
+        name={state.name}
+        local={'local' in state}
+        title={`${state.gameName} - ${state.matchName}`}
+      />
       <div
         className={[
           'match-content',

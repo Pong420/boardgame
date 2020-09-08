@@ -1,4 +1,4 @@
-import React, { useState, ProviderProps, useEffect } from 'react';
+import React, { useState, ProviderProps, useEffect, useRef } from 'react';
 import { createLocalStorage } from '../utils/storage';
 
 export type Theme = 'light' | 'dark';
@@ -55,11 +55,24 @@ export const PreferencesProvider: React.FC = ({ children }) => {
   const [preferences, setPreferences] = useState<PreferencesState>(
     preferencesStorage.get()
   );
+  const previous = useRef(preferences);
 
   useEffect(() => {
-    handleTheme(preferences.theme);
-    preferencesStorage.save(preferences);
+    // mainly for big-two
+    if (previous.current.screenWidth !== preferences.screenWidth) {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('resize'));
+      }
+    }
+
+    if (previous.current.theme !== preferences.theme) {
+      handleTheme(preferences.theme);
+    }
+
     themeStorage.save(preferences.theme);
+    preferencesStorage.save(preferences);
+
+    previous.current = preferences;
   }, [preferences]);
 
   return React.createElement<ProviderProps<PreferencesState>>(

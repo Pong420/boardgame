@@ -6,7 +6,6 @@ import { useBoolean } from '@/hooks/useBoolean';
 
 export function Preferences() {
   const [isOpen, openDialog, closeDialog] = useBoolean();
-
   return (
     <>
       <ButtonPopover

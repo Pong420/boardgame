@@ -7,6 +7,10 @@
 .match-header {
   @include header();
   flex: 0 0 auto;
+
+  .header-title {
+    text-align-last: center;
+  }
 }
 
 .match-content {

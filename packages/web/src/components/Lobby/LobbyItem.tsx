@@ -10,6 +10,7 @@ interface Props extends Match {
 export function LobbyItem({
   name,
   matchID,
+  gameName,
   setupData,
   updatedAt,
   players
@@ -47,6 +48,9 @@ export function LobbyItem({
               <JoinMatch
                 name={name}
                 matchID={matchID}
+                matchName={matchName}
+                gameName={gameName}
+                numPlayers={numPlayers}
                 playerID={String(nextPlayers[0]?.id)}
               />
             ) : null}

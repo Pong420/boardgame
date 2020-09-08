@@ -4,6 +4,10 @@
 
 .lobby-header {
   @include header();
+
+  .header-title {
+    text-align: center;
+  }
 }
 
 .lobby-content {

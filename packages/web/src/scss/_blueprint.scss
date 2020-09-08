@@ -1,5 +1,7 @@
-.#{$ns}-icon {
-  color: var(--icon-color) !important;
+.#{$ns}-button:not([class*='bp3-intent-']) {
+  .#{$ns}-icon.#{$ns}-icon {
+    color: var(--icon-color);
+  }
 }
 
 .#{$ns}-popover.#{$ns}-popover {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { defer, interval, empty } from 'rxjs';
-import { repeatWhen, map, catchError } from 'rxjs/operators';
+import { repeatWhen, map, catchError, tap } from 'rxjs/operators';
 import { GameMeta, Match } from '@/typings';
 import { getMatches, usePreferencesState } from '@/services';
 import { LobbyHeader } from './LobbyHeader';
@@ -14,16 +14,24 @@ interface Props {
 export function Lobby({ meta }: Props) {
   const { name } = meta;
   const [state, setState] = useState<Match[]>([]);
+  const [loading, setLoading] = useState(true);
   const { polling } = usePreferencesState();
 
   useEffect(() => {
     const subscription = defer(() => getMatches({ name }))
       .pipe(
+        tap(() => setLoading(true)),
         map(response => response.data.matches),
-        catchError(() => empty()),
+        catchError(() => {
+          setLoading(false);
+          return empty();
+        }),
         repeatWhen(() => (polling ? interval(5 * 1000) : empty()))
       )
-      .subscribe(setState);
+      .subscribe(state => {
+        setState(state);
+        setLoading(false);
+      });
     return () => subscription.unsubscribe();
   }, [name, polling]);
 
@@ -36,7 +44,7 @@ export function Lobby({ meta }: Props) {
             <LobbyItem key={match.matchID} name={name} {...match} />
           ))}
         </div>
-      ) : (
+      ) : loading ? null : (
         <NoMatches
           name={name}
           gameName={meta.gameName}
