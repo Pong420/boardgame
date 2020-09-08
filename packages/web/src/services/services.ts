@@ -42,7 +42,6 @@ export function updatePlayerMeta({
   matchID,
   ...params
 }: Params$UpdatePlayerMeta) {
-  // TODO:
   return api.post<unknown>(`/games/${name}/${matchID}/update`, params);
 }
 

@@ -6,6 +6,7 @@ import { getMatches, usePreferencesState } from '@/services';
 import { LobbyHeader } from './LobbyHeader';
 import { LobbyItem } from './LobbyItem';
 import { NoMatches } from './NoMatches';
+import { Toaster } from '@/utils/toaster';
 
 interface Props {
   meta: GameMeta;
@@ -22,8 +23,9 @@ export function Lobby({ meta }: Props) {
       .pipe(
         tap(() => setLoading(true)),
         map(response => response.data.matches),
-        catchError(() => {
+        catchError(error => {
           setLoading(false);
+          !polling && Toaster.apiError('Get Matches Failure', error);
           return empty();
         }),
         repeatWhen(() => (polling ? interval(5 * 1000) : empty()))

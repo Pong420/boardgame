@@ -21,10 +21,6 @@
     "packages": [
       "packages/*",
       "packages/games/*"
-    ],
-    "nohoist": [
-      "react-dom",
-      "react-dom/**"
     ]
   },
   "devDependencies": {
@@ -47,7 +43,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn web lint:types"
     }
   },
   "lint-staged": {

@@ -4,12 +4,15 @@ import { useRxAsync } from 'use-rx-hooks';
 import { GameListHeader } from './GameListHeader';
 import { getAllGames } from '@/services';
 import { useGameMeta } from '@/store/gameMeta';
+import { Toaster } from '@/utils/toaster';
 
 interface ItemProps {
   name: string;
 }
 
 const gameIconFallback = <div className="game-icon-fallback" />;
+
+const onFailure = Toaster.apiError.bind(Toaster, 'Get Games Failure');
 
 export function GameListItem({ name }: ItemProps) {
   const { gameName, icon, numPlayers = [], version } = useGameMeta(name) || {};
@@ -35,7 +38,7 @@ export function GameListItem({ name }: ItemProps) {
 }
 
 export function GameList() {
-  const [{ data }] = useRxAsync(getAllGames);
+  const [{ data }] = useRxAsync(getAllGames, { onFailure });
   const games = data?.data || [];
 
   return (

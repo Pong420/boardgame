@@ -9,6 +9,7 @@ import {
   MultiMatchState
 } from '@/services';
 import { Params$JoinMatch, GameMeta } from '@/typings';
+import { Toaster } from '@/utils/toaster';
 import { getPlayerName } from '../PlayerNameControl';
 
 export interface Join {
@@ -17,6 +18,8 @@ export interface Join {
 }
 
 interface Props extends Join, Omit<Params$JoinMatch, 'playerName'> {}
+
+const onFailure = Toaster.apiError.bind(Toaster, 'Join Match Failure');
 
 function _joinMatch({ meta, matchName, ...params }: Join & Params$JoinMatch) {
   return joinMatch(params).then<MultiMatchState>(res => ({
@@ -29,34 +32,34 @@ function _joinMatch({ meta, matchName, ...params }: Join & Params$JoinMatch) {
   }));
 }
 
-export function JoinMatch({ meta, ...params }: Props) {
+function onSuccess(state: MultiMatchState) {
+  matchStorage.save(state);
+  gotoMatch(state);
+}
+
+export function JoinMatch(props: Props) {
   const [{ playerName }, updatePrefrences] = usePreferences();
 
   const [{ loading }, { fetch }] = useRxAsync(_joinMatch, {
     defer: true,
-    onSuccess: gotoMatch
+    onSuccess,
+    onFailure
   });
-
-  function handleJoinMatch() {
-    if (playerName) {
-      fetch({ ...params, meta, playerName });
-    } else {
-      getPlayerName({ title: 'Player Name' }).then(playerName => {
-        updatePrefrences(state => ({ ...state, playerName }));
-        return _joinMatch({ ...params, meta, playerName }).then(state => {
-          matchStorage.save(state);
-          gotoMatch(state);
-        });
-      });
-    }
-  }
 
   return (
     <Button
       text="Join"
       intent="primary"
       loading={loading}
-      onClick={handleJoinMatch}
+      onClick={() =>
+        (playerName
+          ? Promise.resolve(playerName)
+          : getPlayerName({ title: 'Player Name' }).then(playerName => {
+              updatePrefrences(state => ({ ...state, playerName }));
+              return playerName;
+            })
+        ).then(playerName => fetch({ ...props, playerName }))
+      }
     />
   );
 }

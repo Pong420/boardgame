@@ -1,3 +1,7 @@
+import { AxiosError } from 'axios';
+
+export type ApiError = AxiosError | Error;
+
 export interface SetupData {
   matchName: string;
   description?: string;

@@ -4,6 +4,7 @@ import { useRxAsync } from 'use-rx-hooks';
 import { ButtonPopover } from '@/components/ButtonPopover';
 import { Preferences } from '@/components/Preferences';
 import { leaveMatchAndRedirect, matchStorage } from '@/services';
+import { Toaster } from '@/utils/toaster';
 
 interface Props {
   name: string;
@@ -11,9 +12,12 @@ interface Props {
   title?: ReactNode;
 }
 
+const onFailure = Toaster.apiError.bind(Toaster, 'Leave Match Failure');
+
 function LeaveMatchButton({ name, local }: Pick<Props, 'local' | 'name'>) {
   const [{ loading }, { fetch }] = useRxAsync(leaveMatchAndRedirect, {
-    defer: true
+    defer: true,
+    onFailure
   });
   return (
     <ButtonPopover
@@ -22,12 +26,13 @@ function LeaveMatchButton({ name, local }: Pick<Props, 'local' | 'name'>) {
       content="Leave match"
       loading={loading}
       onClick={() => {
-        if (local) {
-          navigate(`/lobby/${name}/`);
+        const state = matchStorage.get();
+        if (state) {
+          return fetch(state);
         } else {
-          const state = matchStorage.get();
-          state && fetch(state);
+          onFailure('State is not defined');
         }
+        navigate(`/lobby/${name}/`);
       }}
     />
   );

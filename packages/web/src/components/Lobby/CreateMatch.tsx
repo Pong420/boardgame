@@ -1,6 +1,9 @@
 import React from 'react';
+import { defer, throwError } from 'rxjs';
+import { catchError, switchMap, map } from 'rxjs/operators';
 import { HTMLSelect } from '@blueprintjs/core';
 import { createForm, FormProps, validators, FormItemProps } from '@/utils/form';
+import { Toaster } from '@/utils/toaster';
 import { Params$CreateMatch, GameMeta } from '@/typings';
 import {
   gotoMatch,
@@ -28,19 +31,25 @@ interface Props extends Create, ButtonPopoverProps {}
 
 const { Form, FormItem, useForm } = createForm<Store>();
 
-async function createAndJoinMatch({
-  playerName,
-  local,
-  name,
-  ...reset
-}: Store) {
-  const create = await createMatch({ name, ...reset });
-  const { matchID } = create.data;
-  const join = await joinMatch({ name, matchID, playerName, playerID: '0' });
-  return {
-    matchID,
-    credentials: join.data.playerCredentials
-  };
+function createAndJoinMatch({ playerName, local, name, ...reset }: Store) {
+  return defer(() => createMatch({ name, ...reset })).pipe(
+    catchError(error => {
+      Toaster.apiError('Create Match Failure', error);
+      return throwError(error);
+    }),
+    switchMap(response => {
+      const { matchID } = response.data;
+      return defer(() =>
+        joinMatch({ name, matchID, playerName, playerID: '0' })
+      ).pipe(
+        map(join => ({ matchID, credentials: join.data.playerCredentials })),
+        catchError(error => {
+          Toaster.apiError('Join Match Failure', error);
+          return throwError(error);
+        })
+      );
+    })
+  );
 }
 
 function HiddenIfLocal(props: FormItemProps<Store>) {
@@ -134,7 +143,7 @@ export function CreateMatch({ meta, ...props }: Props) {
       });
     } else if (store.setupData) {
       const { matchName } = store.setupData;
-      const payload = await createAndJoinMatch(store);
+      const payload = await createAndJoinMatch(store).toPromise();
       const state: MultiMatchState = {
         ...payload,
         name,
@@ -146,7 +155,7 @@ export function CreateMatch({ meta, ...props }: Props) {
       await gotoMatch(state);
       matchStorage.save(state);
     } else {
-      // TODO: notice
+      throw new Error('Incorrct form state');
     }
   }
 
