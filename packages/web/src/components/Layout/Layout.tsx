@@ -21,7 +21,7 @@ export const Layout = ({ children, path }: LayoutProps) => {
       navigate(
         '/error/Sorry, the website relies on local storage so you need to disable the blocker'
       );
-  }, []);
+  }, [path]);
 
   if (!path.startsWith('/match') && !path.startsWith('/error')) {
     const match = matchStorage.get();
