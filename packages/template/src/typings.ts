@@ -2,14 +2,6 @@ import { Game, Ctx, PhaseConfig } from 'boardgame.io';
 import { BoardProps } from 'boardgame.io/react';
 import { moves } from './game/moves';
 
-export type OmitArg<F> = F extends (
-  G: any,
-  ctx: any,
-  ...args: infer P
-) => infer R // eslint-disable-line @typescript-eslint/no-unused-vars
-  ? (...args: P) => R
-  : never;
-
 type Name = 'game-name';
 
 export interface Prefix_Meta {
@@ -18,7 +10,7 @@ export interface Prefix_Meta {
   gameName: string;
   icon: string;
   author: string;
-  numPlayers: [];
+  numPlayers: number[];
   description?: string;
 }
 
@@ -38,8 +30,22 @@ export interface Prefix_Opponent extends Partial<Prefix_Player> {
   id: string;
 }
 
+export type OmitArg<F> = F extends (
+  G: any,
+  ctx: any,
+  ...args: infer P
+) => infer R // eslint-disable-line @typescript-eslint/no-unused-vars
+  ? (...args: P) => R
+  : never;
+
+type ExtractMove<T> = T extends (...args: any) => any
+  ? T
+  : T extends { move: (...args: any) => any }
+  ? T['move']
+  : never;
+
 export type Prefix_Moves = {
-  [K in keyof typeof moves]: OmitArg<typeof moves[K]>;
+  [K in keyof typeof moves]: OmitArg<ExtractMove<typeof moves[K]>>;
 };
 
 export interface Prefix_Ctx extends Ctx {

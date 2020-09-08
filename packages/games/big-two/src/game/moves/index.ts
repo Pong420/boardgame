@@ -9,5 +9,3 @@ export const moves = {
   pass,
   playCard
 };
-
-export type BigTwoMoves = typeof moves;
