@@ -21,6 +21,7 @@
     "@blueprintjs/core": "^3.31.0",
     "@boardgame/big-two": "1.0.0",
     "@boardgame/scss": "1.0.0",
+    "@boardgame/tic-tac-toe": "1.0.0",
     "axios": "^0.20.0",
     "boardgame.io": "0.40.0",
     "lodash": "^4.17.20",

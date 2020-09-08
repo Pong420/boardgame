@@ -6,7 +6,6 @@ import { historyApiFallback } from 'koa2-connect-history-api-fallback';
 import { Game } from 'boardgame.io';
 import { Server, FlatFile } from 'boardgame.io/server';
 import { PostgresStore } from 'bgio-postgres';
-import { game as BigTwo } from '@boardgame/big-two/dist/game';
 
 [
   '.env',
@@ -59,20 +58,28 @@ const db = parsed.every(Boolean)
       logging: true
     });
 
-const server = Server({
-  db,
-  games: [BigTwo] as Game[]
-});
+const games: string[] = ['big-two', 'tic-tac-toe'];
 
-const { app } = server;
+(async () => {
+  const server = Server({
+    db,
+    games: await Promise.all<Game>(
+      games.map(name =>
+        import(`@boardgame/${name}/dist/game`).then(p => p.game)
+      )
+    )
+  });
 
-app.use(
-  historyApiFallback({ index: 'index.html', whiteList: ['/api', '/games'] })
-);
+  const { app } = server;
 
-app.use(serve(path.join(__dirname, '../../web/public')));
+  app.use(
+    historyApiFallback({ index: 'index.html', whiteList: ['/api', '/games'] })
+  );
 
-server.run(PORT, () => {
-  // eslint-disable-next-line
-  console.log(`Serving at: http://localhost:${PORT}/`);
-});
+  app.use(serve(path.join(__dirname, '../../web/public')));
+
+  server.run(PORT, () => {
+    // eslint-disable-next-line
+    console.log(`Serving at: http://localhost:${PORT}/`);
+  });
+})();

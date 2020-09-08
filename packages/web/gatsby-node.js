@@ -1,6 +1,11 @@
 // @ts-check
 const path = require('path');
 
+const games = [
+  require('@boardgame/big-two/dist/meta'),
+  require('@boardgame/tic-tac-toe/dist/meta')
+];
+
 /** @type {import('gatsby').GatsbyNode['onCreateWebpackConfig']} */
 exports.onCreateWebpackConfig = ({ actions }) => {
   actions.setWebpackConfig({
@@ -15,8 +20,6 @@ exports.onCreateWebpackConfig = ({ actions }) => {
 exports.sourceNodes = props => {
   /** @type {import('gatsby').SourceNodesArgs} */
   const { actions, createNodeId, createContentDigest } = props;
-
-  const games = [require('@boardgame/big-two/dist/meta')];
 
   return games.map(({ meta }) =>
     actions.createNode({
