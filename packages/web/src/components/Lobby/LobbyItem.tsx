@@ -57,7 +57,7 @@ export function LobbyItem({
             ) : (
               <Button
                 text="Spectate"
-                disabled={!!meta.spectate}
+                disabled={!meta.spectate}
                 onClick={() =>
                   gotoSpectate({ name, matchID, matchName, gameMeta: meta })
                 }

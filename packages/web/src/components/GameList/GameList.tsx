@@ -15,26 +15,30 @@ const gameIconFallback = <div className="game-icon-fallback" />;
 const onFailure = Toaster.apiError.bind(Toaster, 'Get Games Failure');
 
 export function GameListItem({ name }: ItemProps) {
-  const { gameName, icon, numPlayers = [], version } = useGameMeta(name) || {};
+  const meta = useGameMeta(name);
 
-  return (
-    <Link
-      to={`/lobby/${name}/`}
-      className="game-list-item"
-      activeClassName="active"
-    >
-      <div className="game-icon">
-        {icon ? <img src={icon} alt={icon} /> : gameIconFallback}
-      </div>
-      <div className="game-list-item-content">
-        <div className="game-name">{gameName}</div>
-        <div>
-          {numPlayers.join(numPlayers.length === 2 ? ' - ' : ' / ')} players
+  if (meta) {
+    const { gameName, icon, numPlayers, version } = meta;
+    return (
+      <Link
+        to={`/lobby/${name}/`}
+        className="game-list-item"
+        activeClassName="active"
+      >
+        <div className="game-icon">
+          {icon ? <img src={icon} alt={icon} /> : gameIconFallback}
         </div>
-      </div>
-      <div className="game-version">v{version}</div>
-    </Link>
-  );
+        <div className="game-list-item-content">
+          <div className="game-name">{gameName}</div>
+          <div>
+            {numPlayers.join(numPlayers.length === 2 ? ' - ' : ' / ')} players
+          </div>
+        </div>
+        <div className="game-version">v{version}</div>
+      </Link>
+    );
+  }
+  return null;
 }
 
 export function GameList() {
