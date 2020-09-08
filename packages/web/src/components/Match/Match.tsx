@@ -5,17 +5,13 @@ import { SocketIO, Local } from 'boardgame.io/multiplayer';
 import { MatchState } from '@/services';
 import { MatchHeader } from './MatchHeader';
 
-export interface MatchProps {
-  name: string;
-}
-
 const handleImport = (name: string) =>
   Promise.all([
     import(`@boardgame/${name}/dist/game`),
     import(`@boardgame/${name}/dist/board`)
   ]);
 
-export function Match(state: MatchProps & MatchState) {
+export function Match(state: MatchState) {
   const ClientComponent = useMemo(
     () =>
       React.lazy(() =>
@@ -24,6 +20,7 @@ export function Match(state: MatchProps & MatchState) {
             debug: false,
             game: game as Game,
             board: Board,
+            numPlayers: state.numPlayers,
             multiplayer:
               'local' in state
                 ? (Local() as any) // FIXME:
@@ -51,6 +48,7 @@ export function Match(state: MatchProps & MatchState) {
       <div
         className={[
           'match-content',
+          `num-of-player-${state.numPlayers}`,
           'local' in state ? 'local' : 'multi',
           state.name
         ]
@@ -59,11 +57,11 @@ export function Match(state: MatchProps & MatchState) {
       >
         <Suspense fallback={null}>
           {'local' in state ? (
-            Array.from({ length: state.numPlayers || 0 }, (_, index) => (
+            Array.from({ length: state.numPlayers }, (_, index) => (
               <ClientComponent
                 key={index}
                 playerID={`${index}`}
-                matchID={`${state.name}-local`}
+                matchID={`${state.name}-${+new Date()}`}
               />
             ))
           ) : (

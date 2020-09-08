@@ -21,6 +21,7 @@ export type LocalMatchState = {
 };
 export type MultiMatchState = {
   name: string;
+  numPlayers: number;
   matchID: string;
   playerID: string;
   credentials: string;

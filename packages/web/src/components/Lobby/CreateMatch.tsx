@@ -84,6 +84,7 @@ function CreateMatchForm({
       <FormItem
         label="Number of Players"
         name="numPlayers"
+        normalize={Number}
         validators={[validators.required('Please select number of players')]}
       >
         <HTMLSelect fill options={numPlayersOps} />
@@ -132,7 +133,12 @@ export function CreateMatch({ name, gameName, numPlayers, ...props }: Props) {
                   numPlayers: store.numPlayers
                 }
               });
-              const state = { ...payload, name, playerID: '0' };
+              const state = {
+                ...payload,
+                name,
+                playerID: '0',
+                numPlayers: store.numPlayers
+              };
               await gotoMatch(state);
               matchStorage.save(state);
             }
