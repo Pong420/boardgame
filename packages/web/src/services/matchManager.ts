@@ -5,12 +5,14 @@ import {
   exhaustMap,
   retryWhen,
   catchError,
-  switchMap
+  switchMap,
+  tap
 } from 'rxjs/operators';
 import { JSONParse } from '@/utils/JSONParse';
 import { createLocalStorage } from '@/utils/storage';
 import { leaveMatch } from './services';
 import isEqual from 'lodash/isEqual';
+import { AxiosError } from 'axios';
 
 export type LocalMatchState = {
   name: string;
@@ -47,25 +49,28 @@ export function leaveMatchAndRedirect(state: MultiMatchState): Promise<void>;
 export function leaveMatchAndRedirect(
   state?: MultiMatchState | null
 ): Promise<any> | undefined {
-  matchStorage.save(null);
-
   if (state) {
-    navigate(`/lobby/${state.name}/`);
-
     return defer(() => leaveMatch(state))
       .pipe(
         retryWhen(error$ =>
           error$.pipe(
-            switchMap((error, index) =>
-              index < 3 ? timer(1000) : throwError(error)
+            switchMap((error: AxiosError, index) =>
+              error.response?.status === 403 || index >= 3
+                ? throwError(error)
+                : timer(1000)
             )
           )
-        )
+        ),
+        tap(() => {
+          navigate(`/lobby/${state.name}/`);
+          matchStorage.save(null);
+        })
       )
       .toPromise();
   }
 
   navigate(`/`);
+  matchStorage.save(null);
 }
 
 const getState = (payload: string | null): MultiMatchState | null => {
