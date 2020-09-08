@@ -17,16 +17,14 @@ export function Lobby({ meta }: Props) {
   const { polling } = usePreferencesState();
 
   useEffect(() => {
-    if (polling) {
-      const subscription = defer(() => getMatches({ name }))
-        .pipe(
-          map(response => response.data.matches),
-          catchError(() => empty()),
-          repeatWhen(() => interval(5 * 1000))
-        )
-        .subscribe(setState);
-      return () => subscription.unsubscribe();
-    }
+    const subscription = defer(() => getMatches({ name }))
+      .pipe(
+        map(response => response.data.matches),
+        catchError(() => empty()),
+        repeatWhen(() => (polling ? interval(5 * 1000) : empty()))
+      )
+      .subscribe(setState);
+    return () => subscription.unsubscribe();
   }, [name, polling]);
 
   return (
