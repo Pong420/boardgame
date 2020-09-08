@@ -125,28 +125,28 @@ export function CreateMatch({ meta, ...props }: Props) {
 
   async function onConfirm() {
     const store = await form.validateFields();
-    if (store.setupData) {
+    if (store.local) {
+      await gotoMatch({
+        ...store,
+        matchName: 'local',
+        local: true,
+        gameMeta: meta
+      });
+    } else if (store.setupData) {
       const { matchName } = store.setupData;
-      if (store.local) {
-        await gotoMatch({
-          ...store,
-          matchName,
-          local: true,
-          gameMeta: meta
-        });
-      } else {
-        const payload = await createAndJoinMatch(store);
-        const state: MultiMatchState = {
-          ...payload,
-          name,
-          matchName,
-          playerID: '0',
-          gameMeta: meta,
-          numPlayers: store.numPlayers
-        };
-        await gotoMatch(state);
-        matchStorage.save(state);
-      }
+      const payload = await createAndJoinMatch(store);
+      const state: MultiMatchState = {
+        ...payload,
+        name,
+        matchName,
+        playerID: '0',
+        gameMeta: meta,
+        numPlayers: store.numPlayers
+      };
+      await gotoMatch(state);
+      matchStorage.save(state);
+    } else {
+      // TODO: notice
     }
   }
 
