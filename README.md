@@ -9,22 +9,24 @@ This is `v3` branch and working in progress.
 
 ### Development
 
-1. Create a file named `.env.local` in to `packages/server` and set your `postgres` url
-
-```
-DATABASE_URL = postgres://postgres:12345678@localhost:5432/boardgame
-```
-
-2. Generate `d.ts` for games. You may run if required. Or you are the first time to start the development.
+1. Generate `d.ts` for games. You may run if required. Or you are the first time to start the development.
 
 ```
 yarn build:games
 ```
 
-3. Start develop
+2. Start develop
 
 ```
 yarn dev
+```
+
+### Database
+
+By default, data are store at `packages/server/match-storage`. To connect to a database(postgres) create a file named `.env.local` into `packages/server` and set your `postgres` url
+
+```
+DATABASE_URL = postgres://postgres:12345678@localhost:5432/boardgame
 ```
 
 ### Contribution
@@ -34,3 +36,5 @@ yarn dev
 ```
 node scripts/clone.js GameName
 ```
+
+2. Start develop :P
