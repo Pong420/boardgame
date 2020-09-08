@@ -2,9 +2,6 @@
 
 A project building boardgame with React and [boardgame.io](https://boardgame.io/)
 
-:warning: :warning: :warning:
-This is `v3` branch and working in progress.
-
 <img src="./preview.png">
 
 ### Development
