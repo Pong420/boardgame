@@ -12,6 +12,7 @@ export interface BigTwoMeta {
   author: string;
   numPlayers: number[];
   description?: string;
+  spectate?: 'all-players' | 'single-player';
 }
 
 export interface BigTwoState {

@@ -8,5 +8,6 @@ export const meta: BigTwoMeta = {
   icon,
   numPlayers: [2, 4],
   author: 'Pong420',
-  description: ''
+  description: '',
+  spectate: 'single-player'
 };

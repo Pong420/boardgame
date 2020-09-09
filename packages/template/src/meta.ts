@@ -8,4 +8,5 @@ export const meta: Prefix_Meta = {
   numPlayers: [],
   author: '',
   description: ''
+  // spectate: 'single-player' // for the game have `playerView`
 };

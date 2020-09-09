@@ -39,9 +39,11 @@ if (!fs.existsSync(dist)) {
         `@boardgame/${gameName}`
       );
 
-      fs.writeFileSync(targetPath, content, {
-        encoding: 'utf-8'
-      });
+      fs.writeFileSync(
+        targetPath.replace(new RegExp('Prefix_', 'g'), name),
+        content,
+        'utf-8'
+      );
     } else {
       fs.mkdirSync(targetPath);
       fs.readdirSync(fullPath).forEach(data => {

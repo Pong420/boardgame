@@ -12,6 +12,7 @@ export interface Prefix_Meta {
   author: string;
   numPlayers: number[];
   description?: string;
+  spectate?: 'all-players' | 'single-player';
 }
 
 export interface Prefix_State {
