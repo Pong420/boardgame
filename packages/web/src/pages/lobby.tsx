@@ -14,13 +14,14 @@ export default function (props: RouteComponentProps<Context>) {
 export const query = graphql`
   query($name: String) {
     gameMeta(name: { eq: $name }) {
-      author
-      description
+      version
+      name
       gameName
       icon
-      name
+      author
       numPlayers
-      version
+      description
+      spectate
     }
   }
 `;

@@ -49,13 +49,14 @@ const query = graphql`
   query {
     allGameMeta {
       nodes {
-        author
-        description
+        version
+        name
         gameName
         icon
-        name
+        author
         numPlayers
-        version
+        description
+        spectate
       }
     }
   }

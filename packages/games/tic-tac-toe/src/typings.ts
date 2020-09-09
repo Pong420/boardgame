@@ -11,7 +11,7 @@ export interface TicTacToeMeta {
   author: string;
   numPlayers: number[];
   description?: string;
-  spectate?: boolean;
+  spectate?: 'all-players' | 'single-player';
 }
 
 export type Cell = number | null;
