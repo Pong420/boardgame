@@ -16,7 +16,9 @@ function SpectateContent(props: RouteComponentProps<MatchParams>) {
     MatchParams;
   const meta = useGameMeta(name);
 
-  if (meta && meta.spectate === 'secret' ? isNumberString(playerID) : true) {
+  if (
+    meta && meta.spectate === 'single-player' ? isNumberString(playerID) : true
+  ) {
     return <Match name={name} matchID={matchID} playerID={playerID} />;
   }
 

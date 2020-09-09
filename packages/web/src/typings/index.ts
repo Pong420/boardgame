@@ -31,7 +31,7 @@ export interface GameMeta {
   author: string;
   numPlayers: number[];
   description?: string;
-  spectate?: 'public' | 'secret';
+  spectate?: 'all-players' | 'single-player';
 }
 
 export * from './services';

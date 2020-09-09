@@ -1,9 +1,8 @@
 import React from 'react';
-import { Card, Button } from '@blueprintjs/core';
-import { JoinMatch } from './JoinMatch';
+import { Card } from '@blueprintjs/core';
 import { Player, Match, GameMeta } from '@/typings';
-import { gotoSpectate } from '@/services';
-
+import { JoinMatch } from './JoinMatch';
+import { Spectate } from './Spectate';
 interface Props extends Match {
   meta: GameMeta;
 }
@@ -23,7 +22,7 @@ export function LobbyItem({
     [[], []] as [Player[], Player[]]
   );
   const numPlayers = players.length;
-  const { name } = meta;
+  const { name, spectate: spectateType } = meta;
 
   if (setupData) {
     const { matchName, description, spectate } = setupData;
@@ -53,10 +52,12 @@ export function LobbyItem({
                 playerID={String(nextPlayers[0]?.id)}
               />
             ) : (
-              <Button
-                text="Spectate"
-                disabled={!spectate}
-                onClick={() => gotoSpectate({ name, matchID })}
+              <Spectate
+                name={name}
+                matchID={matchID}
+                players={players}
+                allow={spectate}
+                type={spectateType}
               />
             )}
           </div>
