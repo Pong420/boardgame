@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import { animated } from 'react-spring';
 import { CardBack } from './CardBack';
 
@@ -12,6 +12,10 @@ interface Props extends AnimatedDivProps {
 
 export const CARD_HEIGHT = 120;
 export const CARD_WIDTH = CARD_HEIGHT * 0.75;
+
+function preventImageDrag(e: MouseEvent) {
+  e.preventDefault();
+}
 
 export function Card({ value, degree, style, ...props }: Props) {
   if (value) {
@@ -28,7 +32,14 @@ export function Card({ value, degree, style, ...props }: Props) {
         {...props}
       >
         <CardBack degree={degree} />
-        <img className="front" draggable={false} src={src} alt="" />
+        <img
+          className="front"
+          src={src}
+          draggable={false}
+          // for firefox
+          onDragStart={preventImageDrag}
+          alt=""
+        />
       </animated.div>
     );
   }

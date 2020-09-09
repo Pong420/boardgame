@@ -1,11 +1,20 @@
 // @ts-check
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import esbuild from 'rollup-plugin-esbuild';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import image from '@rollup/plugin-image';
+import esbuild from 'rollup-plugin-esbuild';
 import styles from 'rollup-plugin-styles';
+import serve from 'rollup-plugin-serve';
 import pkg from './package.json';
+
+function onwarn(warning, rollupWarn) {
+  if (warning.code !== 'CIRCULAR_DEPENDENCY') {
+    rollupWarn(warning);
+  }
+}
 
 /** @type {import('rollup').RollupOptions['plugins']} */
 const plugins = [
@@ -16,10 +25,12 @@ const plugins = [
       data: `@import "~@boardgame/scss/index.scss";`
     }
   }),
+  nodeResolve({ browser: true }),
   commonjs(),
   esbuild({
     // @ts-ignore
     watch: !!process.env.ROLLUP_WATCH,
+    target: 'esnext',
     include: /\.[jt]sx?$/,
     minify: process.env.NODE_ENV === 'production',
     define: {
@@ -33,31 +44,45 @@ const plugins = [
 ];
 
 /** @type {import('rollup').RollupOptions[]} */
-const config = [
-  {
-    input: './src/meta.ts',
-    output: {
-      file: './dist/meta.js',
-      format: 'cjs'
-    },
-    plugins
+const productionInput = [
+  './src/meta.ts',
+  './src/game/index.ts',
+  './src/board/index.ts'
+].map(input => ({
+  input,
+  output: {
+    file: input.replace('src', 'dist').replace('.ts', '.js'),
+    format: 'cjs',
+    strict: false
   },
-  {
-    input: './src/game/index.ts',
-    output: {
-      file: './dist/game/index.js',
-      format: 'cjs'
-    },
-    plugins
-  },
-  {
-    input: './src/board/index.ts',
-    output: {
-      file: './dist/board/index.js',
-      format: 'cjs'
-    },
-    plugins
-  }
-];
+  plugins,
+  onwarn,
+  external: ['react', 'react-dom']
+}));
+
+/** @type {import('rollup').RollupOptions[]} */
+const config =
+  process.env.NODE_ENV === 'production'
+    ? productionInput
+    : [
+        {
+          input: './src/app.tsx',
+          output: {
+            file: './dist/app.js',
+            format: 'umd',
+            strict: false
+          },
+          plugins: [
+            replace({
+              'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+            }),
+            ...plugins,
+            serve({
+              contentBase: ['']
+            })
+          ],
+          onwarn
+        }
+      ];
 
 export default config;

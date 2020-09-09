@@ -5,13 +5,16 @@
     "dist/**/*"
   ],
   "scripts": {
-    "dev": "rollup -c -w",
-    "build": "rimraf dist && rollup -c && tsc --emitDeclarationOnly"
+    "start": "NODE_ENV=development rollup -c -w",
+    "dev": "NODE_ENV=production rollup -c -w",
+    "build": "rimraf dist && NODE_ENV=production rollup -c && tsc --emitDeclarationOnly"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-image": "^2.0.5",
     "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "@rollup/plugin-replace": "^2.3.3",
     "@types/lodash": "^4.14.161",
     "@types/react": "^16.9.49",
     "esbuild": "^0.6.23",
@@ -19,6 +22,7 @@
     "rollup": "^2.23.0",
     "rollup-plugin-esbuild": "^2.4.2",
     "rollup-plugin-scss": "^2.6.0",
+    "rollup-plugin-serve": "^1.0.4",
     "rollup-plugin-styles": "^3.10.0",
     "sass": "^1.26.10",
     "typescript": "^4.0.2"

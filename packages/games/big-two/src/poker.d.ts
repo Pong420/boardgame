@@ -1,11 +1,11 @@
 declare module 'pokersolver' {
-  interface Resolved {
+  export interface Resolved {
     cards: string[];
     isPossible?: boolean;
     toArray: (flag?: boolean) => string[];
   }
 
-  interface Hand {
+  export interface Hand {
     winners: (resolved: Resolved[]) => Resolved[];
     solve: (hand: string[] | null, type: 'bigtwo') => Resolved;
   }
