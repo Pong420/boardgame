@@ -1,6 +1,6 @@
-import { navigate } from 'gatsby';
+import React from 'react';
+import { Redirect } from '@/components/Redirect';
 
 export default function () {
-  typeof window !== 'undefined' && navigate('/');
-  return null;
+  return <Redirect />;
 }

@@ -1,12 +1,12 @@
 import React, { useMemo, Suspense } from 'react';
 import { AxiosError } from 'axios';
-import { navigate } from 'gatsby';
 import { Game } from 'boardgame.io';
 import { Client } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer';
 import { useRxAsync } from 'use-rx-hooks';
 import { MatchState, getMatch, matchStorage } from '@/services';
 import { Toaster } from '@/utils/toaster';
+import { Redirect } from '../Redirect';
 import { MatchHeader } from './MatchHeader';
 
 interface State {
@@ -21,24 +21,14 @@ const handleImport = (name: string) =>
     import(`@boardgame/${name}/dist/board`)
   ]);
 
-function Redirect() {
-  if (typeof window !== 'undefined') {
-    navigate('/');
-  }
-  return null;
-}
-
 const onFailure = (error: AxiosError) => {
   // match not found
-  if (error.response?.status === 404) {
-    navigate('/');
-    const state = matchStorage.get();
-    if (state) {
-      // skip toaster
-      return matchStorage.save(null);
-    }
+  if (error.response?.status === 404 && matchStorage.get()) {
+    matchStorage.save(null);
+  } else {
+    Toaster.apiError('Get Match Failure', error);
   }
-  Toaster.apiError('Get Match Failure', error);
+  return <Redirect />;
 };
 
 export function Match(state: MatchState) {

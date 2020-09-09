@@ -2,17 +2,14 @@ import React from 'react';
 import { navigate } from 'gatsby';
 import { ButtonPopover } from '@/components/ButtonPopover';
 import { Github } from '@/components/Github';
+import { Redirect } from '@/components/Redirect';
 
 interface MatchParams {
   message?: string;
 }
 
 export default function ({ message }: MatchParams) {
-  if (typeof window !== 'undefined' && !message) {
-    navigate('/');
-  }
-
-  return (
+  return message ? (
     <div className="error-page">
       <div className="error-page-header">
         <ButtonPopover
@@ -31,5 +28,7 @@ export default function ({ message }: MatchParams) {
         </div>
       </div>
     </div>
+  ) : (
+    <Redirect />
   );
 }

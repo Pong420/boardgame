@@ -1,18 +1,12 @@
 import React from 'react';
-import { navigate } from 'gatsby';
 import { RouteComponentProps } from '@/typings';
 import { MatchState } from '@/services';
 import { Match } from '@/components/Match';
+import { Redirect } from '@/components/Redirect';
 
 export default function (
   props: RouteComponentProps<undefined, unknown, MatchState>
 ) {
   const { state } = props.location;
-
-  if (!state) {
-    typeof window !== 'undefined' && navigate('/');
-    return null;
-  }
-
-  return <Match {...state} />;
+  return state ? <Match {...state} /> : <Redirect />;
 }
