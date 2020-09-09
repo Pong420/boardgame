@@ -63,13 +63,6 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
       context: { name },
       component: require.resolve(`./src/pages/match.tsx`)
     });
-
-    actions.createPage({
-      path: `/spectate/${name}/*`,
-      matchPath: `/spectate/${name}/:matchName/:matchID/`,
-      context: { name },
-      component: require.resolve(`./src/pages/spectate.tsx`)
-    });
   });
 
   actions.createPage({
@@ -78,4 +71,12 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
     context: {},
     component: require.resolve(`./src/pages/error.tsx`)
   });
+};
+
+/** @type {import('gatsby').GatsbyNode['onCreatePage']} */
+exports.onCreatePage = ({ page, actions }) => {
+  if (page.path.match(/^\/spectate/)) {
+    page.matchPath = '/spectate/*';
+    actions.createPage(page);
+  }
 };

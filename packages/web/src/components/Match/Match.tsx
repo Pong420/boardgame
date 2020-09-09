@@ -1,9 +1,19 @@
 import React, { useMemo, Suspense } from 'react';
+import { AxiosError } from 'axios';
+import { navigate } from 'gatsby';
 import { Game } from 'boardgame.io';
 import { Client } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer';
+import { useRxAsync } from 'use-rx-hooks';
+import { MatchState, getMatch } from '@/services';
+import { Toaster } from '@/utils/toaster';
 import { MatchHeader } from './MatchHeader';
-import { MatchState } from '@/services';
+
+interface State {
+  matchName: string;
+  gameName: string;
+  spectate?: boolean;
+}
 
 const handleImport = (name: string) =>
   Promise.all([
@@ -11,44 +21,73 @@ const handleImport = (name: string) =>
     import(`@boardgame/${name}/dist/board`)
   ]);
 
+function Redirect() {
+  if (typeof window !== 'undefined') {
+    navigate('/');
+  }
+  return null;
+}
+
+const onFailure = (error: AxiosError) => {
+  // match not found
+  if (error.response?.status === 404) {
+    navigate('/');
+  }
+  Toaster.apiError('Get Match Failure', error);
+};
+
 export function Match(state: MatchState) {
-  const ClientComponent = useMemo(
-    () =>
-      React.lazy(() =>
-        handleImport(state.name).then(([{ game }, { Board }]) => ({
-          default: Client({
-            debug: false,
-            game: game as Game,
-            board: Board,
-            numPlayers: 'local' in state ? state.numPlayers : undefined,
-            multiplayer:
-              'local' in state
-                ? (Local() as any) // FIXME:
-                : SocketIO({
-                    server:
-                      process.env.NODE_ENV === 'development'
-                        ? `http://localhost:8080`
-                        : window.location.origin
-                  })
+  const { ClientComponent, _getMatch } = useMemo(() => {
+    const ClientComponent = React.lazy(() =>
+      handleImport(state.name).then(([{ game }, { Board }]) => ({
+        default: Client({
+          debug: false,
+          game: game as Game,
+          board: Board,
+          numPlayers: 'local' in state ? state.numPlayers : undefined,
+          multiplayer:
+            'local' in state
+              ? (Local() as any) // FIXME:
+              : SocketIO({
+                  server:
+                    process.env.NODE_ENV === 'development'
+                      ? `http://localhost:8080`
+                      : window.location.origin
+                })
+        })
+      }))
+    );
+
+    const _getMatch = () =>
+      'local' in state
+        ? Promise.resolve<State>({
+            matchName: 'Local',
+            gameName: state.gameName
           })
-        }))
-      ),
-    [state]
-  );
+        : getMatch({
+            name: state.name,
+            matchID: state.matchID
+          }).then<State>(({ data }) => {
+            return data.setupData
+              ? { ...data, ...data.setupData }
+              : Promise.reject('Invalid match');
+          });
+
+    return { ClientComponent, _getMatch };
+  }, [state]);
 
   const isSSR = typeof window === 'undefined';
+  const [{ data }] = useRxAsync(_getMatch, { onFailure });
 
-  if (isSSR) {
+  if (isSSR || !data) {
     return <div />;
   }
 
+  const { matchName, gameName, spectate } = data;
+
   return (
     <div className="match">
-      <MatchHeader
-        name={state.name}
-        local={'local' in state}
-        title={`${state.gameMeta.gameName} - ${state.matchName}`}
-      />
+      <MatchHeader name={state.name} title={`${gameName} - ${matchName}`} />
       <div
         className={[
           'match-content',
@@ -69,14 +108,19 @@ export function Match(state: MatchState) {
                 matchID={`${state.name}-${+new Date()}`}
               />
             ))
-          ) : 'playerID' in state ? (
+          ) : 'credentials' in state ? (
             <ClientComponent
               matchID={state.matchID}
               playerID={state.playerID}
               credentials={state.credentials}
             />
+          ) : spectate ? (
+            <ClientComponent
+              matchID={state.matchID}
+              playerID={state.playerID}
+            />
           ) : (
-            <ClientComponent matchID={state.matchID} />
+            <Redirect />
           )}
         </Suspense>
       </div>

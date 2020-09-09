@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 export type ApiError = AxiosError | Error;
 
 export interface SetupData {
+  spectate?: boolean;
   matchName: string;
   description?: string;
 }

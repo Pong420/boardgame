@@ -8,23 +8,16 @@ import {
   matchStorage,
   MultiMatchState
 } from '@/services';
-import { Params$JoinMatch, GameMeta } from '@/typings';
+import { Params$JoinMatch } from '@/typings';
 import { Toaster } from '@/utils/toaster';
 import { getPlayerName } from '../PlayerNameControl';
 
-export interface Join {
-  meta: GameMeta;
-  matchName: string;
-}
-
-interface Props extends Join, Omit<Params$JoinMatch, 'playerName'> {}
+interface Props extends Omit<Params$JoinMatch, 'playerName'> {}
 
 const onFailure = Toaster.apiError.bind(Toaster, 'Join Match Failure');
 
-function _joinMatch({ meta, matchName, ...params }: Join & Params$JoinMatch) {
+function _joinMatch(params: Params$JoinMatch) {
   return joinMatch(params).then<MultiMatchState>(res => ({
-    matchName,
-    gameMeta: meta,
     name: params.name,
     matchID: params.matchID,
     playerID: params.playerID,

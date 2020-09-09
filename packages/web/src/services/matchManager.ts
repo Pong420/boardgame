@@ -11,30 +11,28 @@ import {
 } from 'rxjs/operators';
 import { JSONParse } from '@/utils/JSONParse';
 import { createLocalStorage } from '@/utils/storage';
-import { GameMeta } from '@/typings';
 import { leaveMatch } from './services';
 import isEqual from 'lodash/isEqual';
 
 interface Common {
   name: string;
-  matchName: string;
-  gameMeta: GameMeta;
 }
 
 export interface LocalMatchState extends Common {
   local: boolean;
   numPlayers: number;
+  gameName: string;
 }
 
 export interface MultiMatchState extends Common {
   matchID: string;
   playerID: string;
   credentials: string;
-  numPlayers?: number;
 }
 
 export interface SpectatorState extends Common {
   matchID: string;
+  playerID?: string;
 }
 
 export type MatchState = LocalMatchState | MultiMatchState | SpectatorState;
@@ -43,8 +41,8 @@ export const gotoMatch = (state: MatchState) => {
   return navigate(`/match/${state.name}/`, { state, replace: true });
 };
 
-export const gotoSpectate = ({ name, matchID, matchName }: SpectatorState) => {
-  return navigate(`/spectate/${name}/${matchName}/${matchID}/`);
+export const gotoSpectate = ({ name, matchID }: SpectatorState) => {
+  return navigate(`/spectate/${name}/${matchID}/`);
 };
 
 export const matchStorage = createLocalStorage<MultiMatchState | null>(

@@ -1,36 +1,36 @@
 import React from 'react';
-import { navigate } from 'gatsby';
-import { RouteComponentProps } from '@/typings';
+import { Router, Redirect, RouteComponentProps } from '@reach/router';
 import { Match } from '@/components/Match';
 import { useGameMeta } from '@/store/gameMeta';
 
 interface MatchParams {
-  matchID?: string;
-  matchName?: string;
-}
-
-interface Context {
   name: string;
+  matchID: string;
+  playerID?: string;
 }
 
-export default function ({
-  matchID,
-  matchName,
-  pageContext: { name }
-}: RouteComponentProps<unknown, Context> & MatchParams) {
+const isNumberString = (payload?: string) => payload && !isNaN(Number(payload));
+
+function SpectateContent(props: RouteComponentProps<MatchParams>) {
+  const { name, matchID, playerID } = props as RouteComponentProps &
+    MatchParams;
   const meta = useGameMeta(name);
 
-  if (!meta || !matchID || !matchName) {
-    typeof window !== 'undefined' && navigate('/');
-    return null;
+  if (meta && meta.spectate === 'secret' ? isNumberString(playerID) : true) {
+    return <Match name={name} matchID={matchID} playerID={playerID} />;
   }
 
+  return <Redirect from="/" to="/" noThrow />;
+}
+
+const RouterComponent: React.FC = ({ children }) => <>{children}</>;
+
+export default function () {
   return (
-    <Match
-      name={name}
-      matchID={matchID}
-      matchName={matchName}
-      gameMeta={meta}
-    />
+    <Router basepath="/spectate" primary={false} component={RouterComponent}>
+      <SpectateContent path="/:name/:matchID/" />
+      <SpectateContent path="/:name/:matchID/:playerID" />
+      <Redirect from="/" to="/" noThrow />
+    </Router>
   );
 }

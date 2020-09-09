@@ -26,7 +26,7 @@ export function LobbyItem({
   const { name } = meta;
 
   if (setupData) {
-    const { matchName, description } = setupData;
+    const { matchName, description, spectate } = setupData;
     return (
       <Card className="lobby-item" elevation={1}>
         <div className="lobby-item-header">
@@ -48,19 +48,15 @@ export function LobbyItem({
           <div>
             {nextPlayers.length ? (
               <JoinMatch
-                meta={meta}
                 name={name}
                 matchID={matchID}
-                matchName={matchName}
                 playerID={String(nextPlayers[0]?.id)}
               />
             ) : (
               <Button
                 text="Spectate"
-                disabled={!meta.spectate}
-                onClick={() =>
-                  gotoSpectate({ name, matchID, matchName, gameMeta: meta })
-                }
+                disabled={!spectate}
+                onClick={() => gotoSpectate({ name, matchID })}
               />
             )}
           </div>

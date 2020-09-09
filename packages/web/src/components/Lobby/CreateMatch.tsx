@@ -70,7 +70,8 @@ function CreateMatchForm({
       {...props}
       initialValues={{
         ...initialValues,
-        numPlayers: numPlayersOps[0]
+        numPlayers: numPlayersOps[0],
+        setupData: { matchName: '', spectate: true }
       }}
     >
       <FormItem name="local" valuePropName="checked">
@@ -120,6 +121,10 @@ function CreateMatchForm({
         <TextArea />
       </HiddenIfLocal>
 
+      <FormItem name={['setupData', 'spectate']} valuePropName="checked">
+        <Checkbox>Spectate</Checkbox>
+      </FormItem>
+
       <FormItem name="name" noStyle>
         <div hidden />
       </FormItem>
@@ -137,20 +142,15 @@ export function CreateMatch({ meta, ...props }: Props) {
     if (store.local) {
       await gotoMatch({
         ...store,
-        matchName: 'local',
-        local: true,
-        gameMeta: meta
+        gameName,
+        local: true
       });
     } else if (store.setupData) {
-      const { matchName } = store.setupData;
       const payload = await createAndJoinMatch(store).toPromise();
       const state: MultiMatchState = {
         ...payload,
         name,
-        matchName,
-        playerID: '0',
-        gameMeta: meta,
-        numPlayers: store.numPlayers
+        playerID: '0'
       };
       await gotoMatch(state);
       matchStorage.save(state);

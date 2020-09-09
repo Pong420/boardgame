@@ -8,17 +8,17 @@ import { Toaster } from '@/utils/toaster';
 
 interface Props {
   name: string;
-  local?: boolean;
   title?: ReactNode;
 }
 
 const onFailure = Toaster.apiError.bind(Toaster, 'Leave Match Failure');
 
-function LeaveMatchButton({ name, local }: Pick<Props, 'local' | 'name'>) {
+function LeaveMatchButton({ name }: Pick<Props, 'name'>) {
   const [{ loading }, { fetch }] = useRxAsync(leaveMatchAndRedirect, {
     defer: true,
     onFailure
   });
+
   return (
     <ButtonPopover
       minimal
@@ -29,8 +29,6 @@ function LeaveMatchButton({ name, local }: Pick<Props, 'local' | 'name'>) {
         const state = matchStorage.get();
         if (state) {
           return fetch(state);
-        } else {
-          // onFailure('State is not defined');
         }
         navigate(`/lobby/${name}/`);
       }}
@@ -38,10 +36,10 @@ function LeaveMatchButton({ name, local }: Pick<Props, 'local' | 'name'>) {
   );
 }
 
-export function MatchHeader({ name, local, title }: Props) {
+export function MatchHeader({ name, title }: Props) {
   return (
     <div className="match-header">
-      <LeaveMatchButton name={name} local={local} />
+      <LeaveMatchButton name={name} />
       <div className="header-title">{title}</div>
       <div>
         <Preferences />
