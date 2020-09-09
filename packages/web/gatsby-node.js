@@ -9,6 +9,12 @@ const games = [
 /** @type {import('gatsby').GatsbyNode['onCreateWebpackConfig']} */
 exports.onCreateWebpackConfig = ({ actions }) => {
   actions.setWebpackConfig({
+    // seems not work, but leave here
+    devServer: {
+      watchOptions: {
+        ignored: [path.resolve(__dirname, '../games/src')]
+      }
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, 'src')
