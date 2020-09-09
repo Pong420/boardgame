@@ -5,7 +5,7 @@ import { Game } from 'boardgame.io';
 import { Client } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer';
 import { useRxAsync } from 'use-rx-hooks';
-import { MatchState, getMatch } from '@/services';
+import { MatchState, getMatch, matchStorage } from '@/services';
 import { Toaster } from '@/utils/toaster';
 import { MatchHeader } from './MatchHeader';
 
@@ -32,6 +32,11 @@ const onFailure = (error: AxiosError) => {
   // match not found
   if (error.response?.status === 404) {
     navigate('/');
+    const state = matchStorage.get();
+    if (state) {
+      // skip toaster
+      return matchStorage.save(null);
+    }
   }
   Toaster.apiError('Get Match Failure', error);
 };
