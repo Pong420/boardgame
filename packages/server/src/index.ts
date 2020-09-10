@@ -54,20 +54,16 @@ const db = parsed.every(Boolean)
         : {})
     })
   : new FlatFile({
-      dir: path.resolve(__dirname, '../match-storage'),
+      dir: path.resolve(__dirname, './match-storage'),
       logging: true
     });
-
-const games: string[] = ['big-two', 'tic-tac-toe'];
 
 (async () => {
   const server = Server({
     db,
-    games: await Promise.all<Game>(
-      games.map(name =>
-        import(`@boardgame/${name}/dist/game`).then(p => p.game)
-      )
-    )
+    games: await Promise.all<Game>([
+      import(`../../web/src/games/big-two/game`).then(p => p.game)
+    ])
   });
 
   const { app } = server;

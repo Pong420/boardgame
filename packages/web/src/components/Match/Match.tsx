@@ -17,8 +17,8 @@ interface State {
 
 const handleImport = (name: string) =>
   Promise.all([
-    import(`@boardgame/${name}/dist/game`),
-    import(`@boardgame/${name}/dist/board`)
+    import(`../../games/${name}/game`),
+    import(`../../games/${name}/board`)
   ]);
 
 const onFailure = (error: AxiosError) => {
