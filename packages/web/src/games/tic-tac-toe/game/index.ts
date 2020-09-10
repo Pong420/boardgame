@@ -6,7 +6,13 @@
  * https://opensource.org/licenses/MIT.
  */
 
-import { TicTacToeGame, TicTacToeState, Cell } from '../typings';
+import {
+  Cell,
+  TicTacToeGame,
+  TicTacToeState,
+  TicTacToePhaseConfig
+} from '../typings';
+import { ActivePlayers, TurnOrder } from 'boardgame.io/core';
 
 function IsVictory(cells: Cell[]) {
   const positions = [
@@ -28,35 +34,85 @@ function IsVictory(cells: Cell[]) {
   return positions.map(isRowComplete).some(i => i === true);
 }
 
+const commonPhase: TicTacToePhaseConfig = {
+  turn: {
+    activePlayers: ActivePlayers.ALL
+  },
+
+  moves: {
+    ok: {
+      redact: false,
+      move: (G, ctx, playerID) => {
+        if (ctx.playerID === playerID && playerID) {
+          G.flag[playerID] = true;
+        }
+      }
+    }
+  },
+  endIf: G => G.flag['0'] && G.flag['1']
+};
+
 export const game: TicTacToeGame = {
   name: 'tic-tac-toe',
 
   setup: (): TicTacToeState => ({
-    cells: new Array(9).fill(null)
+    cells: new Array(9).fill(null),
+    flag: { '0': false, '1': false },
+    result: null
   }),
 
-  moves: {
-    clickCell(G, ctx, id) {
-      const cells = [...G.cells];
+  phases: {
+    ready: {
+      ...commonPhase,
+      start: true,
+      next: 'start'
+    },
 
-      if (cells[id] === null) {
-        cells[id] = Number(ctx.currentPlayer);
-        return { ...G, cells };
+    ended: {
+      ...commonPhase,
+      next: 'start',
+      onEnd: (_G, ctx) => {
+        return game.setup!(ctx);
       }
+    },
+
+    start: {
+      next: 'ended',
+      moves: {
+        clickCell: {
+          redact: false,
+          move: (G, ctx, id) => {
+            const cells = [...G.cells];
+
+            if (cells[id] === null) {
+              cells[id] = Number(ctx.currentPlayer);
+
+              let result = null;
+
+              if (IsVictory(cells)) {
+                result = ctx.playerID;
+              }
+
+              if (cells.filter(c => c === null).length === 0) {
+                result = 'draw';
+              }
+
+              return { ...G, cells, result };
+            }
+          }
+        }
+      },
+      onEnd: G => {
+        G.flag['0'] = false;
+        G.flag['1'] = false;
+      },
+      endIf: G => !!G.result
     }
   },
 
   turn: {
-    moveLimit: 1
-  },
-
-  endIf: (G, ctx) => {
-    if (IsVictory(G.cells)) {
-      return { winner: ctx.currentPlayer };
-    }
-    if (G.cells.filter(c => c === null).length === 0) {
-      return { draw: true };
-    }
+    moveLimit: 1,
+    order: TurnOrder.CONTINUE
   },
 
   ai: {

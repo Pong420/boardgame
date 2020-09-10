@@ -1,3 +1,4 @@
-import './board.scss';
+import './TicTacToeBoard.scss';
 
-export * from './Board';
+export { TicTacToeBoard } from './TicTacToeBoard';
+export { TicTacToeBoard as Board } from './TicTacToeBoard';

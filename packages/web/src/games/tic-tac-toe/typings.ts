@@ -18,6 +18,8 @@ export type Cell = number | null;
 
 export interface TicTacToeState {
   cells: Cell[];
+  result?: string | null;
+  flag: { [playerID: string]: boolean };
 }
 
 export interface TicTacToeSecret {}
@@ -39,7 +41,7 @@ export type TicTacToeGame = Game<TicTacToeState, TicTacToeCtx> & { name: Name };
 export type TicTacToePlayerView = TicTacToeGame['playerView'];
 export type TicTacToePhaseConfig = PhaseConfig<TicTacToeState, TicTacToeCtx>;
 export type TicTacToeBoardProps = BoardProps<TicTacToeState> & {
+  credentials?: string | null;
   isConnected?: boolean;
-  isPreview?: boolean;
   ctx: TicTacToeCtx;
 };
