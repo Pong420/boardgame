@@ -2,17 +2,14 @@
 
 A project building boardgame with React and [boardgame.io](https://boardgame.io/)
 
-<img src="./preview.png">
+<div>
+  <img width="49.5%" src="./screenshot/light.png">
+  <img width="49.5%" src="./screenshot/dark.png">
+</div>
+
+<br />
 
 ### Development
-
-1. Generate `d.ts` for games. You may run if required. Or you are the first time to start the development.
-
-```
-yarn build:games
-```
-
-2. Start develop
 
 ```
 yarn dev
@@ -20,7 +17,7 @@ yarn dev
 
 ### Database
 
-By default, data are store at `packages/server/match-storage`. To connect to a database(postgres) create a file named `.env.local` into `packages/server` and set your `postgres` url
+By default, data are store at `packages/server/dist/match-storage`. To connect to a database (postgres) create a file named `.env.local` into `packages/server` and set your `postgres` url
 
 ```
 DATABASE_URL = postgres://postgres:12345678@localhost:5432/boardgame
@@ -28,10 +25,12 @@ DATABASE_URL = postgres://postgres:12345678@localhost:5432/boardgame
 
 ### Contribution
 
-1. Create a game template into `packages/games`
+1. Clone a template into `packages/web/src/games`
 
 ```
 node scripts/clone.js GameName
 ```
 
-2. Start develop :P
+2. Edit `packages/web/src/games/index.ts` and `packages/server/src/index.ts` import the new game correctly
+
+3. Then start development :P
