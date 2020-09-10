@@ -1,4 +1,5 @@
 {
   "restartable": "rs",
+  "watch": ["src/index.ts"],
   "exec": "yarn build && yarn start"
 }

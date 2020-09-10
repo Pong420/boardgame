@@ -12,7 +12,10 @@ exports.onCreateWebpackConfig = ({ actions }) => {
     // seems not work, but leave here
     devServer: {
       watchOptions: {
-        ignored: [path.resolve(__dirname, '../games/src')]
+        ignored: [
+          path.resolve(__dirname, '../games/src'),
+          path.resolve(__dirname, '../server')
+        ]
       }
     },
     resolve: {
