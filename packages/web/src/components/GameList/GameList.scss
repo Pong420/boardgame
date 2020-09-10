@@ -41,24 +41,15 @@
   }
 
   .game-icon {
-    @include relative();
     width: 60px;
 
-    &:before {
-      content: '';
-      display: block;
-      padding-bottom: 4/3 * 100%;
-    }
-
     .game-icon-fallback {
-      @include absolute(0, null, 0);
       @include sq-dimen(100%);
       background-color: #fff;
       border: 1px solid var(--shadow-color);
     }
 
     img {
-      @include absolute(0, 0, 0);
       width: 100%;
       margin: auto;
     }

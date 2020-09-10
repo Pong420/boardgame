@@ -26,7 +26,15 @@ export function GameListItem({ name }: ItemProps) {
         activeClassName="active"
       >
         <div className="game-icon">
-          {icon ? <img src={icon} alt={icon} /> : gameIconFallback}
+          {icon ? (
+            typeof icon === 'string' ? (
+              <img src={icon} alt={icon} />
+            ) : (
+              icon
+            )
+          ) : (
+            gameIconFallback
+          )}
         </div>
         <div className="game-list-item-content">
           <div className="game-name">{gameName}</div>

@@ -1,4 +1,5 @@
 import { HistoryLocation } from '@reach/router';
+import { ReactNode } from 'react';
 
 export interface RouteComponentProps<
   Data = any,
@@ -26,7 +27,7 @@ export interface RouteComponentProps<
 export interface GameMeta {
   name: string;
   gameName: string;
-  icon: string;
+  icon: ReactNode;
   author: string;
   numPlayers: number[];
   description?: string;
