@@ -1,5 +1,9 @@
 @import '~@boardgame/scss/index.scss';
 @import '~@blueprintjs/core/lib/scss/variables';
+@import './variables';
+@import './functions';
+@import './mixins';
+@import './theme';
 @import './font';
 @import './form';
 @import './blueprint';

@@ -1,9 +1,0 @@
-{
-  "name": "@boardgame/scss",
-  "version": "1.0.0",
-  "main": "index.css",
-  "style": "index.css",
-  "files": [
-    "*"
-  ]
-}

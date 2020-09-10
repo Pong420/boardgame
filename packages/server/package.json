@@ -15,8 +15,6 @@
     "typescript": "4.0.2"
   },
   "dependencies": {
-    "@boardgame/big-two": "1.0.0",
-    "@boardgame/tic-tac-toe": "1.0.0",
     "bgio-postgres": "^1.0.7",
     "boardgame.io": "^0.40.0",
     "dotenv": "^8.2.0",

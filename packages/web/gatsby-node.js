@@ -2,8 +2,18 @@
 const path = require('path');
 
 const games = [
-  require('@boardgame/big-two/dist/meta'),
-  require('@boardgame/tic-tac-toe/dist/meta')
+  {
+    meta: {
+      version: '',
+      name: 'big-two',
+      gameName: 'Big Two',
+      icon: '',
+      numPlayers: [2, 4],
+      author: 'Pong420',
+      description: '',
+      spectate: 'single-player'
+    }
+  }
 ];
 
 /** @type {import('gatsby').GatsbyNode['onCreateWebpackConfig']} */
