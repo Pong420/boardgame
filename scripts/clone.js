@@ -13,8 +13,8 @@ const gameName = name
   .map(str => str.toLocaleLowerCase())
   .join('-');
 
-const dist = path.resolve(__dirname, '../packages/games', gameName);
-const template = path.resolve(__dirname, '../packages/template');
+const dist = path.resolve(__dirname, '../packages/web/src/games', gameName);
+const template = path.resolve(__dirname, '../packages/web/src/games/_template');
 
 const exclude = ['dist', 'node_modules'];
 
@@ -33,10 +33,6 @@ if (!fs.existsSync(dist)) {
       content = content.replace(
         new RegExp('Game Name', 'g'),
         name.split(/(?=[A-Z])/).join(' ')
-      );
-      content = content.replace(
-        new RegExp('@boardgame/template', 'g'),
-        `@boardgame/${gameName}`
       );
 
       fs.writeFileSync(

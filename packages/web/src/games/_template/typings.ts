@@ -4,17 +4,6 @@ import { moves } from './game/moves';
 
 type Name = 'game-name';
 
-export interface Prefix_Meta {
-  version: string;
-  name: Name;
-  gameName: string;
-  icon: string;
-  author: string;
-  numPlayers: number[];
-  description?: string;
-  spectate?: 'all-players' | 'single-player';
-}
-
 export interface Prefix_State {
   players: Record<string, Prefix_Player>;
   opponents: Prefix_Opponent[];

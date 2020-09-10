@@ -4,17 +4,6 @@ import { moves } from './game/moves';
 
 type Name = 'big-two';
 
-export interface BigTwoMeta {
-  version: string;
-  name: Name;
-  gameName: string;
-  icon: string;
-  author: string;
-  numPlayers: number[];
-  description?: string;
-  spectate?: 'all-players' | 'single-player';
-}
-
 export interface BigTwoState {
   players: Record<string, BigTwoPlayer>;
   opponents: BigTwoOpponent[];
