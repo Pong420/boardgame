@@ -56,8 +56,7 @@ const productionInput = [
     strict: false
   },
   plugins,
-  onwarn,
-  external: ['react', 'react-dom']
+  onwarn
 }));
 
 /** @type {import('rollup').RollupOptions[]} */
@@ -70,7 +69,8 @@ const config =
           output: {
             file: './dist/app.js',
             format: 'umd',
-            strict: false
+            strict: false,
+            banner: `var process = { env: {} };`
           },
           plugins: [
             replace({

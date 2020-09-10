@@ -88,10 +88,6 @@ $grid-template: $grid-corner-size calc(100% - #{$grid-corner-size * 2})
           @include dimen(100%);
           @include flex(center, center);
           transform: translateY(-100%);
-
-          button + button {
-            margin-left: 10px;
-          }
         }
 
         .cards {

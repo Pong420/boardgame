@@ -30,5 +30,6 @@ export const start: BigTwoPhaseConfig = {
       }
     }
   },
+  // restart
   onEnd: (_, ctx) => setup(ctx)
 };

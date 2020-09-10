@@ -9,5 +9,8 @@ export const game: BigTwoGame = {
   phases,
   moves,
   setup,
-  playerView
+  playerView,
+  minPlayers: 2,
+  maxPlayers: 4,
+  disableUndo: true
 };

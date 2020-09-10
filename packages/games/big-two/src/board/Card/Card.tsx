@@ -17,7 +17,8 @@ function preventImageDrag(e: MouseEvent) {
   e.preventDefault();
 }
 
-export function Card({ value, degree, style, ...props }: Props) {
+export function Card(_props: Props) {
+  const { value, degree, style, ...props } = _props;
   if (value) {
     const src = window.Poker.getCardData(
       CARD_HEIGHT * 3,
@@ -27,9 +28,9 @@ export function Card({ value, degree, style, ...props }: Props) {
 
     return (
       <animated.div
+        {...props}
         className="card"
         style={{ width: CARD_WIDTH, height: CARD_HEIGHT, ...style }}
-        {...props}
       >
         <CardBack degree={degree} />
         <img

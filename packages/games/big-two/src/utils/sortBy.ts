@@ -1,4 +1,4 @@
-import { points, suits } from '../deck';
+import { points, suits } from './deck';
 
 type Priority = [string[], number];
 export type SortByType = 'points' | 'suits';

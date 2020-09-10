@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card } from '../Card';
 import { BigTwoBoardProps } from '../../typings';
-import { useTranslate, getMaximumDimen } from '../../utils/useTranslate';
+import { useTranslate } from '../../utils/useTranslate';
 
 export function Center(props: BigTwoBoardProps) {
   const { previous } = props.G;
   const numOfCards = previous.hand?.length || 0;
 
-  const [{ translateX }, ref] = useTranslate<HTMLDivElement>({
+  const [{ translateX, maxWidth }, ref] = useTranslate<HTMLDivElement>({
     axis: 'x',
     numOfCards
   });
@@ -16,10 +16,7 @@ export function Center(props: BigTwoBoardProps) {
     <div className="center">
       <div>
         <div className="last-hand" ref={ref}>
-          <div
-            className="cards"
-            style={{ maxWidth: getMaximumDimen(numOfCards) }}
-          >
+          <div className="cards" style={{ maxWidth }}>
             {previous.hand?.map((card: string, idx) => (
               <Card
                 value={card}

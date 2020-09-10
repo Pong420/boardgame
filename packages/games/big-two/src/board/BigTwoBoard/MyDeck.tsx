@@ -1,17 +1,19 @@
 import React, { useRef, useEffect, useMemo } from 'react';
 import { useDrag } from 'react-use-gesture';
 import { useSprings, to } from 'react-spring';
+import { Button, ButtonGroup } from '@blueprintjs/core';
 import { Card, CARD_HEIGHT } from '../Card';
 import { sortBy, SortByType } from '../../utils/sortBy';
-import { useTranslate, getMaximumDimen } from '../../utils/useTranslate';
+import { useTranslate } from '../../utils/useTranslate';
 import { BigTwoMoves } from '../../typings';
 import clamp from 'lodash/clamp';
 import swap from 'array-move';
 
 interface Props {
-  isActive: boolean;
   deck: string[];
+  isActive: boolean;
   moves: BigTwoMoves;
+  disablePass?: boolean;
 }
 
 interface GetSpringOptions {
@@ -23,7 +25,7 @@ interface GetSpringOptions {
   selected?: boolean;
 }
 
-export function MyDeck({ isActive, deck, moves }: Props) {
+export function MyDeck({ isActive, disablePass, deck, moves }: Props) {
   const initialDeck = useRef(deck);
   const selected = useRef<number[]>([]);
   const dragDelta = useRef(0);
@@ -31,7 +33,7 @@ export function MyDeck({ isActive, deck, moves }: Props) {
     deck.map(card => initialDeck.current.indexOf(card))
   );
 
-  const [{ translateX }, ref] = useTranslate<HTMLDivElement>({
+  const [{ translateX, maxWidth }, ref] = useTranslate<HTMLDivElement>({
     axis: 'x',
     numOfCards: deck.length
   });
@@ -94,22 +96,21 @@ export function MyDeck({ isActive, deck, moves }: Props) {
         order.current = newOrder;
         moves.setHand(newOrder.map(index => initialDeck.current[index]));
 
-        if (distance <= 1) {
-          if (dragDelta.current < 100) {
-            const index = selected.current.indexOf(originalIndex);
-            const select = index === -1;
-            selected.current = select
-              ? [...selected.current, originalIndex]
-              : [
-                  ...selected.current.slice(0, index),
-                  ...selected.current.slice(index + 1)
-                ];
-            setSprings(idx => ({
-              y: selected.current.includes(idx) ? -10 : 0
-            }));
-          } else {
-            dragDelta.current = 0;
-          }
+        if (distance <= 10 && dragDelta.current < 250) {
+          const index = selected.current.indexOf(originalIndex);
+          const select = index === -1;
+          selected.current = select
+            ? [...selected.current, originalIndex]
+            : [
+                ...selected.current.slice(0, index),
+                ...selected.current.slice(index + 1)
+              ];
+
+          setSprings(idx => ({
+            y: selected.current.includes(idx) ? -10 : 0
+          }));
+        } else {
+          dragDelta.current = 0;
         }
       }
     }
@@ -126,13 +127,16 @@ export function MyDeck({ isActive, deck, moves }: Props) {
 
   return (
     <div className="my-deck" ref={ref}>
-      <div className="big-two-control">
-        <button onClick={sortHandler('points')}>Sort by Points</button>
-        <button onClick={sortHandler('suits')}>Sort by Suits</button>
-        <button onClick={() => moves.pass()} disabled={!isActive}>
+      <ButtonGroup className="big-two-control">
+        <Button onClick={sortHandler('points')}>Sort by Points</Button>
+        <Button onClick={sortHandler('suits')}>Sort by Suits</Button>
+        <Button
+          onClick={() => moves.pass()}
+          disabled={disablePass || !isActive}
+        >
           Pass
-        </button>
-        <button
+        </Button>
+        <Button
           disabled={!isActive}
           onClick={() => {
             moves.playCard(
@@ -142,9 +146,9 @@ export function MyDeck({ isActive, deck, moves }: Props) {
           }}
         >
           Play Cards
-        </button>
-      </div>
-      <div className="cards" style={{ maxWidth: getMaximumDimen(deck.length) }}>
+        </Button>
+      </ButtonGroup>
+      <div className="cards" style={{ maxWidth }}>
         {springs.map(({ zIndex, shadow, x, y, scale }, i) => {
           const value = initialDeck.current[i];
           if (deck.includes(value)) {

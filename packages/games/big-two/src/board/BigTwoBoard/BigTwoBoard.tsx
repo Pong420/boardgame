@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { Button } from '@blueprintjs/core';
 import { MyDeck } from './MyDeck';
 import { OtherDeck } from './OtherDeck';
 import { Center } from './Center';
@@ -11,35 +12,38 @@ export function BigTwoBoard(props: BigTwoBoardProps) {
   const player = players[Number(playerID)];
   const isActive =
     !!activePlayers && activePlayers[Number(playerID)] === 'main';
-
-  if (!isConnected) {
-    return <div className="disconnected">Connecting ...</div>;
-  }
-
   let content: ReactNode;
 
-  if (phase === 'ready') {
+  if (!isConnected) {
+    content = <div className="disconnected">Connecting ...</div>;
+  } else if (phase === 'ready') {
     if (player.ready) {
       content = opponents.length ? (
         <div>
-          Waiting for Player{' '}
+          Waiting for player{' '}
           {opponents
             .filter(({ ready }) => !ready)
             .map(({ id }) => id)
-            .join(',')}
+            .join(', ')}{' '}
+          ready
         </div>
       ) : (
         'loading...'
       );
     } else {
       content = (
-        <button onClick={() => playerID && moves.ready(playerID)}>Ready</button>
+        <Button onClick={() => playerID && moves.ready(playerID)}>Ready</Button>
       );
     }
   } else {
     content = (
       <>
-        <MyDeck isActive={isActive} deck={player.hand} moves={moves} />
+        <MyDeck
+          moves={moves}
+          deck={player.hand}
+          isActive={isActive}
+          disablePass={ctx.currentPlayer === G.previous.player}
+        />
         {opponents.map(({ numOfCards }, index) => (
           <OtherDeck
             key={index}

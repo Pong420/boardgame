@@ -12,11 +12,12 @@ export const playerView: BigTwoPlayerView = (G, ctx, playerID) => {
       while (opponents.length < numPlayers - 1) {
         idx = (numPlayers + idx + 1) % numPlayers;
 
-        const player = G.players[String(idx)];
+        const { hand, ...rest } = G.players[String(idx)] || {};
 
         opponents.push({
+          ...rest,
           id: String(idx),
-          numOfCards: player.hand.length
+          numOfCards: hand.length
         });
       }
 
@@ -29,6 +30,5 @@ export const playerView: BigTwoPlayerView = (G, ctx, playerID) => {
     };
   }
 
-  // console.log(ctx.player);
   return PlayerView.STRIP_SECRETS(R, ctx, playerID);
 };

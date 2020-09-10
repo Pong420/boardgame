@@ -1,5 +1,5 @@
 import { Ctx } from 'boardgame.io';
-import { deck } from '../deck';
+import { deck } from '../utils/deck';
 import { BigTwoPlayer, BigTwoSecret, BigTwoState } from '../typings';
 
 const createPlayer = (): BigTwoPlayer => ({
@@ -15,7 +15,7 @@ function createPlayers(num: number) {
   return players;
 }
 
-export function setup(ctx: Ctx): BigTwoState {
+export function setup(ctx: Ctx, _setupData?: unknown): BigTwoState {
   const secret: BigTwoSecret = {
     deck
   };
@@ -27,6 +27,6 @@ export function setup(ctx: Ctx): BigTwoState {
       player: ctx.currentPlayer
     },
     opponents: [],
-    players: createPlayers(4)
+    players: createPlayers(ctx.numPlayers)
   };
 }

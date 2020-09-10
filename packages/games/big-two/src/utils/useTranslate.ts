@@ -22,6 +22,7 @@ export function useTranslate<T extends HTMLElement>({
   const ref = useRef<T>(null);
   const [translateX, setTranslateX] = useState(0);
   const [translateY, setTranslateY] = useState(0);
+  const [maxWidth, setMaxWidth] = useState(0);
 
   useEffect(() => {
     const getTranslate = (ref: number) =>
@@ -40,10 +41,11 @@ export function useTranslate<T extends HTMLElement>({
           } else {
             setTranslateY(getTranslate(el.offsetHeight));
           }
+          setMaxWidth(getMaximumDimen(numOfCards));
         }
       });
     return () => subscription.unsubscribe();
   }, [axis, numOfCards]);
 
-  return [{ translateX, translateY }, ref] as const;
+  return [{ translateX, translateY, maxWidth }, ref] as const;
 }
