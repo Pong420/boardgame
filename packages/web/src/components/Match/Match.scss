@@ -22,4 +22,11 @@
       @include sq-dimen(100%);
     }
   }
+
+  > .loading {
+    @include sq-dimen(100%);
+    @include flex(center, center);
+    @include ink-painting;
+    font-size: 40px;
+  }
 }

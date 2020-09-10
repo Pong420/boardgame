@@ -39,6 +39,7 @@ export function Match(state: MatchState) {
           debug: false,
           game: game as Game,
           board: Board,
+          loading: () => <div className="loading">Loading...</div>,
           numPlayers: 'local' in state ? state.numPlayers : undefined,
           multiplayer:
             'local' in state
