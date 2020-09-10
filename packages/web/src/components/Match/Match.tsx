@@ -8,6 +8,7 @@ import { MatchState, getMatch, matchStorage } from '@/services';
 import { Toaster } from '@/utils/toaster';
 import { Redirect } from '../Redirect';
 import { MatchHeader } from './MatchHeader';
+import { gameMetaMap } from '@/games';
 
 interface State {
   matchName: string;
@@ -65,7 +66,11 @@ export function Match(state: MatchState) {
             matchID: state.matchID
           }).then<State>(({ data }) => {
             return data.setupData
-              ? { ...data, ...data.setupData }
+              ? {
+                  ...data,
+                  ...data.setupData,
+                  gameName: gameMetaMap[state.name].gameName
+                }
               : Promise.reject('Invalid match');
           });
 

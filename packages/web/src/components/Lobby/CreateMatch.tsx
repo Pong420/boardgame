@@ -1,7 +1,7 @@
 import React from 'react';
 import { defer, throwError } from 'rxjs';
 import { catchError, switchMap, map } from 'rxjs/operators';
-import { HTMLSelect } from '@blueprintjs/core';
+import { HTMLSelect, IButtonProps, Button } from '@blueprintjs/core';
 import { createForm, FormProps, validators, FormItemProps } from '@/utils/form';
 import { Toaster } from '@/utils/toaster';
 import { Params$CreateMatch, GameMeta } from '@/typings';
@@ -14,7 +14,7 @@ import {
   MultiMatchState
 } from '@/services';
 import { Input, TextArea, Checkbox } from '../Input';
-import { ButtonPopover, ButtonPopoverProps } from '../ButtonPopover';
+import { ButtonPopover } from '../ButtonPopover';
 import { openConfirmDialog } from '../ConfirmDialog';
 import { PlayerNameControl } from '../PlayerNameControl';
 
@@ -27,7 +27,9 @@ export interface Create {
   meta: GameMeta;
 }
 
-interface Props extends Create, ButtonPopoverProps {}
+interface Props extends Create, IButtonProps {
+  content?: string;
+}
 
 const { Form, FormItem, useForm } = createForm<Store>();
 
@@ -132,7 +134,7 @@ function CreateMatchForm({
   );
 }
 
-export function CreateMatch({ meta, ...props }: Props) {
+export function CreateMatch({ meta, content, ...props }: Props) {
   const [form] = useForm();
   const [{ playerName }, updatePrefrences] = usePreferences();
   const { name, gameName, numPlayers } = meta;
@@ -159,9 +161,12 @@ export function CreateMatch({ meta, ...props }: Props) {
     }
   }
 
+  const Component = content ? Button : ButtonPopover;
+
   return (
-    <ButtonPopover
+    <Component
       {...props}
+      content={content}
       onClick={() =>
         openConfirmDialog({
           title: `Create ${gameName} Match`,

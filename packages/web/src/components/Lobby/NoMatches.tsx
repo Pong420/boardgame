@@ -6,7 +6,7 @@ export function NoMatches(props: Create) {
     <div className="no-matches">
       <div>
         <div className="message">No Matches Found</div>
-        <CreateMatch {...props} intent="primary" text="Create" />
+        <CreateMatch {...props} intent="primary" text="Create Match" />
       </div>
     </div>
   );
