@@ -39,7 +39,7 @@ exports.onCreatePage = ({ page, actions }) => {
   }
 
   if (page.path.match(/^\/error/)) {
-    page.matchPath = '/error/*';
+    page.matchPath = '/error/:message';
     actions.createPage(page);
   }
 };

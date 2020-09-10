@@ -7,9 +7,10 @@
   "author": "Pong <samfunghp@gmail.com>",
   "scripts": {
     "start": "yarn server start",
-    "dev": "lerna run dev --stream --parallel",
     "web": "yarn workspace @boardgame/web",
     "server": "yarn workspace @boardgame/server",
+    "dev": "lerna run dev --stream --parallel",
+    "build": "lerna run build --stream --parallel",
     "postinstall": "lerna run postinstall --stream --parallel",
     "heroku-postbuild": "yarn build"
   },

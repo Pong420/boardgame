@@ -123,9 +123,9 @@ function CreateMatchForm({
         <TextArea />
       </HiddenIfLocal>
 
-      <FormItem name={['setupData', 'spectate']} valuePropName="checked">
+      <HiddenIfLocal name={['setupData', 'spectate']} valuePropName="checked">
         <Checkbox>Spectate</Checkbox>
-      </FormItem>
+      </HiddenIfLocal>
 
       <FormItem name="name" noStyle>
         <div hidden />
@@ -143,9 +143,10 @@ export function CreateMatch({ meta, content, ...props }: Props) {
     const store = await form.validateFields();
     if (store.local) {
       await gotoMatch({
-        ...store,
         gameName,
-        local: true
+        local: true,
+        name: store.name,
+        numPlayers: store.numPlayers
       });
     } else if (store.setupData) {
       const payload = await createAndJoinMatch(store).toPromise();
