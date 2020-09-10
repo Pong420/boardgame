@@ -23,9 +23,7 @@ export interface RouteComponentProps<
   data: Data;
 }
 
-// remember to update `gameMeta.ts`, and `pages/lobby.tsx`
 export interface GameMeta {
-  version: string;
   name: string;
   gameName: string;
   icon: string;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Router, Redirect, RouteComponentProps } from '@reach/router';
 import { Match } from '@/components/Match';
-import { useGameMeta } from '@/store/gameMeta';
+import { gameMetaMap } from '@/games';
 
 interface MatchParams {
   name: string;
@@ -14,7 +14,7 @@ const isNumberString = (payload?: string) => payload && !isNaN(Number(payload));
 function SpectateContent(props: RouteComponentProps<MatchParams>) {
   const { name, matchID, playerID } = props as RouteComponentProps &
     MatchParams;
-  const meta = useGameMeta(name);
+  const meta = gameMetaMap[name];
 
   if (
     meta && meta.spectate === 'single-player' ? isNumberString(playerID) : true

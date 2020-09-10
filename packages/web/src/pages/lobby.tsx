@@ -1,27 +1,14 @@
 import React from 'react';
-import { graphql } from 'gatsby';
-import { RouteComponentProps, GameMeta } from '@/typings';
+import { RouteComponentProps } from '@/typings';
 import { Lobby } from '@/components/Lobby';
+import { Redirect } from '@/components/Redirect';
+import { gameMetaMap } from '@/games';
 
-interface Context {
-  gameMeta: GameMeta;
+interface Props extends RouteComponentProps {
+  name?: string;
 }
 
-export default function (props: RouteComponentProps<Context>) {
-  return <Lobby meta={props.data.gameMeta} />;
+export default function (props: Props) {
+  const meta = props.name && gameMetaMap[props.name];
+  return meta ? <Lobby meta={meta} /> : <Redirect />;
 }
-
-export const query = graphql`
-  query($name: String) {
-    gameMeta(name: { eq: $name }) {
-      version
-      name
-      gameName
-      icon
-      author
-      numPlayers
-      description
-      spectate
-    }
-  }
-`;

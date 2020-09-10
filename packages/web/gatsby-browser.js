@@ -6,7 +6,6 @@ require('@blueprintjs/icons/lib/css/blueprint-icons.css');
 const React = require('react');
 const { Layout } = require('./src/components/Layout');
 const { PreferencesProvider } = require('./src/services/preferences');
-const { GameMetaProvider } = require('./src/store/gameMeta');
 
 // @ts-check
 
@@ -14,9 +13,7 @@ const { GameMetaProvider } = require('./src/store/gameMeta');
 exports.wrapPageElement = ({ element, props }) => {
   return (
     <PreferencesProvider>
-      <GameMetaProvider>
-        <Layout {...props}>{element}</Layout>
-      </GameMetaProvider>
+      <Layout {...props}>{element}</Layout>
     </PreferencesProvider>
   );
 };
