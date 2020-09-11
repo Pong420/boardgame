@@ -18,23 +18,14 @@ export type Cell = number | null;
 
 export interface TicTacToeState {
   cells: Cell[];
-  result?: string | null;
-  flag: { [playerID: string]: boolean };
 }
 
-export interface TicTacToeSecret {}
-
-export interface TicTacToePlayer {
-  ready: boolean;
-}
-
-export interface TicTacToeOpponent extends Partial<TicTacToePlayer> {
-  id: string;
-}
+export type TicTacToeGameOver = string | null;
 
 export interface TicTacToeCtx extends Ctx {
   events: NonNullable<Required<Ctx['events']>>;
   random: NonNullable<Ctx['random']>;
+  gameover: TicTacToeGameOver;
 }
 
 export type TicTacToeGame = Game<TicTacToeState, TicTacToeCtx> & { name: Name };

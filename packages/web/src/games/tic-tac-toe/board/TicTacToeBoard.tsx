@@ -7,7 +7,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import { Button } from '@blueprintjs/core';
+import { PlayAgain } from '@/components/PlayAgain';
 import { TicTacToeBoardProps } from '../typings';
 
 const symbol = (playerID: string) =>
@@ -15,11 +15,7 @@ const symbol = (playerID: string) =>
 
 export function TicTacToeBoard(props: TicTacToeBoardProps) {
   const isActive = (id: number) => {
-    return (
-      props.ctx.phase === 'start' &&
-      props.isActive &&
-      props.G.cells[id] === null
-    );
+    return props.isActive && props.G.cells[id] === null;
   };
 
   const onClick = (id: number) => {
@@ -46,20 +42,6 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
     tbody.push(<tr key={i}>{cells}</tr>);
   }
 
-  if (props.ctx.phase === 'ready') {
-    if (props.playerID) {
-      if (props.G.flag[props.playerID] === false) {
-        return (
-          <Button text="Ready" onClick={() => props.moves.ok(props.playerID)} />
-        );
-      } else {
-        return 'Waiting for other player ready';
-      }
-    } else if (!Object.values(props.G.flag).every(Boolean)) {
-      return 'Waiting for players ready';
-    }
-  }
-
   let turn: ReactNode = (
     <div className="turn">
       {props.playerID
@@ -72,19 +54,19 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
 
   let winner: ReactNode = null;
 
-  if (props.G.result) {
+  if (props.G) {
     turn = null;
 
     winner = (
       <div className="winner">
-        {props.G.result === 'draw'
+        {props.ctx.gameover === 'draw'
           ? 'Draw'
-          : props.G.result
+          : props.ctx.gameover
           ? props.playerID
-            ? props.G.result === props.playerID
+            ? props.ctx.gameover === props.playerID
               ? 'You win'
               : 'You lose'
-            : `Player ${symbol(props.G.result)} win`
+            : `Player ${symbol(props.ctx.gameover)} win`
           : ''}
       </div>
     );
@@ -105,13 +87,7 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
       {winner}
 
       <div className="actions">
-        {props.ctx.phase === 'ended' && props.playerID && (
-          <Button
-            text="Play again"
-            disabled={props.G.flag[props.playerID]}
-            onClick={() => props.moves.ok(props.playerID)}
-          />
-        )}
+        {props.ctx.gameover && props.playerID && <PlayAgain />}
       </div>
     </div>
   );
