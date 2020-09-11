@@ -28,6 +28,7 @@ export interface MultiMatchState extends Common {
   matchID: string;
   playerID: string;
   credentials: string;
+  playerName: string;
 }
 
 export interface SpectatorState extends Common {

@@ -1,29 +1,53 @@
 import React from 'react';
 import { Button, IButtonProps } from '@blueprintjs/core';
 import { useRxAsync } from 'use-rx-hooks';
-import { gotoMatch, matchStorage, playAgain } from '@/services';
+import {
+  gotoMatch,
+  joinMatch,
+  leaveMatch,
+  matchStorage,
+  MultiMatchState,
+  playAgain
+} from '@/services';
 import { Toaster } from '@/utils/toaster';
 
 interface Props extends IButtonProps {}
 
-const request = () => {
+const request = async (): Promise<MultiMatchState> => {
   const state = matchStorage.get();
-  return state
-    ? playAgain(state).then(res => {
-        const newState = { ...state, matchID: res.data.nextMatchID };
-        matchStorage.save(newState);
-        return gotoMatch(newState);
-      })
-    : Promise.reject('Some thing worng');
+  if (state) {
+    const again = await playAgain(state);
+    const { nextMatchID } = again.data;
+    const join = await joinMatch({ ...state, matchID: nextMatchID });
+
+    // side effect do not await
+    leaveMatch(state).catch(error =>
+      console.warn('Leave match failure', error)
+    );
+
+    return {
+      ...state,
+      matchID: nextMatchID,
+      credentials: join.data.playerCredentials
+    };
+  }
+  throw new Error('state not found');
 };
+
+function onSuccess(state: MultiMatchState) {
+  matchStorage.save(state);
+  gotoMatch(state);
+}
 
 const onFailure = Toaster.apiError.bind(Toaster, 'Play Again Failure');
 
 export function PlayAgain(props: Props) {
   const [{ loading }, { fetch }] = useRxAsync(request, {
     defer: true,
+    onSuccess,
     onFailure
   });
+
   return (
     <Button {...props} text="Play again" loading={loading} onClick={fetch} />
   );

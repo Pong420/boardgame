@@ -21,6 +21,7 @@ function _joinMatch(params: Params$JoinMatch) {
     name: params.name,
     matchID: params.matchID,
     playerID: params.playerID,
+    playerName: params.playerName,
     credentials: res.data.playerCredentials
   }));
 }
