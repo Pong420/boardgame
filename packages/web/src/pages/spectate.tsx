@@ -32,7 +32,7 @@ export default function () {
     <Router basepath="/spectate" primary={false} component={RouterComponent}>
       <SpectateContent path="/:name/:matchID/" />
       <SpectateContent path="/:name/:matchID/:playerID" />
-      <Redirect from="/" to="/" noThrow />
+      <Redirect from="/" to="/" noThrow default />
     </Router>
   );
 }
