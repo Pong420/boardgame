@@ -6,8 +6,9 @@ import ratelimit from 'koa-ratelimit';
 import dotenv from 'dotenv';
 import { historyApiFallback } from 'koa2-connect-history-api-fallback';
 import { Game } from 'boardgame.io';
-import { Server, FlatFile } from 'boardgame.io/server';
+import { Server } from 'boardgame.io/server';
 import { PostgresStore } from 'bgio-postgres';
+import { FlatFile } from './flatfile';
 
 [
   '.env',
