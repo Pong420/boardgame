@@ -1,5 +1,4 @@
 import React, { ReactNode } from 'react';
-import { navigate } from 'gatsby';
 import { useRxAsync } from 'use-rx-hooks';
 import { ButtonPopover } from '@/components/ButtonPopover';
 import { Preferences } from '@/components/Preferences';
@@ -13,7 +12,7 @@ interface Props {
 
 const onFailure = Toaster.apiError.bind(Toaster, 'Leave Match Failure');
 
-function LeaveMatchButton({ name }: Pick<Props, 'name'>) {
+function LeaveMatchButton() {
   const [{ loading }, { fetch }] = useRxAsync(leaveMatchAndRedirect, {
     defer: true,
     onFailure
@@ -25,21 +24,15 @@ function LeaveMatchButton({ name }: Pick<Props, 'name'>) {
       icon="arrow-left"
       content="Leave match"
       loading={loading}
-      onClick={() => {
-        const state = matchStorage.get();
-        if (state) {
-          return fetch(state);
-        }
-        navigate(`/lobby/${name}/`);
-      }}
+      onClick={() => fetch(matchStorage.get())}
     />
   );
 }
 
-export function MatchHeader({ name, title }: Props) {
+export function MatchHeader({ title }: Props) {
   return (
     <div className="match-header">
-      <LeaveMatchButton name={name} />
+      <LeaveMatchButton />
       <div className="header-title">{title}</div>
       <div>
         <Preferences disablePlayerName />

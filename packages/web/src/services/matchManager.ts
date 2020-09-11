@@ -1,6 +1,6 @@
 import { navigate } from 'gatsby';
 import { AxiosError } from 'axios';
-import { fromEvent, defer, empty, timer, throwError } from 'rxjs';
+import { fromEvent, defer, empty, timer, throwError, of } from 'rxjs';
 import {
   filter,
   exhaustMap,
@@ -51,26 +51,33 @@ export const matchStorage = createLocalStorage<MultiMatchState | null>(
 );
 
 export function leaveMatchAndRedirect(): undefined;
-export function leaveMatchAndRedirect(state: MultiMatchState): Promise<void>;
+export function leaveMatchAndRedirect(
+  state: MultiMatchState | null
+): Promise<void>;
 export function leaveMatchAndRedirect(
   state?: MultiMatchState | null
 ): Promise<any> | undefined {
   if (state) {
+    const leave = () => {
+      navigate(`/lobby/${state.name}/`);
+      matchStorage.save(null);
+    };
     return defer(() => leaveMatch(state))
       .pipe(
         retryWhen(error$ =>
           error$.pipe(
-            switchMap((error: AxiosError, index) =>
-              error.response?.status === 403 || index >= 3
-                ? throwError(error)
-                : timer(1000)
-            )
+            switchMap((error: AxiosError, index) => {
+              if (error.response?.status === 403) {
+                leave();
+              }
+              return index >= 3 ? throwError(error) : timer(1000);
+            })
           )
         ),
-        tap(() => {
-          navigate(`/lobby/${state.name}/`);
-          matchStorage.save(null);
-        })
+        catchError((error: AxiosError) =>
+          error.response?.status === 403 ? of([]) : throwError(error)
+        ),
+        tap(leave)
       )
       .toPromise();
   }
