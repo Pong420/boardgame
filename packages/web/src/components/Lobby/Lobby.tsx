@@ -22,7 +22,7 @@ export function Lobby({ meta }: Props) {
   useEffect(() => {
     const subscription = merge(
       subject.current,
-      polling ? timer(0, 5 * 1000) : empty()
+      polling ? timer(0, 5 * 1000) : timer(0)
     )
       .pipe(
         tap(() => setLoading(true)),
