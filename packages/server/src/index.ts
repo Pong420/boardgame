@@ -62,12 +62,14 @@ const db = parsed.every(Boolean)
     });
 
 (async () => {
+  const games = await Promise.all<Game>([
+    import(`../../web/src/games/big-two/game`).then(p => p.game),
+    import(`../../web/src/games/tic-tac-toe/game`).then(p => p.game)
+  ]);
+
   const server = Server({
     db,
-    games: await Promise.all<Game>([
-      import(`../../web/src/games/big-two/game`).then(p => p.game),
-      import(`../../web/src/games/tic-tac-toe/game`).then(p => p.game)
-    ])
+    games
   });
 
   const { app } = server;
