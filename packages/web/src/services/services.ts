@@ -6,6 +6,7 @@ import {
   Params$JoinMatch,
   Params$UpdatePlayerMeta,
   Params$LeaveMatch,
+  Params$PlayAgain,
   Response$GetMatches,
   Response$GetMatch
 } from '../typings';
@@ -47,4 +48,11 @@ export function updatePlayerMeta({
 
 export function leaveMatch({ name, matchID, ...params }: Params$LeaveMatch) {
   return api.post(`/games/${name}/${matchID}/leave`, params);
+}
+
+export function playAgain({ name, matchID, ...params }: Params$PlayAgain) {
+  return api.post<{ nextMatchID: string }>(
+    `/games/${name}/${matchID}/playAgain`,
+    params
+  );
 }
