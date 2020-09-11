@@ -72,6 +72,7 @@ function CreateMatchForm({
       {...props}
       initialValues={{
         ...initialValues,
+        unlisted: false,
         numPlayers: numPlayersOps[0],
         setupData: { matchName: '', spectate: true }
       }}
@@ -127,6 +128,10 @@ function CreateMatchForm({
         <Checkbox>Spectate</Checkbox>
       </HiddenIfLocal>
 
+      <HiddenIfLocal name="unlisted" valuePropName="checked">
+        <Checkbox>Private</Checkbox>
+      </HiddenIfLocal>
+
       <FormItem name="name" noStyle>
         <div hidden />
       </FormItem>
@@ -153,7 +158,8 @@ export function CreateMatch({ meta, content, ...props }: Props) {
       const state: MultiMatchState = {
         ...payload,
         name,
-        playerID: '0'
+        playerID: '0',
+        playerName: store.playerName
       };
       await gotoMatch(state);
       matchStorage.save(state);
