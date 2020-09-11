@@ -17,6 +17,10 @@ interface Strore extends PreferencesState {
   playerName: string;
 }
 
+export interface PreferencesFormProps {
+  disablePlayerName?: boolean;
+}
+
 const { Form, FormItem, useForm } = createForm<Strore>();
 
 const Row: React.FC<{ label?: ReactNode }> = ({ label, children }) => (
@@ -26,7 +30,7 @@ const Row: React.FC<{ label?: ReactNode }> = ({ label, children }) => (
   </div>
 );
 
-export function PreferencesForm() {
+export function PreferencesForm({ disablePlayerName }: PreferencesFormProps) {
   const [form] = useForm();
   const updatePreferences = usePreferencesAction();
 
@@ -45,7 +49,7 @@ export function PreferencesForm() {
       <div className="preferences-section" data-type="Lobby">
         <Row label="Your Name">
           <FormItem name="playerName" noStyle>
-            <PlayerNameControl minimal />
+            <PlayerNameControl minimal disabled={!!disablePlayerName} />
           </FormItem>
         </Row>
 

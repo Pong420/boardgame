@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { defer, interval, empty } from 'rxjs';
-import { repeatWhen, map, catchError, tap } from 'rxjs/operators';
+import React, { useEffect, useRef, useState } from 'react';
+import { defer, empty, Subject, merge, timer } from 'rxjs';
+import { map, catchError, tap, exhaustMap } from 'rxjs/operators';
 import { GameMeta, Match } from '@/typings';
 import { getMatches, usePreferencesState } from '@/services';
+import { Toaster } from '@/utils/toaster';
 import { LobbyHeader } from './LobbyHeader';
 import { LobbyItem } from './LobbyItem';
 import { NoMatches } from './NoMatches';
-import { Toaster } from '@/utils/toaster';
 
 interface Props {
   meta: GameMeta;
@@ -17,18 +17,29 @@ export function Lobby({ meta }: Props) {
   const [state, setState] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const { polling } = usePreferencesState();
+  const subject = useRef(new Subject());
 
   useEffect(() => {
-    const subscription = defer(() => getMatches({ name }))
+    const subscription = merge(
+      subject.current,
+      polling ? timer(0, 5 * 1000) : empty()
+    )
       .pipe(
         tap(() => setLoading(true)),
-        map(response => response.data.matches),
-        catchError(error => {
-          setLoading(false);
-          !polling && Toaster.apiError('Get Matches Failure', error);
-          return empty();
-        }),
-        repeatWhen(() => (polling ? interval(5 * 1000) : empty()))
+        exhaustMap(value =>
+          defer(() => getMatches({ name })).pipe(
+            map(response => response.data.matches),
+            catchError(error => {
+              setLoading(false);
+
+              // if the request is not trigger by timer
+              if (typeof value !== 'number') {
+                Toaster.apiError('Get Matches Failure', error);
+              }
+              return empty();
+            })
+          )
+        )
       )
       .subscribe(state => {
         setState(state);
@@ -39,7 +50,11 @@ export function Lobby({ meta }: Props) {
 
   return (
     <div className="lobby">
-      <LobbyHeader meta={meta} />
+      <LobbyHeader
+        meta={meta}
+        updating={loading}
+        onRefresh={() => subject.current.next()}
+      />
       {state.length ? (
         <div className="lobby-content">
           {state.map(match => (

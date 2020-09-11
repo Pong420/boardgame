@@ -1,9 +1,11 @@
 .lobby {
   @include dimen(100%);
+  @include flex($flex-direction: column);
 }
 
 .lobby-header {
   @include header();
+  flex: 0 0 auto;
 
   .header-title {
     text-align: center;
@@ -15,6 +17,7 @@
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   grid-gap: 20px;
   padding: 20px;
+  flex: 1 1 auto;
 }
 
 $padding: 12.5px;

@@ -42,7 +42,7 @@ export function MatchHeader({ name, title }: Props) {
       <LeaveMatchButton name={name} />
       <div className="header-title">{title}</div>
       <div>
-        <Preferences />
+        <Preferences disablePlayerName />
       </div>
     </div>
   );

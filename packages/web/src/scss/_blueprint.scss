@@ -43,6 +43,22 @@ a:hover,
   color: inherit;
 }
 
+// for checkbox / swtich
+.#{$ns}-control {
+  margin-bottom: 0;
+}
+
+.#{$ns}-toast {
+  max-width: 320px;
+}
+
+.#{$ns}-toast-message {
+  div:nth-child(1) {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+}
+
 [data-theme^='dark'] {
   .#{$ns}-card {
     background-color: var(--main-diff1-color);
