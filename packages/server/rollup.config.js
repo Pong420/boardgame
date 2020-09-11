@@ -9,6 +9,8 @@ function onwarn(warning, rollupWarn) {
   }
 }
 
+const watch = process.env.ROLLUP_WATCH === 'true';
+
 /** @type {import('rollup').RollupOptions[]} */
 const config = [
   {
@@ -21,7 +23,7 @@ const config = [
     plugins: [
       esbuild({
         // @ts-ignore
-        watch: !!process.env.ROLLUP_WATCH,
+        watch,
         target: 'es2017',
         include: /\.[jt]sx?$/,
         minify: process.env.NODE_ENV === 'production',
@@ -30,7 +32,7 @@ const config = [
           '.js': 'jsx'
         }
       }),
-      run()
+      watch && run()
     ]
   }
 ];
