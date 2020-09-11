@@ -19,8 +19,8 @@ export function getAllGames() {
   return api.get<string[]>('/games');
 }
 
-export function getMatches({ name }: Params$GetMatches) {
-  return api.get<Response$GetMatches>(`/games/${name}`);
+export function getMatches({ name, ...params }: Params$GetMatches) {
+  return api.get<Response$GetMatches>(`/games/${name}`, { params });
 }
 
 export function getMatch({ name, matchID }: Params$GetMatch) {

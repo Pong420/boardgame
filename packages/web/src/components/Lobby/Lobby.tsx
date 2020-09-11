@@ -27,7 +27,15 @@ export function Lobby({ meta }: Props) {
       .pipe(
         tap(() => setLoading(true)),
         exhaustMap(value =>
-          defer(() => getMatches({ name })).pipe(
+          defer(() => {
+            const date = new Date();
+            date.setHours(date.getHours() - 1);
+            return getMatches({
+              name,
+              isGameover: false,
+              updatedAfter: date.getTime()
+            });
+          }).pipe(
             map(response => response.data.matches),
             catchError(error => {
               setLoading(false);

@@ -27,6 +27,9 @@ export interface Player {
 
 export interface Params$GetMatches {
   name: string;
+  isGameover?: boolean;
+  updatedBefore?: number;
+  updatedAfter?: number;
 }
 
 export interface Params$GetMatch {
