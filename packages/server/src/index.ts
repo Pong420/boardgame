@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import serve from 'koa-static';
+import helmet from 'koa-helmet';
+import ratelimit from 'koa-ratelimit';
 import dotenv from 'dotenv';
 import { historyApiFallback } from 'koa2-connect-history-api-fallback';
 import { Game } from 'boardgame.io';
@@ -68,6 +70,24 @@ const db = parsed.every(Boolean)
   });
 
   const { app } = server;
+
+  app.use(helmet());
+  app.use(
+    ratelimit({
+      driver: 'memory',
+      db: new Map(),
+      duration: 60000,
+      errorMessage: 'Sometimes You Just Have to Slow Down.',
+      id: ctx => ctx.ip,
+      headers: {
+        remaining: 'Rate-Limit-Remaining',
+        reset: 'Rate-Limit-Reset',
+        total: 'Rate-Limit-Total'
+      },
+      max: 100,
+      disableHeader: false
+    })
+  );
 
   app.use(
     historyApiFallback({ index: 'index.html', whiteList: ['/api', '/games'] })

@@ -10,6 +10,8 @@
   "devDependencies": {
     "@rollup/plugin-run": "^2.0.2",
     "@types/dotenv": "^8.2.0",
+    "@types/koa-helmet": "^5.2.0",
+    "@types/koa-ratelimit": "^4.2.1",
     "@types/koa-static": "^4.0.1",
     "@types/node": "^14.0.27",
     "esbuild": "^0.6.33",
@@ -21,6 +23,8 @@
     "bgio-postgres": "^1.0.7",
     "boardgame.io": "0.40.0",
     "dotenv": "^8.2.0",
+    "koa-helmet": "^5.2.0",
+    "koa-ratelimit": "^4.2.1",
     "koa-static": "^5.0.0",
     "koa2-connect-history-api-fallback": "^0.1.2",
     "node-persist": "^3.1.0"
