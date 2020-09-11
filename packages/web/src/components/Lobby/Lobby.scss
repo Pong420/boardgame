@@ -12,12 +12,16 @@
   }
 }
 
+$gap: 20px;
+
 .lobby-content {
   display: grid;
+  align-content: start;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  grid-gap: 20px;
-  padding: 20px;
+  grid-column-gap: 20px;
   flex: 1 1 auto;
+  overflow: auto;
+  padding: 20px;
 }
 
 $padding: 12.5px;
@@ -26,6 +30,7 @@ $padding: 12.5px;
   @include flex($flex-direction: column);
   @include padding-y($padding);
   @include padding-x(20px);
+  margin-bottom: $gap;
 }
 
 .lobby-item-header {
