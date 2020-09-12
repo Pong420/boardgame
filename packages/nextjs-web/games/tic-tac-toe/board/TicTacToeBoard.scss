@@ -1,0 +1,46 @@
+.tic-tac-toe {
+  &.local.num-of-player-2 {
+    .bgio-client {
+      height: 50%;
+    }
+  }
+
+  .bgio-client {
+    @include flex(center, center);
+    text-align: center;
+  }
+
+  td {
+    @include sq-dimen(50px);
+    border: 2px solid var(--text-color);
+    cursor: default;
+    font-weight: bold;
+    font-size: 20px;
+
+    &.active {
+      cursor: pointer;
+      background: var(--text-light-color);
+    }
+  }
+
+  .container {
+    @include dimen(100%);
+
+    #board {
+      margin: auto;
+    }
+  }
+
+  .head,
+  .turn,
+  .winner {
+    font-weight: bold;
+    font-size: 18px;
+    min-height: 50px;
+    line-height: 50px;
+  }
+
+  .actions {
+    min-height: 30px;
+  }
+}

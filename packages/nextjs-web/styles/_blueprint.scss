@@ -1,0 +1,68 @@
+@import './scss/index';
+
+.#{$ns}-button:not([class*='bp3-intent-']) {
+  .#{$ns}-icon.#{$ns}-icon {
+    color: var(--icon-color);
+  }
+}
+
+.#{$ns}-popover.#{$ns}-popover {
+  .#{$ns}-popover-arrow-fill {
+    fill: var(--main-diff1-color);
+  }
+  .#{$ns}-popover-content {
+    background-color: var(--main-diff1-color);
+    color: var(--text-color);
+  }
+}
+
+.#{$ns}-menu.#{$ns}-menu {
+  background-color: var(--main-diff1-color);
+}
+
+.#{$ns}-dialog.#{$ns}-dialog {
+  @include dimen(auto);
+  border-radius: 4px;
+  background-color: var(--main-diff1-color);
+  min-width: 300px;
+  overflow: hidden;
+  padding-bottom: 10px;
+
+  .#{$ns}-dialog-header {
+    background-color: var(--main-color);
+    min-height: 50px;
+
+    .bp3-heading {
+      font-size: 16px;
+    }
+  }
+}
+
+a,
+a:hover,
+.#{$ns}-dark a,
+.#{$ns}-dark a:hover {
+  color: inherit;
+}
+
+// for checkbox / swtich
+.#{$ns}-control {
+  margin-bottom: 0;
+}
+
+.#{$ns}-toast {
+  max-width: 320px;
+}
+
+.#{$ns}-toast-message {
+  div:nth-child(1) {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+}
+
+[data-theme^='dark'] {
+  .#{$ns}-card {
+    background-color: var(--main-diff1-color);
+  }
+}

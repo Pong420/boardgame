@@ -1,0 +1,10 @@
+@import '../../styles/scss/index';
+
+.button-popover {
+  :global {
+    .#{$ns}-popover-content {
+      padding: $pt-grid-size/2 $pt-grid-size;
+      white-space: nowrap;
+    }
+  }
+}

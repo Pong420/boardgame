@@ -1,0 +1,52 @@
+$error-color: $pt-intent-danger;
+$help-line-height: 1em;
+
+.rc-form {
+  &.inline {
+    @include flex(flex-start);
+
+    .rc-form-item {
+      margin-bottom: 0;
+      + .rc-form-item {
+        margin-left: 10px;
+      }
+    }
+  }
+
+  &:not(.inline) {
+    .rc-form-item-label:not(:empty) {
+      display: block;
+      margin-bottom: 5px;
+    }
+  }
+}
+
+.rc-form-item {
+  + .rc-form-item {
+    margin-top: 7.5px;
+  }
+
+  .rc-form-item-help {
+    color: $error-color;
+    margin-top: 4px;
+    font-size: 14px;
+    min-height: $help-line-height;
+    line-height: $help-line-height;
+  }
+}
+
+.rc-form-item {
+  &.rc-form-item-error {
+    .#{$ns}-input {
+      box-shadow: 0 0 0 0 rgba(219, 55, 55, 0), 0 0 0 0 rgba(219, 55, 55, 0),
+        inset 0 0 0 1px #db3737, inset 0 0 0 1px rgba(16, 22, 26, 0.15),
+        inset 0 1px 1px rgba(16, 22, 26, 0.2);
+
+      &:focus,
+      &:active {
+        box-shadow: 0 0 0 1px #db3737, 0 0 0 3px rgba(219, 55, 55, 0.3),
+          inset 0 1px 1px rgba(16, 22, 26, 0.2);
+      }
+    }
+  }
+}

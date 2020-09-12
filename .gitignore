@@ -34,3 +34,5 @@ tsconfig.tsbuildinfo
 .pnp.*
 
 match-storage
+
+web
