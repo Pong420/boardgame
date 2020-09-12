@@ -54,20 +54,18 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
 
   let winner: ReactNode = null;
 
-  if (props.G) {
+  if (props.ctx.gameover) {
     turn = null;
 
     winner = (
       <div className="winner">
         {props.ctx.gameover === 'draw'
           ? 'Draw'
-          : props.ctx.gameover
-          ? props.playerID
-            ? props.ctx.gameover === props.playerID
-              ? 'You win'
-              : 'You lose'
-            : `Player ${symbol(props.ctx.gameover)} win`
-          : ''}
+          : props.playerID
+          ? props.ctx.gameover === props.playerID
+            ? 'You win'
+            : 'You lose'
+          : `Player ${symbol(props.ctx.gameover)} win`}
       </div>
     );
   }
