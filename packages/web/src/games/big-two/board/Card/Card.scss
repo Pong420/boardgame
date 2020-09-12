@@ -1,9 +1,0 @@
-.card {
-  @include relative();
-  user-select: none;
-
-  img {
-    @include absolute(0, null, 0);
-    @include dimen(100%);
-  }
-}
