@@ -1,0 +1,14 @@
+.invitation {
+  @include sq-dimen(100%);
+  @include flex(center, center);
+  text-align: center;
+
+  .text {
+    @include ink-painting;
+    font-size: 50px;
+
+    + * {
+      margin-top: 20px;
+    }
+  }
+}

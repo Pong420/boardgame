@@ -4,9 +4,14 @@ import { ButtonPopover } from '@/components/ButtonPopover';
 import { Preferences } from '@/components/Preferences';
 import { leaveMatchAndRedirect, matchStorage } from '@/services';
 import { Toaster } from '@/utils/toaster';
+import { ShareButton } from '../ShareButton';
+import { Button } from '@blueprintjs/core';
 
 interface Props {
   name: string;
+  matchID: string;
+  playerName: string;
+  gameName: string;
   title?: ReactNode;
 }
 
@@ -29,12 +34,27 @@ function LeaveMatchButton() {
   );
 }
 
-export function MatchHeader({ title }: Props) {
+export function MatchHeader({
+  title,
+  name,
+  playerName,
+  gameName,
+  matchID
+}: Props) {
   return (
     <div className="match-header">
-      <LeaveMatchButton />
+      <div>
+        <LeaveMatchButton />
+        <Button minimal icon="blank" style={{ visibility: 'hidden' }} />
+      </div>
       <div className="header-title">{title}</div>
       <div>
+        <ShareButton
+          name={name}
+          matchID={matchID}
+          playerName={playerName}
+          gameName={gameName}
+        />
         <Preferences disablePlayerName />
       </div>
     </div>
