@@ -19,7 +19,9 @@ export function ButtonPopover({
   disabled,
   ...props
 }: ButtonPopoverProps) {
-  return (
+  const button = <Button disabled={disabled} {...props} />;
+
+  return content ? (
     <Popover
       popoverClassName="button-popover"
       interactionKind="hover-target"
@@ -30,7 +32,9 @@ export function ButtonPopover({
       disabled={disabled}
       {...popoverProps}
     >
-      <Button disabled={disabled} {...props} />
+      {button}
     </Popover>
+  ) : (
+    button
   );
 }
