@@ -1,10 +1,17 @@
-import { prop, getModelForClass } from '@typegoose/typegoose';
+import {
+  prop,
+  getModelForClass,
+  modelOptions,
+  Severity
+} from '@typegoose/typegoose';
 import { StorageAPI } from 'boardgame.io';
+import { Schema } from 'mongoose';
 
 export type IPlayers = StorageAPI.CreateGameOpts['metadata']['players'];
 export type IPlayerMetadata = IPlayers[number];
 export type IMetadata = StorageAPI.CreateGameOpts['metadata'];
 
+@modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class Metadata<SetupData = any> implements IMetadata {
   @prop({ type: String, required: true, unique: true })
   matchID: string;
@@ -12,13 +19,13 @@ export class Metadata<SetupData = any> implements IMetadata {
   @prop({ type: String, required: true })
   gameName: string;
 
-  @prop({ required: true })
+  @prop({ type: Schema.Types.Mixed, required: true })
   players: IPlayers;
 
-  @prop()
+  @prop({ type: Schema.Types.Mixed })
   setupData?: SetupData;
 
-  @prop()
+  @prop({ type: Schema.Types.Mixed })
   gameover?: unknown;
 
   @prop({ type: String })

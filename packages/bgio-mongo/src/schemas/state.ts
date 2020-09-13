@@ -1,29 +1,35 @@
-import { State as IState, Ctx } from 'boardgame.io';
-import { prop, getModelForClass } from '@typegoose/typegoose';
-import { Log } from './log';
+import { State as IState, Ctx, LogEntry } from 'boardgame.io';
+import {
+  prop,
+  getModelForClass,
+  modelOptions,
+  Severity
+} from '@typegoose/typegoose';
+import { Schema } from 'mongoose';
 
+@modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class State<G extends any = any, CtxWithPlugins extends Ctx = Ctx> {
   @prop({ type: String, required: true })
   matchID: string;
 
-  @prop()
+  @prop({ type: Schema.Types.Mixed })
   G: G;
 
-  @prop()
+  @prop({ type: Schema.Types.Mixed })
   ctx: Ctx | CtxWithPlugins;
 
-  @prop({ type: () => [Log] })
-  deltalog?: Log[];
+  @prop({ type: Schema.Types.Mixed })
+  deltalog?: LogEntry[];
 
-  @prop()
+  @prop({ type: Schema.Types.Mixed })
   plugins: {
     [pluginName: string]: any;
   };
 
-  @prop()
+  @prop({ type: Schema.Types.Mixed })
   _undo: IState['_undo'];
 
-  @prop()
+  @prop({ type: Schema.Types.Mixed })
   _redo: IState['_undo'];
 
   @prop({ type: Number })
