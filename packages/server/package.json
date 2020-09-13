@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@types/koa": "^2.11.4",
-    "bgio-postgres": "^1.0.7",
+    "bgio-mongo": "1.0.0",
     "boardgame.io": "0.40.0",
     "dotenv": "^8.2.0",
     "koa-helmet": "^5.2.0",

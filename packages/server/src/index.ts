@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 import { historyApiFallback } from 'koa2-connect-history-api-fallback';
 import { Game } from 'boardgame.io';
 import { Server } from 'boardgame.io/server';
-import { PostgresStore } from 'bgio-postgres';
+import { MongoStore } from 'bgio-mongo';
 import { FlatFile } from './flatfile';
 
 [
@@ -28,33 +28,9 @@ const PORT = Number(
   process.env.REACT_APP_SERVER_PORT || process.env.PORT || 8080
 );
 
-const parsed = (process.env.DATABASE_URL || '')
-  .replace('postgres://', '')
-  .split(/:|@|\//);
-
-const [username, password, host, port, database] = parsed;
-
-const db = parsed.every(Boolean)
-  ? new PostgresStore({
-      username,
-      password,
-      host,
-      port: Number(port),
-      database,
-      ...(!/localhost/.test(host)
-        ? {
-            // https://stackoverflow.com/a/27688357
-            // https://stackoverflow.com/a/61350416
-            dialectOptions: /localhost/.test(host)
-              ? undefined
-              : {
-                  ssl: {
-                    require: true,
-                    rejectUnauthorized: false
-                  }
-                }
-          }
-        : {})
+const db = process.env.MONGODB_URL
+  ? new MongoStore({
+      url: process.env.MONGODB_URL
     })
   : new FlatFile({
       dir: path.resolve(__dirname, './match-storage'),
@@ -93,7 +69,10 @@ const db = parsed.every(Boolean)
   );
 
   app.use(
-    historyApiFallback({ index: 'index.html', whiteList: ['/api', '/games'] })
+    historyApiFallback({
+      index: 'index.html',
+      whiteList: ['/api', '/games']
+    })
   );
 
   app.use(serve(path.join(__dirname, '../../web/public')));
