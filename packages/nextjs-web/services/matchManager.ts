@@ -59,11 +59,13 @@ export function leaveMatchAndRedirect(
 export function leaveMatchAndRedirect(
   state?: MultiMatchState | null
 ): Promise<any> | undefined {
+  const leave = () => {
+    const path = router.query?.name ? `/lobby/${router.query.name}` : '/';
+    router.push(path);
+    matchStorage.save(null);
+  };
+
   if (state) {
-    const leave = () => {
-      router.push(`/lobby/${state.name}/`);
-      matchStorage.save(null);
-    };
     return defer(() => leaveMatch(state))
       .pipe(
         retryWhen(error$ =>
@@ -84,8 +86,7 @@ export function leaveMatchAndRedirect(
       .toPromise();
   }
 
-  router.push(`/`);
-  matchStorage.save(null);
+  leave();
 }
 
 // leave match if user try to delete the matchStorage

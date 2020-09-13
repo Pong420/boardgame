@@ -1,3 +1,4 @@
+import React from 'react';
 import router from 'next/router';
 
 interface Props {
@@ -9,5 +10,5 @@ export function Redirect({ to = '/', replace }: Props) {
   if (typeof window !== 'undefined') {
     router[replace ? 'replace' : 'push'](to);
   }
-  return null;
+  return <div />;
 }

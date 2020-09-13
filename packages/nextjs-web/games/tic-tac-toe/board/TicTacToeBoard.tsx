@@ -9,6 +9,7 @@
 import React, { ReactNode } from 'react';
 // import { PlayAgain } from '@/components/PlayAgain';
 import { TicTacToeBoardProps } from '../typings';
+import styles from './TicTacToeBoard.module.scss';
 
 const symbol = (playerID: string) =>
   (({ '0': 'O', '1': '✕' } as Record<string, string>)[playerID]);
@@ -32,7 +33,9 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
       cells.push(
         <td
           key={id}
-          className={isActive(id) ? 'active' : ''}
+          className={[styles['td'], isActive(id) ? styles['active'] : '']
+            .filter(Boolean)
+            .join(' ')}
           onClick={() => onClick(id)}
         >
           {symbol(String(props.G.cells[id]))}
@@ -43,7 +46,7 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
   }
 
   let turn: ReactNode = (
-    <div className="turn">
+    <div className={styles['turn']}>
       {props.playerID
         ? props.playerID === props.ctx.currentPlayer
           ? 'Your turn'
@@ -58,7 +61,7 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
     turn = null;
 
     winner = (
-      <div className="winner">
+      <div className={styles['winner']}>
         {props.ctx.gameover === 'draw'
           ? 'Draw'
           : props.playerID
@@ -71,12 +74,12 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
   }
 
   return (
-    <div className="container">
-      <div className="head">
+    <div className={styles['container']}>
+      <div className={styles['head']}>
         {props.playerID && `You are -  ${symbol(props.playerID)}`}
       </div>
 
-      <table id="board">
+      <table className={styles['board']}>
         <tbody>{tbody}</tbody>
       </table>
 
@@ -84,9 +87,21 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
 
       {winner}
 
-      <div className="actions">
+      <div className={styles['actions']}>
         {/* {props.ctx.gameover && props.playerID && <PlayAgain />} */}
       </div>
+
+      <style jsx global>{`
+        .tic-tac-toe.local.num-of-player-2 .bgio-client {
+          height: 50%;
+        }
+
+        .tic-tac-toe .bgio-client {
+          display: flex;
+          align-items: center;
+          text-align: center;
+        }
+      `}</style>
     </div>
   );
 }
