@@ -1,9 +1,4 @@
-import {
-  prop,
-  getModelForClass,
-  modelOptions,
-  Severity
-} from '@typegoose/typegoose';
+import { prop, getModelForClass } from '@typegoose/typegoose';
 import { StorageAPI } from 'boardgame.io';
 import { Schema } from 'mongoose';
 
@@ -11,7 +6,6 @@ export type IPlayers = StorageAPI.CreateGameOpts['metadata']['players'];
 export type IPlayerMetadata = IPlayers[number];
 export type IMetadata = StorageAPI.CreateGameOpts['metadata'];
 
-@modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class Metadata<SetupData = any> implements IMetadata {
   @prop({ type: String, required: true, unique: true })
   matchID: string;

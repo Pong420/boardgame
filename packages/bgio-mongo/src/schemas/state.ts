@@ -1,13 +1,7 @@
 import { State as IState, Ctx, LogEntry } from 'boardgame.io';
-import {
-  prop,
-  getModelForClass,
-  modelOptions,
-  Severity
-} from '@typegoose/typegoose';
+import { prop, getModelForClass } from '@typegoose/typegoose';
 import { Schema } from 'mongoose';
 
-@modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class State<G extends any = any, CtxWithPlugins extends Ctx = Ctx> {
   @prop({ type: String, required: true })
   matchID: string;

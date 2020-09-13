@@ -19,7 +19,7 @@ export class MongoStore extends Async {
     await mongoose.connect(url, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      dbName: 'boardgmae.io',
+      dbName: 'boardgmae',
       ...options
     });
   }
@@ -70,7 +70,7 @@ export class MongoStore extends Async {
     matchID: string,
     metadata: Server.MatchData
   ): Promise<void> {
-    await StateModel.updateOne({ matchID }, metadata);
+    await MetadataModel.updateOne({ matchID }, metadata);
   }
 
   /**
