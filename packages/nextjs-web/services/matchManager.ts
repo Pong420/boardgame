@@ -1,4 +1,4 @@
-import { navigate } from 'gatsby';
+import router from 'next/router';
 import { AxiosError } from 'axios';
 import { fromEvent, defer, empty, timer, throwError, of } from 'rxjs';
 import {
@@ -12,38 +12,39 @@ import {
 import { JSONParse } from '@/utils/JSONParse';
 import { createLocalStorage } from '@/utils/storage';
 import { leaveMatch } from './services';
+import { pushHistoryState } from './historyState';
 import isEqual from 'lodash/isEqual';
 
-interface Common {
+type Common = {
   name: string;
-}
+};
 
-export interface LocalMatchState extends Common {
+export type LocalMatchState = Common & {
   local: boolean;
   numPlayers: number;
-  gameName: string;
-}
+};
 
-export interface MultiMatchState extends Common {
+export type MultiMatchState = Common & {
   matchID: string;
   playerID: string;
   credentials: string;
   playerName: string;
-}
+};
 
-export interface SpectatorState extends Common {
+export type SpectatorState = Common & {
   matchID: string;
   playerID?: string;
-}
+};
 
 export type MatchState = LocalMatchState | MultiMatchState | SpectatorState;
 
 export const gotoMatch = (state: MatchState) => {
-  return navigate(`/match/${state.name}/`, { state, replace: true });
+  pushHistoryState(state);
+  return router.push(`/match/${state.name}/`);
 };
 
 export const gotoSpectate = ({ name, matchID, playerID }: SpectatorState) => {
-  return navigate(`/spectate/${name}/${matchID}/${playerID || ''}`);
+  return router.push(`/spectate/${name}/${matchID}/${playerID || ''}`);
 };
 
 export const matchStorage = createLocalStorage<MultiMatchState | null>(
@@ -60,7 +61,7 @@ export function leaveMatchAndRedirect(
 ): Promise<any> | undefined {
   if (state) {
     const leave = () => {
-      navigate(`/lobby/${state.name}/`);
+      router.push(`/lobby/${state.name}/`);
       matchStorage.save(null);
     };
     return defer(() => leaveMatch(state))
@@ -83,7 +84,7 @@ export function leaveMatchAndRedirect(
       .toPromise();
   }
 
-  navigate(`/`);
+  router.push(`/`);
   matchStorage.save(null);
 }
 

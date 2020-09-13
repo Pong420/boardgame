@@ -12,7 +12,7 @@ import {
 } from '../typings';
 
 const api = axios.create({
-  baseURL: process.env.NODE_ENV === 'development' ? '/api' : '/'
+  baseURL: '/'
 });
 
 export function getAllGames() {

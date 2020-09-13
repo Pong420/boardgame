@@ -25,22 +25,24 @@ export function bgioServer(games: Game[]): ReturnType<typeof Server> {
 
   app.use(helmet());
 
-  app.use(
-    ratelimit({
-      driver: 'memory',
-      db: new Map(),
-      duration: 60000,
-      errorMessage: 'Sometimes You Just Have to Slow Down.',
-      id: ctx => ctx.ip,
-      headers: {
-        remaining: 'Rate-Limit-Remaining',
-        reset: 'Rate-Limit-Reset',
-        total: 'Rate-Limit-Total'
-      },
-      max: 100,
-      disableHeader: false
-    })
-  );
+  if (process.env.NODE_ENV === 'production') {
+    app.use(
+      ratelimit({
+        driver: 'memory',
+        db: new Map(),
+        duration: 60000,
+        errorMessage: 'Sometimes You Just Have to Slow Down.',
+        id: ctx => ctx.ip,
+        headers: {
+          remaining: 'Rate-Limit-Remaining',
+          reset: 'Rate-Limit-Reset',
+          total: 'Rate-Limit-Total'
+        },
+        max: 100,
+        disableHeader: false
+      })
+    );
+  }
 
   return server;
 }
