@@ -11,10 +11,12 @@ function onwarn(warning, rollupWarn) {
 
 const watch = process.env.ROLLUP_WATCH === 'true';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 /** @type {import('rollup').RollupOptions[]} */
 const config = [
   {
-    input: './src/index.ts',
+    input: './server/index.ts',
     output: {
       dir: './dist',
       format: 'cjs'
@@ -24,9 +26,10 @@ const config = [
       esbuild({
         // @ts-ignore
         watch,
+        tsconfig: './tscofnig.server.json',
         target: 'es2017',
         include: /\.[jt]sx?$/,
-        minify: process.env.NODE_ENV === 'production',
+        minify: isProduction,
         loaders: {
           '.json': 'json',
           '.js': 'jsx'

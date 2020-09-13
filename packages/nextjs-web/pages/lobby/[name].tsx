@@ -4,7 +4,7 @@ import { GetStaticProps, GetStaticPaths } from 'next';
 import { Layout } from '@/components/Layout';
 import { GameList } from '@/components/GameList';
 import { Lobby } from '@/components/Lobby';
-import { gameMetaMap, games } from '@/games';
+import { gameMetaMap, gameMetadata } from '@/games';
 
 type Params = {
   name: string;
@@ -29,7 +29,7 @@ export default function LobbyPage({ name }: Props) {
 
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
   return {
-    paths: games.map(({ name }) => ({ params: { name } })),
+    paths: gameMetadata.map(({ name }) => ({ params: { name } })),
     fallback: false
   };
 };

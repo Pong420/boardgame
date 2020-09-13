@@ -1,7 +1,7 @@
 import React from 'react';
 import { GameListHeader } from './GameListHeader';
 import { GameMeta } from '@/typings';
-import { games } from '@/games';
+import { gameMetadata } from '@/games';
 import { NavLink } from '@/components/NavLink';
 import styles from './GameList.module.scss';
 
@@ -34,7 +34,7 @@ export function GameListItem({ meta }: ItemProps) {
       activeClassName={styles['game-list-item-active']}
       prefetch={false}
     >
-      <a className={styles['game-list-item']}>
+      <a className={styles['game-list-item']} href="/">
         {_icon}
         <div className={styles['game-list-item-content']}>
           <div className={styles['game-name']}>{gameName}</div>
@@ -52,7 +52,7 @@ export function GameList() {
     <div className={styles['game-list']}>
       <GameListHeader />
       <div className={styles['game-list-content']}>
-        {games.map(meta => (
+        {gameMetadata.map(meta => (
           <GameListItem key={meta.name} meta={meta} />
         ))}
       </div>
