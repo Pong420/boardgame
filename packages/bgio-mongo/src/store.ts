@@ -1,0 +1,133 @@
+import mongoose, { ConnectionOptions } from 'mongoose';
+import { Async } from 'boardgame.io/internal';
+import { LogEntry, Server, State, StorageAPI } from 'boardgame.io';
+import { InitialStateModel, StateModel } from './schemas/state';
+import { MetadataModel } from './schemas/metadata';
+
+export interface MongoStoreOptions extends ConnectionOptions {
+  url: string;
+}
+
+export class MongoStore extends Async {
+  constructor(private readonly options: MongoStoreOptions) {
+    super();
+  }
+
+  async connect(): Promise<void> {
+    const { url, ...options } = this.options;
+    // sync sequelize models with database schema
+    await mongoose.connect(url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      dbName: 'boardgmae.io',
+      ...options
+    });
+  }
+
+  async createGame(
+    matchID: string,
+    opts: StorageAPI.CreateGameOpts
+  ): Promise<void> {
+    const statePayload = { matchID, ...opts.initialState };
+    const initialState = new InitialStateModel(statePayload);
+    const state = new StateModel(statePayload);
+    const metadata = new MetadataModel({ matchID, ...opts.metadata });
+
+    await Promise.all([
+      //
+      initialState.save(),
+      state.save(),
+      metadata.save()
+    ]);
+  }
+
+  /**
+   * Update the game state.
+   *
+   * If passed a deltalog array, setState should append its contents to the
+   * existing log for this game.
+   */
+  async setState(
+    matchID: string,
+    state: State,
+    deltalog?: LogEntry[]
+  ): Promise<void> {
+    const $push = deltalog?.length
+      ? { $push: { deltalog: { $each: deltalog } } }
+      : {};
+
+    await StateModel.updateOne(
+      { matchID },
+      { ...state, matchID, ...$push },
+      { upsert: true }
+    );
+  }
+
+  /**
+   * Update the game metadata.
+   */
+  async setMetadata(
+    matchID: string,
+    metadata: Server.MatchData
+  ): Promise<void> {
+    await StateModel.updateOne({ matchID }, metadata);
+  }
+
+  /**
+   * Fetch the game state.
+   */
+  async fetch<O extends StorageAPI.FetchOpts>(
+    matchID: string,
+    opts: O
+  ): Promise<StorageAPI.FetchResult<O>> {
+    const result = {} as StorageAPI.FetchFields;
+
+    const [state, metadata, initialState] = await Promise.all([
+      opts.state || opts.log ? StateModel.findOne({ matchID }) : undefined,
+      opts.metadata ? MetadataModel.findOne({ matchID }) : undefined,
+      opts.initialState ? InitialStateModel.findOne({ matchID }) : undefined
+    ]);
+
+    result.state = opts.state ? state?.toJSON() : undefined;
+    result.metadata = metadata?.toJSON();
+    result.initialState = initialState?.toJSON();
+    result.log = opts.log ? state?.toJSON().deltalog : undefined;
+
+    return result as StorageAPI.FetchResult<O>;
+  }
+
+  /**
+   * Remove the game state.
+   */
+  async wipe(matchID: string): Promise<void> {
+    await Promise.all([
+      StateModel.deleteOne({ matchID }),
+      MetadataModel.deleteOne({ matchID }),
+      InitialStateModel.deleteOne({ matchID })
+    ]);
+  }
+
+  /**
+   * Return all games.
+   */
+  async listGames(opts?: StorageAPI.ListGamesOpts): Promise<string[]> {
+    const { isGameover, updatedAfter, updatedBefore } = opts?.where || {};
+
+    const result = await MetadataModel.find({
+      ...(opts?.gameName ? { gameName: opts.gameName } : {}),
+      ...(typeof isGameover === 'boolean'
+        ? isGameover
+          ? { gameover: { $ne: null } }
+          : { gameover: null }
+        : {}),
+      ...(typeof updatedAfter === 'number'
+        ? { updatedAt: { $gte: updatedAfter } }
+        : {}),
+      ...(typeof updatedBefore === 'number'
+        ? { updatedAt: { $lte: updatedBefore } }
+        : {})
+    });
+
+    return result.map(m => m.matchID);
+  }
+}
