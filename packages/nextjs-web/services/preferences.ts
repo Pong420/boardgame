@@ -15,14 +15,16 @@ export const BOARDGAME_THEME = 'BOARDGAME_THEME';
 
 export const themeStorage = createLocalStorage<Theme>(BOARDGAME_THEME, 'dark');
 
+const initialState: PreferencesState = {
+  playerName: '',
+  screenWidth: 'limited',
+  polling: true,
+  theme: themeStorage.get()
+};
+
 export const preferencesStorage = createLocalStorage<PreferencesState>(
   'BOARDGAME_PREFERENCE',
-  {
-    playerName: '',
-    screenWidth: 'limited',
-    polling: true,
-    theme: themeStorage.get()
-  }
+  initialState
 );
 
 export function handleTheme(theme: Theme) {
@@ -33,8 +35,6 @@ export function handleTheme(theme: Theme) {
     );
   }
 }
-
-handleTheme(preferencesStorage.get().theme);
 
 type Actions = React.Dispatch<React.SetStateAction<PreferencesState>>;
 
@@ -55,9 +55,15 @@ export function usePreferences() {
 
 export const PreferencesProvider: React.FC = ({ children }) => {
   const [preferences, setPreferences] = useState<PreferencesState>(
-    preferencesStorage.get()
+    initialState
   );
   const previous = useRef(preferences);
+
+  useEffect(() => {
+    const value = preferencesStorage.get();
+    setPreferences(value);
+    handleTheme(value.theme);
+  }, []);
 
   useEffect(() => {
     // mainly for big-two
