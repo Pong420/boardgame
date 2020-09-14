@@ -6,8 +6,7 @@ import {
   exhaustMap,
   retryWhen,
   catchError,
-  switchMap,
-  tap
+  switchMap
 } from 'rxjs/operators';
 import { JSONParse } from '@/utils/JSONParse';
 import { createLocalStorage } from '@/utils/storage';
@@ -62,8 +61,8 @@ export function leaveMatchAndRedirect(
 ): Promise<any> | undefined {
   const leave = () => {
     const path = router.query?.name ? `/lobby/${router.query.name}` : '/';
-    router.push(path);
     matchStorage.save(null);
+    return router.push(path);
   };
 
   if (state) {
@@ -73,7 +72,7 @@ export function leaveMatchAndRedirect(
           error$.pipe(
             switchMap((error: AxiosError, index) => {
               if (error.response?.status === 403) {
-                leave();
+                return leave();
               }
               return index >= 3 ? throwError(error) : timer(1000);
             })
@@ -82,12 +81,12 @@ export function leaveMatchAndRedirect(
         catchError((error: AxiosError) =>
           error.response?.status === 403 ? of([]) : throwError(error)
         ),
-        tap(leave)
+        switchMap(() => leave())
       )
       .toPromise();
   }
 
-  leave();
+  return leave();
 }
 
 // leave match if user try to delete the matchStorage
