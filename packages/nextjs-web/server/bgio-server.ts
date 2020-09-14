@@ -1,48 +1,47 @@
 import path from 'path';
 import helmet from 'koa-helmet';
 import ratelimit from 'koa-ratelimit';
-import { Game } from 'boardgame.io';
 import { Server } from 'boardgame.io/server';
 import { MongoStore } from 'bgio-mongo';
 import { FlatFile } from './flatfile';
+import { game as TicTacToe } from '../games/tic-tac-toe/game';
+import { overrideGetMatches } from './overrideGetMatches';
 
 const db = process.env.MONGODB_URL
   ? new MongoStore({
-      url: process.env.MONGODB_URL
+      url: process.env.MONGODB_URL,
+      dbName: 'boardgame'
     })
   : new FlatFile({
       dir: path.resolve(__dirname, './match-storage'),
       logging: true
     });
 
-export function bgioServer(games: Game[]): ReturnType<typeof Server> {
-  const server = Server({
-    db,
-    games
-  });
+const games = [TicTacToe];
 
-  const { app } = server;
+export const server = Server({ db, games });
 
-  app.use(helmet());
+if (db instanceof MongoStore) {
+  overrideGetMatches(server.router);
+}
 
-  if (process.env.NODE_ENV === 'production') {
-    app.use(
-      ratelimit({
-        driver: 'memory',
-        db: new Map(),
-        duration: 60000,
-        errorMessage: 'Sometimes You Just Have to Slow Down.',
-        id: ctx => ctx.ip,
-        headers: {
-          remaining: 'Rate-Limit-Remaining',
-          reset: 'Rate-Limit-Reset',
-          total: 'Rate-Limit-Total'
-        },
-        max: 100,
-        disableHeader: false
-      })
-    );
-  }
+if (process.env.NODE_ENV === 'production') {
+  server.app.use(helmet());
 
-  return server;
+  server.app.use(
+    ratelimit({
+      driver: 'memory',
+      db: new Map(),
+      duration: 60000,
+      errorMessage: 'Sometimes You Just Have to Slow Down.',
+      id: ctx => ctx.ip,
+      headers: {
+        remaining: 'Rate-Limit-Remaining',
+        reset: 'Rate-Limit-Reset',
+        total: 'Rate-Limit-Total'
+      },
+      max: 100,
+      disableHeader: false
+    })
+  );
 }

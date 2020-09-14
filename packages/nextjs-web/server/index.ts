@@ -1,7 +1,6 @@
 import path from 'path';
 import next from 'next';
-import { bgioServer } from './bgio-server';
-import { game as TicTacToe } from '../games/tic-tac-toe/game';
+import { server } from './bgio-server';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev, dir: path.join(__dirname, '../') });
@@ -10,10 +9,7 @@ const port = Number(process.env.PORT) || 3000;
 
 (async () => {
   try {
-    const games = [TicTacToe];
-
     await app.prepare();
-    const server = bgioServer(games);
 
     server.router.all('*', async ctx => {
       await handle(ctx.req, ctx.res);

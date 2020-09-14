@@ -27,6 +27,7 @@ const handleImport = (name: string) =>
 const onFailure = (error: ApiError) => {
   // match not found
   if (
+    typeof error == 'object' &&
     'response' in error &&
     error.response?.status === 404 &&
     matchStorage.get()
