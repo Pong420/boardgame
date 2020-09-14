@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { defer, empty, Subject, merge, timer } from 'rxjs';
 import { map, catchError, tap, exhaustMap } from 'rxjs/operators';
 import { GameMeta, Match } from '@/typings';
-import { Layout } from '@/components/Layout';
 import { getMatches, usePreferencesState } from '@/services';
 import { Toaster } from '@/utils/toaster';
 import { LobbyHeader } from './LobbyHeader';
@@ -58,21 +57,19 @@ export function Lobby(meta: Props) {
   }, [name, polling]);
 
   return (
-    <Layout>
-      <div className={styles['lobby']}>
-        <LobbyHeader title={`Lobby - ${gameName}`}>
-          <CreateMatch meta={meta} icon="plus" content="Create Match" minimal />
-        </LobbyHeader>
-        {state.length ? (
-          <div className={styles['lobby-content']}>
-            {state.map(match => (
-              <LobbyItem key={match.matchID} meta={meta} {...match} />
-            ))}
-          </div>
-        ) : loading ? null : (
-          <NoMatches meta={meta} />
-        )}
-      </div>
-    </Layout>
+    <div className={styles['lobby']}>
+      <LobbyHeader title={`Lobby - ${gameName}`}>
+        <CreateMatch meta={meta} icon="plus" content="Create Match" minimal />
+      </LobbyHeader>
+      {state.length ? (
+        <div className={styles['lobby-content']}>
+          {state.map(match => (
+            <LobbyItem key={match.matchID} meta={meta} {...match} />
+          ))}
+        </div>
+      ) : loading ? null : (
+        <NoMatches meta={meta} />
+      )}
+    </div>
   );
 }

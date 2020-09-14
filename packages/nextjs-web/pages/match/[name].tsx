@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { GetStaticProps, GetStaticPaths } from 'next';
-import { Layout } from '@/components/Layout';
 import { Match } from '@/components/Match';
 import { Redirect } from '@/components/Redirect';
 import { gameMetaMap, gameMetadata } from '@/games';
@@ -20,12 +19,12 @@ export default function MatchPage({ name }: Props) {
   const [state] = useState<MatchState>(historyState.get());
 
   return (
-    <Layout>
+    <>
       <Head>
         <title>Lobby | {meta.gameName}</title>
       </Head>
       {state && meta ? <Match {...state} /> : <Redirect />}
-    </Layout>
+    </>
   );
 }
 

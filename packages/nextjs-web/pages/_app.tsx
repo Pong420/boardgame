@@ -1,14 +1,17 @@
 import React from 'react';
 import 'typeface-muli';
-import { PreferencesProvider } from '@/services';
 import '@/styles/globals.scss';
+import { PreferencesProvider } from '@/services';
+import { Layout } from '@/components/Layout';
 
 import type { AppProps /*, AppContext */ } from 'next/app';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <PreferencesProvider>
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </PreferencesProvider>
   );
 }

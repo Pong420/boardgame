@@ -1,7 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
 import { GetStaticProps, GetStaticPaths } from 'next';
-import { Layout } from '@/components/Layout';
 import { GameList } from '@/components/GameList';
 import { Lobby } from '@/components/Lobby';
 import { gameMetaMap, gameMetadata } from '@/games';
@@ -17,13 +16,13 @@ interface Props {
 export default function LobbyPage({ name }: Props) {
   const meta = gameMetaMap[name];
   return (
-    <Layout>
+    <>
       <Head>
         <title>Lobby | {meta.gameName}</title>
       </Head>
       <GameList />
       <Lobby {...meta} />
-    </Layout>
+    </>
   );
 }
 
