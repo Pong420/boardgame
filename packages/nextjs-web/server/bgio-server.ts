@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'production') {
     ratelimit({
       driver: 'memory',
       db: new Map(),
-      duration: 60000,
+      duration: 30000,
       errorMessage: 'Sometimes You Just Have to Slow Down.',
       id: ctx => ctx.ip,
       headers: {
@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'production') {
         reset: 'Rate-Limit-Reset',
         total: 'Rate-Limit-Total'
       },
-      max: 100,
+      max: 1000,
       disableHeader: false
     })
   );

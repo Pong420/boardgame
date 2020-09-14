@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "rollup -c -w --environment NODE_ENV:development",
-    "build:server": "rollup -c --environment NODE_ENV:prodction",
+    "build:server": "rollup -c --environment NODE_ENV:production",
     "build:next": "next build",
     "build": "npm run build:next && npm run build:server",
-    "start": "NODE_ENV=production node dist/index.js"
+    "start": "cross-env NODE_ENV=production node dist/index.js"
   },
   "dependencies": {
     "@blueprintjs/core": "^3.31.0",
@@ -33,6 +33,7 @@
     "@types/koa-router": "^7.4.1",
     "@types/node": "^14.10.1",
     "@types/react": "^16.9.49",
+    "cross-env": "^7.0.2",
     "esbuild": "^0.7.1",
     "rollup": "^2.26.11",
     "rollup-plugin-esbuild": "^2.5.0",
