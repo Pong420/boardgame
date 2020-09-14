@@ -3,9 +3,9 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export type IPlayers = StorageAPI.CreateGameOpts['metadata']['players'];
 export type IPlayerMetadata = IPlayers[number];
-export type IMetadata = StorageAPI.CreateGameOpts['metadata'] & Document;
+export type IMetadata = StorageAPI.CreateGameOpts['metadata'];
 
-export interface Metadata extends Document {
+export interface Metadata extends IMetadata, Document {
   matchID: string;
 }
 
