@@ -50,14 +50,13 @@ export function Match(state: MatchState) {
       : Promise.reject('Invalid match');
   }, [state]);
 
-  const [{ data }] = useRxAsync(_getMatch, { onFailure });
-
+  const [{ data, loading }] = useRxAsync(_getMatch, { onFailure });
   const { matchName, spectate } = data || {};
   const { gameName } = gameMetaMap[state.name];
 
   return (
     <div className={styles['match']}>
-      <MatchHeader title={matchName ? `${gameName} - ${matchName}` : gameName}>
+      <MatchHeader title={[gameName, matchName].filter(Boolean).join(' - ')}>
         {'playerName' in state && (
           <ShareButton
             gameName={gameName}
@@ -68,7 +67,13 @@ export function Match(state: MatchState) {
         )}
         <Preferences disablePlayerName />
       </MatchHeader>
-      <MatchContent state={state} spectate={spectate} />
+      {
+        <MatchContent
+          state={state}
+          spectate={spectate}
+          loading={!data || loading}
+        />
+      }
     </div>
   );
 }

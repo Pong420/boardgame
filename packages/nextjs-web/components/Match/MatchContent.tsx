@@ -1,4 +1,5 @@
-import React, { useMemo, Suspense, ReactNode } from 'react';
+import React, { useMemo, ReactNode } from 'react';
+import dynamic from 'next/dynamic';
 import { Game } from 'boardgame.io';
 import { Client } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer';
@@ -9,6 +10,7 @@ import styles from './Match.module.scss';
 interface Props {
   spectate?: boolean;
   state: MatchState;
+  loading?: boolean;
 }
 
 const handleImport = (name: string) =>
@@ -17,24 +19,33 @@ const handleImport = (name: string) =>
     import(`../../games/${name}/board`)
   ]);
 
-export function MatchContent({ spectate, state }: Props) {
+const Loading = () => (
+  <div className={styles['match-content-loading']}>Loading...</div>
+);
+
+export function MatchContent({ loading, spectate, state }: Props) {
   const { ClientComponent } = useMemo(() => {
-    const ClientComponent = React.lazy(() =>
-      handleImport(state.name).then(([{ game }, { Board }]) => ({
-        default: Client({
-          debug: false,
-          game: game as Game,
-          board: Board,
-          loading: () => (
-            <div className={styles['match-content-loading']}>Loading...</div>
-          ),
-          numPlayers: 'local' in state ? state.numPlayers : undefined,
-          multiplayer:
-            'local' in state
-              ? (Local() as any) // FIXME:
-              : SocketIO({ server: window.location.origin })
-        })
-      }))
+    const ClientComponent = dynamic<any>(
+      () =>
+        handleImport(state.name).then(([{ game }, { Board }]) =>
+          Client({
+            debug: false,
+            game: game as Game,
+            board: Board,
+            loading: Loading,
+            numPlayers: 'local' in state ? state.numPlayers : undefined,
+            multiplayer:
+              'local' in state
+                ? (Local() as any) // FIXME:
+                : SocketIO({
+                    server:
+                      typeof window === 'undefined'
+                        ? ''
+                        : window.location.origin
+                  })
+          })
+        ),
+      { loading: Loading }
     );
 
     return { ClientComponent };
@@ -67,6 +78,10 @@ export function MatchContent({ spectate, state }: Props) {
       );
     }
 
+    if (loading) {
+      return <Loading />;
+    }
+
     return <Redirect />;
   };
 
@@ -82,7 +97,7 @@ export function MatchContent({ spectate, state }: Props) {
         .filter(Boolean)
         .join(' ')}
     >
-      <Suspense fallback={null}>{getContent()}</Suspense>
+      {getContent()}
     </div>
   );
 }
