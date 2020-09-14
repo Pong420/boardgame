@@ -1,11 +1,31 @@
-import mongoose, { ConnectionOptions } from 'mongoose';
+import mongoose, { ConnectionOptions, MongooseFilterQuery } from 'mongoose';
 import { Async } from 'boardgame.io/internal';
 import { LogEntry, Server, State, StorageAPI } from 'boardgame.io';
 import { InitialStateModel, StateModel } from './schemas/state';
-import { MetadataModel } from './schemas/metadata';
+import { Metadata, MetadataModel } from './schemas/metadata';
 
 export interface MongoStoreOptions extends ConnectionOptions {
   url: string;
+}
+
+export function getListGamesOptsQuery(
+  opts?: StorageAPI.ListGamesOpts
+): MongooseFilterQuery<Metadata> {
+  const { isGameover, updatedAfter, updatedBefore } = opts?.where || {};
+  return {
+    ...(opts?.gameName ? { gameName: opts.gameName } : {}),
+    ...(typeof isGameover === 'boolean'
+      ? isGameover
+        ? { gameover: { $ne: null } }
+        : { gameover: null }
+      : {}),
+    ...(typeof updatedAfter === 'number'
+      ? { updatedAt: { $gte: updatedAfter } }
+      : {}),
+    ...(typeof updatedBefore === 'number'
+      ? { updatedAt: { $lte: updatedBefore } }
+      : {})
+  };
 }
 
 export class MongoStore extends Async {
@@ -111,23 +131,7 @@ export class MongoStore extends Async {
    * Return all games.
    */
   async listGames(opts?: StorageAPI.ListGamesOpts): Promise<string[]> {
-    const { isGameover, updatedAfter, updatedBefore } = opts?.where || {};
-
-    const result = await MetadataModel.find({
-      ...(opts?.gameName ? { gameName: opts.gameName } : {}),
-      ...(typeof isGameover === 'boolean'
-        ? isGameover
-          ? { gameover: { $ne: null } }
-          : { gameover: null }
-        : {}),
-      ...(typeof updatedAfter === 'number'
-        ? { updatedAt: { $gte: updatedAfter } }
-        : {}),
-      ...(typeof updatedBefore === 'number'
-        ? { updatedAt: { $lte: updatedBefore } }
-        : {})
-    });
-
+    const result = await MetadataModel.find(getListGamesOptsQuery(opts));
     return result.map(m => m.matchID);
   }
 }

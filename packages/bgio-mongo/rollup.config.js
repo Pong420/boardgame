@@ -25,13 +25,13 @@ const config = [
         watch,
         target: 'es2017',
         include: /\.[jt]sx?$/,
-        minify: process.env.NODE_ENV === 'production',
         loaders: {
           '.json': 'json',
           '.js': 'jsx'
         }
       })
-    ]
+    ],
+    external: ['boardgame.io/internal', 'mongoose']
   }
 ];
 

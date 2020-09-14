@@ -1,34 +1,31 @@
-import { State as IState, Ctx, LogEntry } from 'boardgame.io';
-import { prop, getModelForClass } from '@typegoose/typegoose';
-import { Schema } from 'mongoose';
+import { State } from 'boardgame.io';
+import mongoose, { Schema, Document } from 'mongoose';
 
-export class State<G extends any = any, CtxWithPlugins extends Ctx = Ctx> {
-  @prop({ type: String, required: true })
-  matchID: string;
+const StateSchema = new Schema(
+  {
+    matchID: { type: String, required: true, unique: true },
+    G: { type: Schema.Types.Mixed, required: true },
+    ctx: { type: Schema.Types.Mixed, required: true },
+    deltalog: { type: Schema.Types.Mixed },
+    plugins: { type: Schema.Types.Mixed },
+    _undo: { type: Schema.Types.Mixed },
+    _redo: { type: Schema.Types.Mixed },
+    _stateID: { type: Schema.Types.Mixed }
+  },
+  {
+    toJSON: {
+      versionKey: false,
+      transform: (_, { _id, ...rest }) => rest
+    }
+  }
+);
 
-  @prop({ type: Schema.Types.Mixed })
-  G: G;
+export const StateModel = mongoose.model<State & Document>(
+  'State',
+  StateSchema
+);
 
-  @prop({ type: Schema.Types.Mixed })
-  ctx: Ctx | CtxWithPlugins;
-
-  @prop({ type: Schema.Types.Mixed })
-  deltalog?: LogEntry[];
-
-  @prop({ type: Schema.Types.Mixed })
-  plugins: {
-    [pluginName: string]: any;
-  };
-
-  @prop({ type: Schema.Types.Mixed })
-  _undo: IState['_undo'];
-
-  @prop({ type: Schema.Types.Mixed })
-  _redo: IState['_undo'];
-
-  @prop({ type: Number })
-  _stateID: number;
-}
-
-export const StateModel = getModelForClass(State);
-export const InitialStateModel = getModelForClass(State);
+export const InitialStateModel = mongoose.model<State & Document>(
+  'InitialState',
+  StateSchema
+);

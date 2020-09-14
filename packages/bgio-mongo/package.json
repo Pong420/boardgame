@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "main": "dist/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "dist/**/*"
   ],
   "scripts": {
     "dev": "rollup -c -w",
-    "build": "rollup -c && tsc --emitDeclarationOnly "
+    "build": "rollup -c --environment NODE_ENV:production && tsc --emitDeclarationOnly "
   },
   "devDependencies": {
     "@types/mongoose": "^5.7.36",
@@ -20,8 +20,7 @@
     "typescript": "4.0.2"
   },
   "dependencies": {
-    "@typegoose/typegoose": "^7.3.5",
     "boardgame.io": "0.40.0",
-    "mongoose": "^5.10.5"
+    "mongoose": "5.10.5"
   }
 }

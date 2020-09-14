@@ -1,38 +1,35 @@
-import { prop, getModelForClass } from '@typegoose/typegoose';
 import { StorageAPI } from 'boardgame.io';
-import { Schema } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
 export type IPlayers = StorageAPI.CreateGameOpts['metadata']['players'];
 export type IPlayerMetadata = IPlayers[number];
-export type IMetadata = StorageAPI.CreateGameOpts['metadata'];
+export type IMetadata = StorageAPI.CreateGameOpts['metadata'] & Document;
 
-export class Metadata<SetupData = any> implements IMetadata {
-  @prop({ type: String, required: true, unique: true })
+export interface Metadata extends Document {
   matchID: string;
-
-  @prop({ type: String, required: true })
-  gameName: string;
-
-  @prop({ type: Schema.Types.Mixed, required: true })
-  players: IPlayers;
-
-  @prop({ type: Schema.Types.Mixed })
-  setupData?: SetupData;
-
-  @prop({ type: Schema.Types.Mixed })
-  gameover?: unknown;
-
-  @prop({ type: String })
-  nextMatchID?: string;
-
-  @prop({ type: Boolean })
-  unlisted?: boolean;
-
-  @prop({ type: Number })
-  createdAt: number;
-
-  @prop({ type: Number })
-  updatedAt: number;
 }
 
-export const MetadataModel = getModelForClass(Metadata);
+const MetadataSchema = new Schema<Metadata>(
+  {
+    matchID: { type: String, required: true, unique: true },
+    gameName: { type: String, required: true },
+    players: { type: Schema.Types.Mixed, required: true },
+    setupData: { type: Schema.Types.Mixed },
+    gameover: { type: Schema.Types.Mixed },
+    nextMatchID: { type: String },
+    unlisted: { type: Boolean },
+    createdAt: { type: Number },
+    updatedAt: { type: Number }
+  },
+  {
+    toJSON: {
+      versionKey: false,
+      transform: (_, { _id, ...rest }) => rest
+    }
+  }
+);
+
+export const MetadataModel = mongoose.model<Metadata>(
+  'Metadata',
+  MetadataSchema
+);
