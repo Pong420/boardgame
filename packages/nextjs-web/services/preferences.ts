@@ -34,6 +34,8 @@ export function handleTheme(theme: Theme) {
   }
 }
 
+handleTheme(preferencesStorage.get().theme);
+
 type Actions = React.Dispatch<React.SetStateAction<PreferencesState>>;
 
 const StateContext = React.createContext({} as PreferencesState);
