@@ -31,9 +31,9 @@ export function Lobby(meta: Props) {
             const date = new Date();
             date.setHours(date.getHours() - 1);
             return getMatches({
-              name
-              // isGameover: false,
-              // updatedAfter: date.getTime()
+              name,
+              isGameover: false,
+              updatedAfter: date.getTime()
             });
           }).pipe(
             map(response => response.data.matches),
