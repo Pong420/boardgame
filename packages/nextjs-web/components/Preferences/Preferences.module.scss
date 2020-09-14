@@ -1,0 +1,31 @@
+@import '../../styles/scss/index';
+
+@mixin row($height: 50px) {
+  @include dimen(100%);
+  @include flex(center, space-between);
+  @include padding-x(20px);
+  min-height: $height;
+}
+
+.preferences-row {
+  @include row();
+}
+
+.preferences-section:before {
+  @include row(40px);
+}
+
+.preferences-row {
+  background-color: var(--main-color);
+}
+
+.preferences-section:before,
+.preferences-row {
+  border-bottom: $divider;
+}
+
+.preferences-section {
+  &:before {
+    content: attr(data-type);
+  }
+}

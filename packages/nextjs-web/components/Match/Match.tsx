@@ -10,6 +10,7 @@ import { gameMetaMap } from '@/games';
 import { ApiError } from '@/typings';
 import { Redirect } from '../Redirect';
 import { ShareButton } from '../ShareButton';
+import { Preferences } from '../Preferences';
 import { MatchHeader } from './MatchHeader';
 import styles from './Match.module.scss';
 
@@ -131,6 +132,7 @@ export function Match(state: MatchState) {
             playerName={state.playerName}
           />
         )}
+        <Preferences disablePlayerName />
       </MatchHeader>
       <div
         className={[
