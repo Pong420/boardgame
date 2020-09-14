@@ -39,8 +39,9 @@ export type SpectatorState = Common & {
 export type MatchState = LocalMatchState | MultiMatchState | SpectatorState;
 
 export const gotoMatch = (state: MatchState) => {
+  const pathname = `/match/${state.name}/`;
   pushHistoryState(state);
-  return router.push(`/match/${state.name}/`);
+  return router.push({ pathname, query: state }, pathname);
 };
 
 export const gotoSpectate = ({ name, matchID, playerID }: SpectatorState) => {

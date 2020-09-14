@@ -7,7 +7,7 @@
  */
 
 import React, { ReactNode } from 'react';
-// import { PlayAgain } from '@/components/PlayAgain';
+import { PlayAgain } from '@/components/PlayAgain';
 import { TicTacToeBoardProps } from '../typings';
 import styles from './TicTacToeBoard.module.scss';
 
@@ -88,7 +88,7 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
       {winner}
 
       <div className={styles['actions']}>
-        {/* {props.ctx.gameover && props.playerID && <PlayAgain />} */}
+        {props.ctx.gameover && props.playerID && <PlayAgain />}
       </div>
 
       <style jsx global>{`

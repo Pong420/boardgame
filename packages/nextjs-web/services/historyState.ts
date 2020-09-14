@@ -1,6 +1,6 @@
 import router from 'next/router';
 import { fromEventPattern } from 'rxjs';
-import { skip } from 'rxjs/operators';
+import { distinctUntilChanged, skip } from 'rxjs/operators';
 import { createSessionStorage } from '@/utils/storage';
 
 export const historyState = createSessionStorage<any>(
@@ -11,13 +11,16 @@ export const historyState = createSessionStorage<any>(
 export function pushHistoryState(state: any) {
   historyState.save(state);
 
-  const subscription = fromEventPattern(
+  const subscription = fromEventPattern<string>(
     handler => router.events.on('beforeHistoryChange', handler),
     handler => router.events.off('beforeHistoryChange', handler)
   )
-    .pipe(skip(1))
+    .pipe(
+      distinctUntilChanged(), // for play-again
+      skip(1)
+    )
     .subscribe(() => {
-      historyState.save(null);
       subscription.unsubscribe();
+      historyState.save(null);
     });
 }

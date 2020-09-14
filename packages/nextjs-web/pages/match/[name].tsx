@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { GetStaticProps, GetStaticPaths } from 'next';
+import router from 'next/router';
+import { GetServerSideProps } from 'next';
 import { Match } from '@/components/Match';
-import { Redirect } from '@/components/Redirect';
-import { gameMetaMap, gameMetadata } from '@/games';
+import { gameMetaMap } from '@/games';
 import { historyState, MatchState } from '@/services';
 
 type Params = {
@@ -12,33 +12,36 @@ type Params = {
 
 interface Props {
   name: string;
+  matchID?: string;
 }
 
-export default function MatchPage({ name }: Props) {
+export default function MatchPage({ name, matchID }: Props) {
   const meta = gameMetaMap[name];
-  const [state] = useState<MatchState>(historyState.get());
+  const [state, setState] = useState<MatchState>();
+
+  useEffect(() => {
+    const state = historyState.get();
+    state ? setState(state) : router.push('/');
+  }, [matchID]);
 
   return (
     <>
       <Head>
         <title>Lobby | {meta.gameName}</title>
       </Head>
-      {state && meta ? <Match {...state} /> : <Redirect />}
+      {state && meta ? <Match {...state} /> : null}
     </>
   );
 }
 
-export const getStaticPaths: GetStaticPaths<Params> = async () => {
+export const getServerSideProps: GetServerSideProps<Props, Params> = async ({
+  params,
+  query
+}) => {
   return {
-    paths: gameMetadata.map(({ name }) => ({ params: { name } })),
-    fallback: false
+    props: {
+      ...params,
+      matchID: typeof query.matchID === 'string' ? query.matchID : ''
+    }
   };
 };
-
-export const getStaticProps: GetStaticProps<Props, Params> = async ({
-  params
-}) => ({
-  props: {
-    name: params.name
-  }
-});
