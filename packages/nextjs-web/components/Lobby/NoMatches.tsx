@@ -4,7 +4,7 @@ import styles from './Lobby.module.scss';
 
 export function NoMatches(props: Create) {
   return (
-    <div className={styles['styles']}>
+    <div className={styles['no-matches']}>
       <div>
         <div className="message">No Matches Found</div>
         <CreateMatch {...props} intent="primary" text="Create Match" />
