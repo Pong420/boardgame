@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { defer, empty, Subject, merge, timer } from 'rxjs';
-import { map, catchError, tap, exhaustMap } from 'rxjs/operators';
+import { map, catchError, tap, exhaustMap, repeatWhen } from 'rxjs/operators';
 import { GameMeta, Match } from '@/typings';
 import { getMatches, usePreferencesState } from '@/services';
 import { Toaster } from '@/utils/toaster';
+import { ButtonPopover } from '../ButtonPopover';
 import { LobbyHeader } from './LobbyHeader';
 import { LobbyItem } from './LobbyItem';
 import { NoMatches } from './NoMatches';
 import { CreateMatch } from './CreateMatch';
 import styles from './Lobby.module.scss';
-
 interface Props extends GameMeta {}
 
 export function Lobby(meta: Props) {
@@ -22,12 +22,15 @@ export function Lobby(meta: Props) {
   useEffect(() => {
     const subscription = merge(
       subject.current,
-      polling ? timer(0, 5 * 1000) : timer(0)
+      polling
+        ? timer(0, 5 * 1000).pipe(repeatWhen(() => subject.current))
+        : timer(0)
     )
       .pipe(
-        tap(() => setLoading(true)),
-        exhaustMap(value =>
-          defer(() => {
+        map(value => typeof value !== 'number'),
+        exhaustMap(refresh => {
+          refresh && setLoading(true);
+          return defer(() => {
             const date = new Date();
             date.setHours(date.getHours() - 1);
             return getMatches({
@@ -37,22 +40,19 @@ export function Lobby(meta: Props) {
             });
           }).pipe(
             map(response => response.data.matches),
+            tap(() => setLoading(false)),
             catchError(error => {
-              setLoading(false);
-
-              // if the request is not trigger by timer
-              if (typeof value !== 'number') {
+              if (refresh) {
+                setLoading(false);
                 Toaster.apiError('Get Matches Failure', error);
               }
               return empty();
             })
-          )
-        )
+          );
+        })
       )
-      .subscribe(state => {
-        setState(state);
-        setLoading(false);
-      });
+      .subscribe(setState);
+
     return () => subscription.unsubscribe();
   }, [name, polling]);
 
@@ -60,6 +60,13 @@ export function Lobby(meta: Props) {
     <div className={styles['lobby']}>
       <LobbyHeader title={`Lobby - ${gameName}`}>
         <CreateMatch meta={meta} icon="plus" content="Create Match" minimal />
+        <ButtonPopover
+          minimal
+          icon="refresh"
+          content="Refresh"
+          loading={loading}
+          onClick={() => subject.current.next()}
+        />
       </LobbyHeader>
       {state.length ? (
         <div className={styles['lobby-content']}>
