@@ -88,7 +88,9 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
       {winner}
 
       <div className={styles['actions']}>
-        {props.ctx.gameover && props.playerID && <PlayAgain />}
+        {props.isMultiplayer && props.ctx.gameover && props.playerID && (
+          <PlayAgain />
+        )}
       </div>
 
       <style jsx global>{`
