@@ -9,6 +9,7 @@
     "start": "yarn web start",
     "web": "yarn workspace @boardgame/web",
     "db": "yarn workspace bgio-mongo",
+    "e2e": "yarn workspace e2e",
     "dev": "lerna run dev --stream --parallel --ignore bgio-mongo",
     "build": "lerna run build --stream --parallel",
     "postinstall": "lerna run postinstall --stream --parallel",
