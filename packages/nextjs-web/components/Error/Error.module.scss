@@ -1,0 +1,45 @@
+@import '../../styles/scss/index';
+
+.error-page {
+  @include flex($flex-direction: column);
+  @include ink-painting;
+  @include dimen(100%);
+}
+
+.error-page-header {
+  @include header;
+  flex: 0 0 auto;
+}
+
+.error-page-header-title {
+  @include header-title;
+}
+
+.error-page-content {
+  @include flex(center, center);
+  @include sq-dimen(100%);
+  margin: auto;
+  text-align: center;
+
+  :global {
+    @media (max-width: 768px) {
+      @include padding-x(5vw);
+      .message {
+        font-size: 8vw;
+      }
+    }
+
+    @media (min-width: 769px) {
+      @include padding-x(60px);
+      .message {
+        font-size: 65px;
+      }
+    }
+  }
+}
+
+.github {
+  display: block;
+  font-size: 40px;
+  margin-top: 20px;
+}
