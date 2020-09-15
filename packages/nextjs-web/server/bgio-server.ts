@@ -1,16 +1,44 @@
+import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
 import helmet from 'koa-helmet';
 import ratelimit from 'koa-ratelimit';
 import { Server } from 'boardgame.io/server';
 import { MongoStore } from 'bgio-mongo';
+import { SetupData } from '@/typings';
 import { FlatFile } from './flatfile';
 import { game as TicTacToe } from '../games/tic-tac-toe/game';
 import { overrideGetMatches } from './overrideGetMatches';
 
+[
+  '.env',
+  '.env.local',
+  `.env.${process.env.NODE_ENV || 'development'}`,
+  `.env.${process.env.NODE_ENV || 'development'}.local`
+].forEach(filiname => {
+  try {
+    const envConfig = dotenv.parse(
+      fs.readFileSync(path.resolve(__dirname, '../', filiname))
+    );
+    for (const k in envConfig) {
+      process.env[k] = envConfig[k];
+    }
+  } catch (error) {}
+});
+
 const db = process.env.MONGODB_URL
   ? new MongoStore({
       url: process.env.MONGODB_URL,
-      dbName: 'boardgame'
+      dbName: 'boardgame',
+      preCreateGame: async ({ metadata }) => {
+        const data: Partial<SetupData> | undefined = metadata.setupData;
+        const validation = () => {
+          if (!data) return 'SetupData is not defined';
+          if (!data.matchName) return 'Missting Match Name';
+        };
+        const error = validation();
+        if (error) throw new Error(error);
+      }
     })
   : new FlatFile({
       dir: path.resolve(__dirname, './match-storage'),

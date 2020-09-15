@@ -27,6 +27,7 @@
   "devDependencies": {
     "@rollup/plugin-run": "^2.0.2",
     "@svgr/webpack": "^5.4.0",
+    "@types/dotenv": "^8.2.0",
     "@types/koa": "^2.11.4",
     "@types/koa-helmet": "^5.2.0",
     "@types/koa-ratelimit": "^4.2.1",
@@ -34,6 +35,7 @@
     "@types/node": "^14.10.1",
     "@types/react": "^16.9.49",
     "cross-env": "^7.0.2",
+    "dotenv": "^8.2.0",
     "esbuild": "^0.7.1",
     "rollup": "^2.26.11",
     "rollup-plugin-esbuild": "^2.5.0",

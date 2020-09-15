@@ -38,13 +38,14 @@ export function overrideGetMatches(router: Router) {
       }
     }
 
+    const sort: keyof LobbyAPI.Match = 'createdAt';
     const _matches = await MetadataModel.find({
       unlisted: false,
       ...getListGamesOptsQuery({
         gameName,
         where: { isGameover, updatedAfter, updatedBefore }
       })
-    });
+    }).sort({ [sort]: 1 });
 
     const body: LobbyAPI.MatchList = {
       matches: _matches.map<LobbyAPI.Match>(metadata => {
