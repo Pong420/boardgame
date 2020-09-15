@@ -4,7 +4,7 @@ import { GetServerSideProps } from 'next';
 import { Error } from '@/components/Error/Error';
 
 type Params = {
-  message: string;
+  message?: string;
 };
 
 interface Props extends Params {}

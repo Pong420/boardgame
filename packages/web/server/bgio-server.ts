@@ -3,6 +3,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import helmet from 'koa-helmet';
 import ratelimit from 'koa-ratelimit';
+import { Game } from 'boardgame.io';
 import { Server } from 'boardgame.io/server';
 import { MongoStore } from 'bgio-mongo';
 import { SetupData } from '@/typings';
@@ -45,7 +46,7 @@ const db = process.env.MONGODB_URL
       logging: true
     });
 
-const games = [TicTacToe];
+const games = [TicTacToe] as Game[];
 
 export const server = Server({ db, games });
 

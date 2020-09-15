@@ -159,7 +159,7 @@ export function CreateMatch({ meta, content, ...props }: Props) {
         name,
         playerID: '0',
         playerName: store.playerName,
-        unlisted: store.unlisted
+        unlisted: !!store.unlisted
       };
       await gotoMatch(state);
       matchStorage.save(state);

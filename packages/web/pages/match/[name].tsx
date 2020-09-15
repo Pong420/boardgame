@@ -11,12 +11,12 @@ type Params = {
 };
 
 interface Props {
-  name: string;
+  name?: string;
   matchID?: string;
 }
 
 export default function MatchPage({ name, matchID }: Props) {
-  const meta = gameMetaMap[name];
+  const meta = name && gameMetaMap[name];
   const [state, setState] = useState<MatchState>();
 
   useEffect(() => {
@@ -24,14 +24,18 @@ export default function MatchPage({ name, matchID }: Props) {
     state ? setState(state) : router.push('/');
   }, [matchID]);
 
-  return (
-    <>
-      <Head>
-        <title>Boardgame | Match | {meta.gameName}</title>
-      </Head>
-      {state && meta ? <Match {...state} /> : null}
-    </>
-  );
+  if (meta) {
+    return (
+      <>
+        <Head>
+          <title>Boardgame | Match | {meta.gameName}</title>
+        </Head>
+        {state && meta ? <Match {...state} /> : null}
+      </>
+    );
+  }
+
+  return null;
 }
 
 export const getServerSideProps: GetServerSideProps<Props, Params> = async ({

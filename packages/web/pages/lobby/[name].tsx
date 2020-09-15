@@ -10,20 +10,23 @@ type Params = {
 };
 
 interface Props {
-  name: string;
+  name?: string;
 }
 
 export default function LobbyPage({ name }: Props) {
-  const meta = gameMetaMap[name];
-  return (
-    <>
-      <Head>
-        <title>Boardgame | Lobby | {meta.gameName}</title>
-      </Head>
-      <GameList />
-      <Lobby {...meta} />
-    </>
-  );
+  const meta = name && gameMetaMap[name];
+  if (meta) {
+    return (
+      <>
+        <Head>
+          <title>Boardgame | Lobby | {meta.gameName}</title>
+        </Head>
+        <GameList />
+        <Lobby {...meta} />
+      </>
+    );
+  }
+  return null;
 }
 
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
@@ -37,6 +40,6 @@ export const getStaticProps: GetStaticProps<Props, Params> = async ({
   params
 }) => ({
   props: {
-    name: params.name
+    ...params
   }
 });
