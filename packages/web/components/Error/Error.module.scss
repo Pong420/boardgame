@@ -16,20 +16,22 @@
 }
 
 .error-page-content {
+  $max-width: 1280px;
   @include flex(center, center);
   @include sq-dimen(100%);
+  max-width: $max-width;
   margin: auto;
   text-align: center;
 
   :global {
-    @media (max-width: 768px) {
+    @media (max-width: $max-width) {
       @include padding-x(5vw);
       .message {
         font-size: 8vw;
       }
     }
 
-    @media (min-width: 769px) {
+    @media (min-width: $max-width + 1) {
       @include padding-x(60px);
       .message {
         font-size: 65px;
