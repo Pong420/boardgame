@@ -30,9 +30,10 @@ export const number: Validator = (_, value) =>
     ? Promise.resolve()
     : Promise.reject('Plase input number only');
 
-export const integer = (
-  msg: string = 'Plase input integer only'
-): Validator => (_, value) =>
+export const integer = (msg = 'Plase input integer only'): Validator => (
+  _,
+  value
+) =>
   value === '' || isNaN(Number(value)) || /^(-)?\d*$/.test(value)
     ? Promise.resolve()
     : Promise.reject(msg);
@@ -85,7 +86,7 @@ export const maxLength = lengthComparation(
 );
 
 export const passwordFormat = (
-  msg: string = 'Password must contain number and english character'
+  msg = 'Password must contain number and english character'
 ): Validator => (_, value) =>
   /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z_]{6,20}$/.test(value)
     ? Promise.resolve()
