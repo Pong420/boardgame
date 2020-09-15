@@ -18,17 +18,17 @@ function createStorage<T>(storage?: WebStorage) {
       constructor(private value: T) {}
 
       get() {
-        if (typeof _storage === 'undefined') {
-          return this.value;
+        if (typeof _storage !== 'undefined') {
+          this.value = JSONParse<T>(_storage.getItem(key) || '', this.value);
         }
-        this.value = JSONParse<T>(_storage.getItem(key) || '', this.value);
+        return this.value;
       }
 
       save(newValue: T) {
-        if (typeof _storage === 'undefined') {
-          this.value = newValue;
+        if (typeof _storage !== 'undefined') {
+          _storage.setItem(key, JSON.stringify(newValue));
         }
-        _storage.setItem(key, JSON.stringify(newValue));
+        this.value = newValue;
       }
     }
 

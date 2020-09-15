@@ -81,7 +81,8 @@ export function leaveMatchAndRedirect(
         ),
         catchError((error: AxiosError) =>
           error.response?.status === 403 ? leave() : throwError(error)
-        )
+        ),
+        switchMap(() => leave())
       )
       .toPromise();
   }
