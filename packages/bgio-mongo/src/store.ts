@@ -6,7 +6,10 @@ import { Metadata, MetadataModel } from './schemas/metadata';
 
 export interface MongoStoreOptions extends ConnectionOptions {
   url: string;
+  preCreateGame?: PreCreateGame;
 }
+
+export type PreCreateGame = (opts: StorageAPI.CreateGameOpts) => Promise<void>;
 
 export function getListGamesOptsQuery(
   opts?: StorageAPI.ListGamesOpts
@@ -48,6 +51,10 @@ export class MongoStore extends Async {
     matchID: string,
     opts: StorageAPI.CreateGameOpts
   ): Promise<void> {
+    await (this.options.preCreateGame
+      ? this.options.preCreateGame(opts)
+      : Promise.resolve());
+
     const statePayload = { matchID, ...opts.initialState };
     const initialState = new InitialStateModel(statePayload);
     const state = new StateModel(statePayload);
