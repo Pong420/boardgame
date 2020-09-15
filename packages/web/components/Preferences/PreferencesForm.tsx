@@ -3,7 +3,6 @@ import { Tooltip } from '@blueprintjs/core';
 import { Switch } from '@/components/Input';
 import { createForm } from '@/utils/form';
 import {
-  Theme,
   PreferencesState,
   preferencesStorage,
   usePreferencesAction

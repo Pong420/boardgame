@@ -1,9 +1,6 @@
 import React, { useState, ProviderProps, useEffect, useRef } from 'react';
 import { createLocalStorage } from '../utils/storage';
 
-export type Theme = 'light' | 'dark';
-export type ScreenWidth = 'stretch' | 'limited';
-
 export interface PreferencesState {
   theme: Theme;
   screenWidth: ScreenWidth;
@@ -11,30 +8,18 @@ export interface PreferencesState {
   polling?: boolean;
 }
 
-export const BOARDGAME_THEME = 'BOARDGAME_THEME';
-
-export const themeStorage = createLocalStorage<Theme>(BOARDGAME_THEME, 'dark');
-
 const initialState: PreferencesState = {
   playerName: '',
-  screenWidth: 'limited',
   polling: true,
-  theme: themeStorage.get()
+  theme: typeof window === 'undefined' ? 'dark' : window.__initialTheme,
+  screenWidth:
+    typeof window === 'undefined' ? 'limited' : window.__initialScreenWidth
 };
 
 export const preferencesStorage = createLocalStorage<PreferencesState>(
   'BOARDGAME_PREFERENCE',
   initialState
 );
-
-export function handleTheme(theme: Theme) {
-  if (typeof document !== 'undefined') {
-    document.documentElement.setAttribute('data-theme', theme);
-    document.documentElement.classList[theme === 'dark' ? 'add' : 'remove'](
-      'bp3-dark'
-    );
-  }
-}
 
 type Actions = React.Dispatch<React.SetStateAction<PreferencesState>>;
 
@@ -62,22 +47,19 @@ export const PreferencesProvider: React.FC = ({ children }) => {
   useEffect(() => {
     const value = preferencesStorage.get();
     setPreferences(value);
-    handleTheme(value.theme);
   }, []);
 
   useEffect(() => {
     // mainly for big-two
     if (previous.current.screenWidth !== preferences.screenWidth) {
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new Event('resize'));
-      }
+      window.dispatchEvent(new Event('resize'));
+      window.__setScreenWidth(preferences.screenWidth);
     }
 
     if (previous.current.theme !== preferences.theme) {
-      handleTheme(preferences.theme);
+      window.__setTheme(preferences.theme);
     }
 
-    themeStorage.save(preferences.theme);
     preferencesStorage.save(preferences);
 
     previous.current = preferences;

@@ -1,7 +1,6 @@
 import React, { ChangeEvent } from 'react';
 import { Control } from '@/utils/form';
 import { Switch, ISwitchProps } from '@/components/Input';
-import { Theme } from '@/services';
 
 export function ThemeSwitch({
   value,

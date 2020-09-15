@@ -4,8 +4,6 @@
 @import './scss/index';
 @import './blueprint';
 
-
-
 :root {
   --main-color: #fff;
   --main-diff1-color: #f6f6f6;
@@ -76,4 +74,18 @@ a,
 a:hover {
   text-decoration: none;
   color: inherit;
+}
+
+.layout {
+  @include sq-dimen(100%);
+  @include flex();
+  margin: auto;
+  border-left: $divider;
+  border-right: $divider;
+}
+
+[data-screen-width^='limited'] {
+  .layout {
+    max-width: 1280px;
+  }
 }

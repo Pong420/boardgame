@@ -11,8 +11,6 @@
   @include flex(center, center);
   @include padding-x(15px);
   border-bottom: $divider;
-
-  
 }
 
 @mixin header-title() {
