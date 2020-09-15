@@ -41,6 +41,7 @@ export function Invitation({ name, matchID }: Props) {
           <JoinMatch
             name={match.gameName}
             matchID={match.matchID}
+            unlisted={match.unlisted}
             playerID={String(nextPlayerID)}
           />
         </div>

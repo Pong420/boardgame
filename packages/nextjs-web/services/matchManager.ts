@@ -28,6 +28,7 @@ export type MultiMatchState = Common & {
   playerID: string;
   credentials: string;
   playerName: string;
+  unlisted: boolean;
 };
 
 export type SpectatorState = Common & {

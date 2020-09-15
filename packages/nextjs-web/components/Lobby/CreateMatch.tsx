@@ -158,7 +158,8 @@ export function CreateMatch({ meta, content, ...props }: Props) {
         ...payload,
         name,
         playerID: '0',
-        playerName: store.playerName
+        playerName: store.playerName,
+        unlisted: store.unlisted
       };
       await gotoMatch(state);
       matchStorage.save(state);

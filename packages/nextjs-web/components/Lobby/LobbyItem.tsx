@@ -14,7 +14,8 @@ export function LobbyItem({
   matchID,
   setupData,
   updatedAt,
-  players
+  players,
+  unlisted
 }: Props) {
   const [nextPlayers, playerJoined] = players.reduce(
     (result, p) => {
@@ -53,6 +54,7 @@ export function LobbyItem({
               <JoinMatch
                 name={name}
                 matchID={matchID}
+                unlisted={unlisted}
                 playerID={String(nextPlayers[0]?.id)}
               />
             ) : (
