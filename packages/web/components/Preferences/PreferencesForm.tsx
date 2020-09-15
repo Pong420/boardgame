@@ -10,7 +10,7 @@ import {
 import { ThemeSwitch } from './ThemeSwitch';
 import { ScreenWidthSelect } from './ScreenWidthSelect';
 import { PlayerNameControl } from '../PlayerNameControl';
-import styles from './preferences.module.scss';
+import styles from './Preferences.module.scss';
 
 interface Strore extends PreferencesState {
   theme: Theme;
