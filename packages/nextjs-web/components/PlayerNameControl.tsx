@@ -31,6 +31,7 @@ export const getPlayerName = (props?: Partial<DialogProps>) => {
 export function PlayerNameDialog({
   initialValues,
   onConfirm,
+  onClosed,
   ...props
 }: DialogProps) {
   const [form] = useForm();
@@ -40,7 +41,10 @@ export function PlayerNameDialog({
       onConfirm={() =>
         form.validateFields().then(({ playerName }) => onConfirm(playerName))
       }
-      onClosed={() => form.resetFields()}
+      onClosed={(...args) => {
+        onClosed && onClosed(...args);
+        form.resetFields();
+      }}
     >
       <Form form={form} initialValues={initialValues}>
         <FormItem

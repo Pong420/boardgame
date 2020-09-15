@@ -32,11 +32,7 @@ export function createOpenDialog<T extends DialogProps>(
 
     function render({ children, ...props }: any) {
       ReactDOM.render(
-        React.createElement(
-          DialogComponent,
-          { ...props, usePortal: false, portalContainer: div },
-          children
-        ),
+        React.createElement(DialogComponent, { ...props }, children),
         div
       );
     }

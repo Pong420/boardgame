@@ -84,7 +84,7 @@ export function ConfirmDialog({
       onClose={onClose}
       canEscapeKeyClose={!loading}
       canOutsideClickClose={!loading}
-      className={`confirm-dialog ${className}`.trim()}
+      className={`confirm-dialog ${Classes.OVERLAY_SCROLL_CONTAINER} ${className}`.trim()}
     >
       <div className={Classes.DIALOG_BODY}>{children}</div>
       <div className={Classes.DIALOG_FOOTER}>
