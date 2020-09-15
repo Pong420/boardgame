@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { stringify } from 'qs';
 import { Button, ButtonGroup, Classes, Dialog } from '@blueprintjs/core';
 import { useBoolean } from '@/hooks/useBoolean';
 import { ButtonPopover } from './ButtonPopover';
@@ -16,9 +15,9 @@ interface Props {
 
 const buttonStyle = { fontSize: 18 };
 
-export function ShareButton({ playerName, gameName, ...props }: Props) {
+export function ShareButton({ playerName, gameName, matchID, name }: Props) {
   const [isOpen, openDialog, closeDialog] = useBoolean();
-  const url = `${window.location.origin}/invitation?${stringify(props)}`;
+  const url = `${window.location.origin}/invitation/${name}/${matchID}`;
   const text = `${playerName} inviate you to join the ${gameName} match`;
   const inputRef = useRef<HTMLInputElement>(null);
 
