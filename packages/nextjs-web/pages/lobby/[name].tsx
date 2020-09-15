@@ -18,7 +18,7 @@ export default function LobbyPage({ name }: Props) {
   return (
     <>
       <Head>
-        <title>Lobby | {meta.gameName}</title>
+        <title>Boardgame | Lobby | {meta.gameName}</title>
       </Head>
       <GameList />
       <Lobby {...meta} />

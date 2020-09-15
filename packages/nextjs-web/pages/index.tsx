@@ -7,7 +7,7 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <title>Boardgame</title>
+        <title>Boardgame | Home</title>
       </Head>
       <GameList />
       <Home />

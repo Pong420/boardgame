@@ -27,7 +27,7 @@ export default function MatchPage({ name, matchID }: Props) {
   return (
     <>
       <Head>
-        <title>Lobby | {meta.gameName}</title>
+        <title>Boardgame | Match | {meta.gameName}</title>
       </Head>
       {state && meta ? <Match {...state} /> : null}
     </>
