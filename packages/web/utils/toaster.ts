@@ -7,7 +7,8 @@ import {
   IToastProps,
   IToasterProps,
   IToastOptions,
-  Toaster as BpToaster
+  Toaster as BpToaster,
+  IToaster
 } from '@blueprintjs/core';
 import { ApiError } from '../typings';
 import { getErrorMessage } from './getErrorMessage';
@@ -29,7 +30,7 @@ const toasterSubject = new Subject<IToastProps>();
 toasterSubject
   .pipe(
     concatMap(props => {
-      toaster!.show(props);
+      (toaster as IToaster).show(props);
       return timer(500);
     })
   )
@@ -63,7 +64,7 @@ export const Toaster = {
       message: renderMessage('Error', options.message)
     });
   },
-  apiError(prefix: string = '', error: ApiError | string) {
+  apiError(prefix = '', error: ApiError | string) {
     toasterSubject.next({
       ...defaultOptions,
       className: 'api-error-toaster',

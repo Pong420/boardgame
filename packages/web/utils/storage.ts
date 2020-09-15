@@ -9,7 +9,7 @@ export interface Storage<T> {
 type WebStorage = typeof localStorage | typeof sessionStorage;
 
 function createStorage<T>(storage?: WebStorage) {
-  const _storage = storage!;
+  const _storage = storage as WebStorage;
 
   return (key: string, defaultValue: T) => {
     class _Storage<T> implements Storage<T> {
@@ -18,17 +18,17 @@ function createStorage<T>(storage?: WebStorage) {
       constructor(private value: T) {}
 
       get() {
-        if (typeof _storage !== 'undefined') {
-          this.value = JSONParse<T>(_storage.getItem(key) || '', this.value);
+        if (typeof _storage === 'undefined') {
+          return this.value;
         }
-        return this.value;
+        this.value = JSONParse<T>(_storage.getItem(key) || '', this.value);
       }
 
       save(newValue: T) {
-        if (typeof _storage !== 'undefined') {
-          _storage.setItem(key, JSON.stringify(newValue));
+        if (typeof _storage === 'undefined') {
+          this.value = newValue;
         }
-        this.value = newValue;
+        _storage.setItem(key, JSON.stringify(newValue));
       }
     }
 

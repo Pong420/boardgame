@@ -15,7 +15,7 @@ export interface ButtonPopoverProps
 
 export const ButtonPopover = React.forwardRef<any, ButtonPopoverProps>(
   ({ popoverProps, content, position, disabled, ...props }, ref) => {
-    const button = <Button disabled={disabled} {...props} />;
+    const button = <Button disabled={disabled} {...props} ref={ref} />;
 
     return content ? (
       <Popover

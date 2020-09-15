@@ -6,10 +6,9 @@
   "repository": "https://github.com/Pong420/fullstack.git",
   "author": "Pong <samfunghp@gmail.com>",
   "scripts": {
-    "start": "yarn server start",
+    "start": "yarn web start",
     "web": "yarn workspace @boardgame/web",
-    "server": "yarn workspace @boardgame/server",
-    "dev": "lerna run dev --stream --parallel",
+    "dev": "lerna run dev --stream --parallel --ignore bgio-mongo",
     "build": "lerna run build --stream --parallel",
     "postinstall": "lerna run postinstall --stream --parallel",
     "heroku-postbuild": "yarn build"
@@ -40,8 +39,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "yarn web lint:types"
+      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {

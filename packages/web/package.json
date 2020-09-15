@@ -1,5 +1,5 @@
 {
-  "name": "nextjs-web",
+  "name": "@boardgame/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,8 @@
     "build:server": "rollup -c --environment NODE_ENV:production",
     "build:next": "next build",
     "build": "npm run build:next && npm run build:server",
-    "start": "cross-env NODE_ENV=production node dist/index.js"
+    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "lint": "eslint ./**/*.ts?(x)"
   },
   "dependencies": {
     "@blueprintjs/core": "^3.31.0",
