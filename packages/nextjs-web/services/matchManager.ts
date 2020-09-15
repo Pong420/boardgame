@@ -1,6 +1,6 @@
 import router from 'next/router';
 import { AxiosError } from 'axios';
-import { fromEvent, defer, empty, timer, throwError, of } from 'rxjs';
+import { fromEvent, defer, empty, timer, throwError } from 'rxjs';
 import {
   filter,
   exhaustMap,
@@ -80,9 +80,8 @@ export function leaveMatchAndRedirect(
           )
         ),
         catchError((error: AxiosError) =>
-          error.response?.status === 403 ? of([]) : throwError(error)
-        ),
-        switchMap(() => leave())
+          error.response?.status === 403 ? leave() : throwError(error)
+        )
       )
       .toPromise();
   }
