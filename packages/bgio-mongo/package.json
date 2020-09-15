@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "rollup -c -w",
-    "build": "rollup -c --environment NODE_ENV:production && tsc --emitDeclarationOnly "
+    "build": "rollup -c --environment NODE_ENV:production && tsc --emitDeclarationOnly"
   },
   "devDependencies": {
     "@types/mongoose": "^5.7.36",
