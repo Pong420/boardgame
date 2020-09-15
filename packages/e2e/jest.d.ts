@@ -41,4 +41,11 @@ declare global {
   const testUrl: string;
 }
 
+declare module 'puppeteer' {
+  // eslint-disable-next-line
+  export interface Page {
+    waitForTimeout(duration: number): Promise<void>;
+  }
+}
+
 export {};
