@@ -26,9 +26,8 @@ class MyDocument extends Document {
               (() => {
                 function get(key, defaultValue) {
                   try {
-                    return localStorage.getItem(key);
+                    return localStorage.getItem(key) || defaultValue;
                   } catch (error) {
-                    console.log(error)
                     return defaultValue;
                   }
                 }
