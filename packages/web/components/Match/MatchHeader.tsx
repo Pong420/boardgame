@@ -1,4 +1,5 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
+import router from 'next/router';
 import { useRxAsync } from 'use-rx-hooks';
 import { Button } from '@blueprintjs/core';
 import { ButtonPopover } from '@/components/ButtonPopover';
@@ -18,6 +19,20 @@ function LeaveMatchButton() {
     defer: true,
     onFailure
   });
+
+  useEffect(() => {
+    function handler() {
+      const state = matchStorage.get();
+      if (state) {
+        fetch(state);
+        router.events.emit('routeChangeError');
+        // eslint-disable-next-line
+        throw `Route change aborted, leaving match`;
+      }
+    }
+    router.events.on('routeChangeStart', handler);
+    return () => router.events.off('routeChangeStart', handler);
+  }, [fetch]);
 
   return (
     <ButtonPopover
