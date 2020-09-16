@@ -27,9 +27,9 @@ import { overrideGetMatches } from './overrideGetMatches';
   } catch (error) {}
 });
 
-const db = process.env.MONGODB_URL
+const db = process.env.MONGODB_URI
   ? new MongoStore({
-      url: process.env.MONGODB_URL,
+      url: process.env.MONGODB_URI,
       dbName: 'boardgame',
       preCreateGame: async ({ metadata }) => {
         const data: Partial<SetupData> | undefined = metadata.setupData;

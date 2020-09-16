@@ -20,7 +20,7 @@ yarn dev
 By default, data are store at `packages/web/dist/match-storage`. To connect to a database (mongodb) create a file named `.env.local` into `packages/web` and set your `mongodb` url
 
 ```
-MONGODB_URL = mongodb+srv://...
+MONGODB_URI = mongodb+srv://...
 ```
 
 if your are fist-time to clone the repo, you may also run
