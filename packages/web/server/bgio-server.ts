@@ -30,7 +30,6 @@ import { overrideGetMatches } from './overrideGetMatches';
 const db = process.env.MONGODB_URI
   ? new MongoStore({
       url: process.env.MONGODB_URI,
-      dbName: 'boardgame',
       preCreateGame: async ({ metadata }) => {
         const data: Partial<SetupData> | undefined = metadata.setupData;
         const validation = () => {

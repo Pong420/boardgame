@@ -42,7 +42,6 @@ export class MongoStore extends Async {
     await mongoose.connect(url, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      dbName: 'boardgmae',
       ...options
     });
   }

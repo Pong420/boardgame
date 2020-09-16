@@ -7,8 +7,7 @@ import { Server } from "boardgame.io/server";
 import { MongoStorre } from "bgio-mongo";
 
 const db = new MongoStorre({
-  url: 'mongodb+srv://...'
-  dbName: 'boardgame' // default 'boardgame'
+  url: 'mongodb://...'
 });
 
 const server = Server({
