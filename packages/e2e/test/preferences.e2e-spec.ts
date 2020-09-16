@@ -1,23 +1,25 @@
-const headingSelector = `//h4[text()="Preferences"]`;
-const dialogSelector = `${headingSelector}/../..`;
-const allRowSelector = `${dialogSelector}//div[contains(@class, "preferences-row")]`;
-const rowSelector = (label: string) =>
-  `${allRowSelector}[.//*[text()="${label}"]]`;
-const rowValueSelector = (label: string) => `${rowSelector(label)}//div[2]/*`;
-
-const openDialog = async () => {
-  const [button] = await page.$x("//span[@icon='settings']/..");
-  await button.click();
-  await page.waitForTimeout(300);
-};
-
-const closeDialog = async () => {
-  const [close] = await page.$x(`${headingSelector}/following-sibling::button`);
-  await close.click();
-  await page.waitForTimeout(300);
-};
-
 describe('Preference', () => {
+  const headingSelector = `//h4[text()="Preferences"]`;
+  const dialogSelector = `${headingSelector}/../..`;
+  const allRowSelector = `${dialogSelector}//div[contains(@class, "preferences-row")]`;
+  const rowSelector = (label: string) =>
+    `${allRowSelector}[.//*[text()="${label}"]]`;
+  const rowValueSelector = (label: string) => `${rowSelector(label)}//div[2]/*`;
+
+  const openDialog = async () => {
+    const [button] = await page.$x("//span[@icon='settings']/..");
+    await button.click();
+    await page.waitForTimeout(300);
+  };
+
+  const closeDialog = async () => {
+    const [close] = await page.$x(
+      `${headingSelector}/following-sibling::button`
+    );
+    await close.click();
+    await page.waitForTimeout(300);
+  };
+
   beforeAll(async () => {
     await expect(page).goto('/');
     await openDialog();

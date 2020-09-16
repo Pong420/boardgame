@@ -17,6 +17,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["test", "matchers", "./jest.d.ts"],
+  "include": ["test", "utils", "matchers", "./jest.d.ts"],
   "exclude": ["node_modules"]
 }

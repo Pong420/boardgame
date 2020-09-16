@@ -1,7 +1,5 @@
-// @ts-check
 const { defaults: tsjPreset } = require('ts-jest/presets');
 
-/** @type {import('ts-jest')}  */
 module.exports = {
   displayName: 'e2e',
   globalSetup: 'jest-environment-puppeteer/setup',
@@ -15,6 +13,9 @@ module.exports = {
     '<rootDir>/jest.setup.ts',
     '<rootDir>/matchers/index.ts'
   ],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1'
+  },
   transform: {
     ...tsjPreset.transform
   },
