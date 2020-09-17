@@ -18,7 +18,7 @@ export const Layout = ({ children }: LayoutProps) => {
     const subscription = defer(() => {
       if (storageSupport()) {
         const state = matchStorage.get();
-        if (state) {
+        if (state && !router.asPath.startsWith('/match')) {
           return gotoMatch(state);
         }
       } else {
