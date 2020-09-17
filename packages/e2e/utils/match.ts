@@ -44,22 +44,25 @@ const fillText = async (el: ElementHandle, value: string, clear = true) => {
       (el as HTMLInputElement).setSelectionRange(0, 999999999)
     );
   }
-  await el.type(value);
+  await el.type(value, { delay: 50 });
 };
 
 export const createMatchForm = ((): FormHandlers => {
   const local: FormHandlers['local'] = async () => {
-    const [handler] = await page.$x(`//label[text()="Local"]/input`);
+    const handler = await page.waitForXPath(`//label[text()="Local"]/input`);
     return { handler, fill: value => handleCheckbox(handler, value) };
   };
 
   const playerName: FormHandlers['playerName'] = async () => {
-    const [handler] = await page.$x(`//div[label[text()="Your Name"]]//button`);
-    await handler.click();
-    const playerNameInput = await page.waitForXPath(
-      `//div[label[text()="Your Name"]]//input`,
-      { visible: true }
+    const handler = await page.waitForXPath(
+      `//div[label[text()="Your Name"]]//button`
     );
+    const [playerNameInput] = await Promise.all([
+      page.waitForXPath(`//div[label[text()="Your Name"]]//input`, {
+        visible: true
+      }),
+      handler.click()
+    ]);
 
     return {
       handler,
@@ -69,6 +72,7 @@ export const createMatchForm = ((): FormHandlers => {
           `//button[.//span[text()="Confirm"]]`
         );
         await confirmPlayerName.click();
+        await page.waitForTimeout(300);
       }
     };
   };
@@ -99,7 +103,7 @@ export const createMatchForm = ((): FormHandlers => {
     );
     return {
       handler,
-      fill: value => handler.select(value)
+      fill: value => handler.type(value, { delay: 50 })
     };
   };
 
@@ -154,6 +158,27 @@ export const createMatch = async (options: FormOptions) => {
 
 export const leaveMatch = async () => {
   await expect(page).isMatch();
-  await expect(page).goBack();
-  await page.waitForNavigation();
+  await Promise.all([
+    //
+    page.waitForNavigation(),
+    expect(page).goBack()
+  ]);
+};
+
+export const getMatches = async (
+  _page = page,
+  by?: { matchName?: string; description?: string }
+) => {
+  await expect(_page).isLobby();
+
+  const selectors = [`//div[contains(@class, "bp3-card")]`];
+
+  if (by?.matchName) {
+    selectors.push(`[.//div[text()="${by.matchName}"]]`);
+  }
+  if (by?.description) {
+    selectors.push(`[.//div[text()="${by.description}"]]`);
+  }
+
+  return await _page.$x(selectors.join(''));
 };
