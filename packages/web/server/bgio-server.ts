@@ -51,7 +51,7 @@ export async function startBgioServer({
       })
     : new FlatFile({
         dir: path.resolve(__dirname, './match-storage'),
-        logging: true
+        logging: false
       });
 
   const server = Server({ db, games });
