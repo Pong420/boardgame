@@ -36,7 +36,7 @@ class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
     const mongoUri = await this.mongod.getUri();
     this.stopDevServer = await startServer({
       dev: false,
-      port: 3000,
+      port: 3001,
       mongoUri
     });
   }
