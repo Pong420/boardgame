@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { defer, empty, Subject, merge, timer } from 'rxjs';
-import { map, catchError, tap, exhaustMap, repeatWhen } from 'rxjs/operators';
+import { defer, empty, Subject, timer } from 'rxjs';
+import {
+  map,
+  catchError,
+  tap,
+  exhaustMap,
+  startWith,
+  switchMap
+} from 'rxjs/operators';
 import { GameMeta, Match } from '@/typings';
 import { getMatches, usePreferencesState } from '@/services';
 import { Toaster } from '@/utils/toaster';
@@ -20,13 +27,21 @@ export function Lobby(meta: Props) {
   const subject = useRef(new Subject());
 
   useEffect(() => {
-    const subscription = merge(
-      subject.current,
-      polling
-        ? timer(0, 5 * 1000).pipe(repeatWhen(() => subject.current))
-        : timer(0)
-    )
+    if (polling) {
+      const subscription = subject.current
+        .pipe(
+          startWith(-1),
+          switchMap(() => timer(5 * 1000))
+        )
+        .subscribe(idx => subject.current.next(idx));
+      return () => subscription.unsubscribe();
+    }
+  }, [polling]);
+
+  useEffect(() => {
+    const subscription = subject.current
       .pipe(
+        startWith(null),
         map(value => typeof value !== 'number'),
         exhaustMap(refresh => {
           refresh && setLoading(true);
@@ -54,7 +69,7 @@ export function Lobby(meta: Props) {
       .subscribe(setState);
 
     return () => subscription.unsubscribe();
-  }, [name, polling]);
+  }, [name]);
 
   return (
     <div className={styles['lobby']}>

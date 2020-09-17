@@ -14,9 +14,9 @@ const watch = process.env.ROLLUP_WATCH === 'true';
 const isProduction = process.env.NODE_ENV === 'production';
 
 /** @type {import('rollup').RollupOptions[]} */
-const config = [
-  {
-    input: './server/index.ts',
+const config = ['./server/index.ts', './server/startServer.ts'].map(input => {
+  return {
+    input,
     output: {
       dir: './dist',
       format: 'cjs'
@@ -37,7 +37,7 @@ const config = [
       }),
       watch && run()
     ]
-  }
-];
+  };
+});
 
 export default config;

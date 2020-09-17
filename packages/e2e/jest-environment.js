@@ -2,6 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const rimraf = require('rimraf');
 const PuppeteerEnvironment = require('jest-environment-puppeteer');
+const { MongoMemoryServer } = require('mongodb-memory-server');
+const { startServer } = require('../web/dist/startServer');
+const mongoose = require('mongoose');
 
 /**
  *  Take snapshot after test fail, reference:
@@ -11,9 +14,15 @@ const PuppeteerEnvironment = require('jest-environment-puppeteer');
 const snapshotsDir = path.resolve(__dirname, '__snapshots');
 
 class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
+  mongod = new MongoMemoryServer();
+
   async setup() {
     await super.setup();
+    await this.setupSnapshot();
+    await this.setupMongoMemoryServer();
+  }
 
+  async setupSnapshot() {
     await new Promise((resolve, reject) =>
       rimraf(snapshotsDir, resolve, reject)
     );
@@ -23,11 +32,26 @@ class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
     }
   }
 
+  async setupMongoMemoryServer() {
+    const mongoUri = await this.mongod.getUri();
+    this.stopDevServer = await startServer({
+      dev: false,
+      port: 3001,
+      mongoUri
+    });
+  }
+
   async teardown() {
     // Wait a few seconds before tearing down the page so we
     // have time to take screenshots and handle other events
     await this.global.page.waitFor(2000);
     await super.teardown();
+
+    this.stopDevServer();
+
+    await mongoose.connection.close();
+
+    await this.mongod.stop();
   }
   // `jest-circus` features
   // https://github.com/facebook/jest/tree/master/packages/jest-circus

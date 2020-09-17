@@ -21,11 +21,13 @@ function LeaveMatchButton() {
   });
 
   useEffect(() => {
-    function handler() {
+    const originUrl = router.asPath;
+    function handler(url: string) {
       const state = matchStorage.get();
-      if (state) {
-        fetch(state);
+      if (state && url !== originUrl) {
         router.events.emit('routeChangeError');
+        fetch(state);
+
         // eslint-disable-next-line
         throw `Route change aborted, leaving match`;
       }

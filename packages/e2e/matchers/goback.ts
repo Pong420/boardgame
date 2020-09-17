@@ -2,7 +2,9 @@ import { Page } from 'puppeteer';
 
 export async function goBack(page: Page): Promise<jest.CustomMatcherResult> {
   try {
-    const [goback] = await page.$x(`//button[.//span[@icon="arrow-left"]]`);
+    const goback = await page.waitForXPath(
+      `//button[.//span[@icon="arrow-left"]]`
+    );
     await goback.click();
     return {
       message: () => `success`,

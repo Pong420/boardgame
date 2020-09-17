@@ -20,6 +20,6 @@ module.exports = {
     ...tsjPreset.transform
   },
   globals: {
-    testUrl: 'http://localhost:3000'
+    testUrl: 'http://localhost:3001'
   }
 };
