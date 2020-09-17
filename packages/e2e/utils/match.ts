@@ -1,11 +1,5 @@
 import { ElementHandle } from 'puppeteer';
 
-export const openCreateMatchDialog = async () => {
-  const [plusBtn] = await page.$x(`//button[.//span[@icon="plus"]]`);
-  await plusBtn.click();
-  await page.waitForTimeout(300);
-};
-
 interface FormOptions {
   local?: boolean;
   playerName?: string;
@@ -29,9 +23,28 @@ type FormHandlers = {
   confirm: () => Promise<void>;
 };
 
+export const openCreateMatchDialog = async () => {
+  const plusBtn = await page.waitFor(`//button[.//span[@icon="plus"]]`);
+  await plusBtn.click();
+  await page.waitForXPath(
+    `//h4[contains(text(), "Create")][contains(text(), "Match")]`,
+    { visible: true }
+  );
+};
+
 const handleCheckbox = async (el: ElementHandle, value: boolean) => {
   const checked = await el.evaluate(c => (c as HTMLInputElement).checked);
   if (checked !== value) await el.click();
+};
+
+const fillText = async (el: ElementHandle, value: string, clear = true) => {
+  if (clear) {
+    await el.focus();
+    await el.evaluate(el =>
+      (el as HTMLInputElement).setSelectionRange(0, 999999999)
+    );
+  }
+  await el.type(value);
 };
 
 export const createMatchForm = ((): FormHandlers => {
@@ -44,13 +57,14 @@ export const createMatchForm = ((): FormHandlers => {
     const [handler] = await page.$x(`//div[label[text()="Your Name"]]//button`);
     await handler.click();
     const playerNameInput = await page.waitForXPath(
-      `//div[label[text()="Your Name"]]//input`
+      `//div[label[text()="Your Name"]]//input`,
+      { visible: true }
     );
 
     return {
       handler,
       fill: async value => {
-        await playerNameInput.type(value);
+        await fillText(playerNameInput, value);
         const [, confirmPlayerName] = await page.$x(
           `//button[.//span[text()="Confirm"]]`
         );
@@ -60,15 +74,17 @@ export const createMatchForm = ((): FormHandlers => {
   };
 
   const matchName: FormHandlers['matchName'] = async () => {
-    const [handler] = await page.$x(`//div[label[text()="Match Name"]]//input`);
+    const handler = await page.waitForXPath(
+      `//div[label[text()="Match Name"]]//input`
+    );
     return {
       handler,
-      fill: value => handler.type(value)
+      fill: value => fillText(handler, value)
     };
   };
 
   const numPlayers: FormHandlers['numPlayers'] = async () => {
-    const [handler] = await page.$x(
+    const handler = await page.waitForXPath(
       `//div[label[text()="Number of Players"]]//select`
     );
     return {
@@ -78,7 +94,7 @@ export const createMatchForm = ((): FormHandlers => {
   };
 
   const description: FormHandlers['description'] = async () => {
-    const [handler] = await page.$x(
+    const handler = await page.waitForXPath(
       `//div[label[contains(text(), "Description")]]//textarea`
     );
     return {
@@ -88,12 +104,12 @@ export const createMatchForm = ((): FormHandlers => {
   };
 
   const spectate: FormHandlers['spectate'] = async () => {
-    const [handler] = await page.$x(`//label[text()="Spectate"]/input`);
+    const handler = await page.waitForXPath(`//label[text()="Spectate"]/input`);
     return { handler, fill: value => handleCheckbox(handler, value) };
   };
 
   const _private: FormHandlers['private'] = async () => {
-    const [handler] = await page.$x(`//label[text()="Private"]/input`);
+    const handler = await page.waitForXPath(`//label[text()="Private"]/input`);
     return { handler, fill: value => handleCheckbox(handler, value) };
   };
 
@@ -113,3 +129,31 @@ export const createMatchForm = ((): FormHandlers => {
     confirm
   };
 })();
+
+export const createMatch = async (options: FormOptions) => {
+  await expect(page).isLobby();
+
+  await openCreateMatchDialog();
+
+  for (const [key, value] of Object.entries(options)) {
+    if (typeof value !== 'undefined') {
+      const item: Helper<any> = await createMatchForm[
+        key as keyof FormOptions
+      ]();
+      await item.fill(value);
+    }
+  }
+
+  await createMatchForm.confirm();
+  await page.waitForResponse(
+    res => res.ok() && /games.*\/create/.test(res.url())
+  );
+  await page.waitForNavigation();
+  await expect(page).isMatch();
+};
+
+export const leaveMatch = async () => {
+  await expect(page).isMatch();
+  await expect(page).goBack();
+  await page.waitForNavigation();
+};

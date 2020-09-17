@@ -7,13 +7,15 @@ describe('Preference', () => {
   const rowValueSelector = (label: string) => `${rowSelector(label)}//div[2]/*`;
 
   const openDialog = async () => {
-    const [button] = await page.$x("//span[@icon='settings']/..");
+    const button = await page.waitForXPath("//span[@icon='settings']/..");
     await button.click();
-    await page.waitForTimeout(300);
+    await page.waitForXPath(`//h4[contains(text(), "Preferences")]`, {
+      visible: true
+    });
   };
 
   const closeDialog = async () => {
-    const [close] = await page.$x(
+    const close = await page.waitForXPath(
       `${headingSelector}/following-sibling::button`
     );
     await close.click();
@@ -25,19 +27,29 @@ describe('Preference', () => {
     await openDialog();
   });
 
+  afterAll(async () => {
+    await closeDialog();
+  });
+
   test('preferences dialog opended', async () => {
-    const [heading] = await page.$x(headingSelector);
+    const heading = await page.waitForXPath(headingSelector);
     expect(heading).toBeDefined();
   });
 
   test('polling', async () => {
-    const [polling] = await page.$x(`${rowValueSelector('Polling')}/input`);
+    const polling = await page.waitForXPath(
+      `${rowValueSelector('Polling')}/input`
+    );
     expect(polling).getChecked(true);
   });
 
   test('dark mode', async () => {
-    const [darkMode] = await page.$x(`${rowValueSelector('Dark Mode')}/input`);
-    const [trigger] = await page.$x(`${rowValueSelector('Dark Mode')}/span`);
+    const darkMode = await page.waitForXPath(
+      `${rowValueSelector('Dark Mode')}/input`
+    );
+    const trigger = await page.waitForXPath(
+      `${rowValueSelector('Dark Mode')}/span`
+    );
     const themeIs = async (theme: string) => {
       const el = await page.$('html');
       const attr = await el?.evaluate(el => el.getAttribute('data-theme'));
@@ -57,7 +69,7 @@ describe('Preference', () => {
   });
 
   test('screen width', async () => {
-    const [screenWidth] = await page.$x(
+    const screenWidth = await page.waitForXPath(
       `${rowValueSelector('Screen Width')}/select`
     );
     const screenWidthIs = async (theme: string) => {
@@ -77,12 +89,5 @@ describe('Preference', () => {
 
     await expect(screenWidth).getInputValue('stretch');
     await expect(screenWidthIs('stretch')).resolves.toBe(true);
-  });
-
-  test('preferences dialog closed', async () => {
-    await closeDialog();
-    const [heading] = await page.$x(headingSelector);
-    expect(close).toBeDefined();
-    expect(heading).toBeUndefined();
   });
 });

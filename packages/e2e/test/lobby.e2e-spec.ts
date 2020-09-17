@@ -1,9 +1,14 @@
-import { openCreateMatchDialog, createMatchForm } from '@/utils/match';
+import {
+  openCreateMatchDialog,
+  createMatchForm,
+  createMatch,
+  leaveMatch
+} from '@/utils/match';
 
 describe('Lobby', () => {
   beforeAll(async () => {
     await expect(page).goto('/');
-    const [link] = await page.$x(`//a[.//div[text()="Tic-Tac-Toe"]]`);
+    const link = await page.waitForXPath(`//a[.//div[text()="Tic-Tac-Toe"]]`);
     await link.click();
     await page.waitForNavigation();
   });
@@ -30,52 +35,14 @@ describe('Lobby', () => {
     await page.waitForNavigation();
     await expect(page).isMatch();
 
-    await expect(page).goBack();
-    await page.waitForNavigation();
+    await leaveMatch();
     await expect(page).isLobby();
   });
 
   test('create match', async () => {
-    await openCreateMatchDialog();
+    await createMatch({ playerName: 'e2e', matchName: 'e2e-test' });
 
-    const playerName = await createMatchForm.playerName();
-    await playerName.fill('e2e-test');
-
-    const matchName = await createMatchForm.matchName();
-    await matchName.fill('e2e match');
-
-    await createMatchForm.confirm();
-    await page.waitForResponse(
-      res => res.ok() && /games.*\/create/.test(res.url())
-    );
-    await page.waitForNavigation();
-    await expect(page).isMatch();
-
-    await expect(page).goBack();
-    await page.waitForNavigation();
-    await expect(page).isLobby();
-  });
-
-  test('create match', async () => {
-    await openCreateMatchDialog();
-
-    const playerName = await createMatchForm.playerName();
-    await playerName.fill('e2e-test');
-
-    const matchName = await createMatchForm.matchName();
-    await matchName.fill('e2e match');
-
-    await createMatchForm.confirm();
-    await page.waitForResponse(
-      res => res.ok() && /games.*\/create/.test(res.url())
-    );
-    await page.waitForNavigation();
-    await expect(page).isMatch();
-
-    // redirect to match auto
-
-    await expect(page).goBack();
-    await page.waitForNavigation();
+    await leaveMatch();
     await expect(page).isLobby();
   });
 });
