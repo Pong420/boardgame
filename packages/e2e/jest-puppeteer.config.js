@@ -3,5 +3,6 @@ module.exports = {
     // If true disable ui
     headless: false,
     defaultViewport: null
-  }
+  },
+  exitOnPageError: false
 };

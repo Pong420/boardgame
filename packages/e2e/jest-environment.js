@@ -42,20 +42,16 @@ class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
   }
 
   async teardown() {
-    try {
-      // Wait a few seconds before tearing down the page so we
-      // have time to take screenshots and handle other events
-      await this.global.page.waitFor(2000);
-      await super.teardown();
+    // Wait a few seconds before tearing down the page so we
+    // have time to take screenshots and handle other events
+    await this.global.page.waitFor(2000);
+    await super.teardown();
 
-      await mongoose.connection.close();
+    this.stopDevServer();
 
-      await this.mongod.stop();
+    await mongoose.connection.close();
 
-      this.stopDevServer();
-    } catch (error) {
-      console.log(error);
-    }
+    await this.mongod.stop();
   }
   // `jest-circus` features
   // https://github.com/facebook/jest/tree/master/packages/jest-circus
