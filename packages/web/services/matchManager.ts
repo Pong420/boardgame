@@ -13,6 +13,7 @@ import { createLocalStorage } from '@/utils/storage';
 import { leaveMatch } from './services';
 import { pushHistoryState } from './historyState';
 import isEqual from 'lodash/isEqual';
+import { gameMetaMap } from '@/games';
 
 type Common = {
   name: string;
@@ -61,7 +62,9 @@ export function leaveMatchAndRedirect(
   state?: MultiMatchState | null
 ): Promise<any> | undefined {
   const leave = () => {
-    const path = router.query?.name ? `/lobby/${router.query.name}` : '/';
+    const name = (router.query?.slug || [])[0] || router.query?.name;
+    const path =
+      typeof name === 'string' && gameMetaMap[name] ? `/lobby/${name}` : '/';
     matchStorage.save(null);
     return router.push(path);
   };
