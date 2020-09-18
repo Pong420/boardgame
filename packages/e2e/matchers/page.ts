@@ -3,7 +3,7 @@ import { Page } from 'puppeteer';
 const handler = (url: RegExp, title: RegExp) => {
   return async (page: Page): Promise<jest.CustomMatcherResult> => {
     try {
-      expect(page.url()).toMatch(url);
+      await expect(page.url()).toMatch(url);
       await expect(page.title()).resolves.toMatch(title);
       return {
         message: () => `success`,

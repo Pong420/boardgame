@@ -18,7 +18,7 @@ const handler = <T extends keyof HTMLInputElement>(key: T) => (
           }
     )
     .catch(error => ({
-      message: () => `failure ${error}`,
+      message: () => error,
       pass: false
     }));
 

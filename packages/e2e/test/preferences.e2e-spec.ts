@@ -23,7 +23,7 @@ describe('Preference', () => {
 
   test('polling', async () => {
     const polling = await preferences.polling();
-    expect(polling.handler).getChecked(true);
+    await expect(polling.handler).getChecked(true);
   });
 
   test('dark mode', async () => {

@@ -63,7 +63,7 @@ describe('Lobby', () => {
       await openPreferenceDialog();
       const polling = await preferences.polling();
       await polling.fill(false);
-      expect(polling.handler).getChecked(false);
+      await expect(polling.handler).getChecked(false);
 
       const hasResponse = await Promise.race([
         page.waitForTimeout(5000).then(() => false),
@@ -72,7 +72,7 @@ describe('Lobby', () => {
       expect(hasResponse).toBe(false);
 
       await polling.fill(true);
-      expect(polling.handler).getChecked(true);
+      await expect(polling.handler).getChecked(true);
       await waitForGameList();
       await closePreferenceDialog();
 

@@ -10,7 +10,7 @@ const rowValueSelector = (label: string) => `${rowSelector(label)}//div[2]/*`;
 export const openPreferenceDialog = async () => {
   const button = await page.waitForXPath("//span[@icon='settings']/..");
   await button.click();
-  await page.waitForXPath(`//h4[contains(text(), "Preferences")]`, {
+  await page.waitForXPath(headingSelector, {
     visible: true
   });
 };
