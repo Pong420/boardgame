@@ -20,5 +20,6 @@ const handler = (url: RegExp, title: RegExp) => {
 
 export const isLobby = handler(/lobby/, /Lobby/);
 export const isMatch = handler(/match/, /Match/);
+export const isSpectatePage = handler(/spectate/, /Spectate/);
 
-expect.extend({ isLobby, isMatch });
+expect.extend({ isLobby, isMatch, isSpectatePage });

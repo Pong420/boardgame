@@ -160,4 +160,57 @@ describe('Lobby', () => {
 
     await leaveMatch();
   });
+
+  test(
+    'join match and spectate',
+    async () => {
+      const matchName = 'e2e-match';
+      const description = 'e2e-test-description';
+      await createMatch({ playerName: 'e2e', matchName, description });
+
+      const joinPage = await (async () => {
+        const page = await newLobbyPage();
+        await waitForGameList(page);
+        const [match] = await getMatches(page, { matchName, description });
+        const [button] = await match.$x('//button[.//span[text()="Join"]]');
+        await button.click();
+        await page.waitFor(300);
+        const input = await page.waitForXPath(
+          `//div[label[text()="Your Name"]]//input`
+        );
+        await input.type('e2e-p-2');
+        const [confirm] = await page.$x(`//button[.//span[text()="Confirm"]]`);
+        await confirm.click();
+        await page.waitForResponse(
+          res => res.ok() && /games.*\/join/.test(res.url())
+        );
+        await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
+        await expect(page).isMatch();
+        return page;
+      })();
+
+      const spectatePage = await (async () => {
+        const page = await newLobbyPage();
+        await waitForGameList(page);
+        const [match] = await getMatches(page, { matchName, description });
+        const [button] = await match.$x('//button[.//span[text()="Spectate"]]');
+        await button.click();
+        await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
+        await expect(page).isSpectatePage();
+        return page;
+      })();
+
+      await Promise.all([leaveMatch(), leaveMatch(joinPage)]);
+
+      await expect(spectatePage).goBack();
+      await spectatePage.waitForNavigation({ waitUntil: 'domcontentloaded' });
+      await expect(spectatePage).isLobby();
+
+      await joinPage.close();
+      await joinPage.browserContext().close();
+      await spectatePage.close();
+      await spectatePage.browserContext().close();
+    },
+    20 * 1000
+  );
 });

@@ -156,14 +156,14 @@ export const createMatch = async (options: FormOptions) => {
   await expect(page).isMatch();
 };
 
-export const leaveMatch = async () => {
-  await expect(page).isMatch();
-  const goback = await page.waitForXPath(
+export const leaveMatch = async (_page = page) => {
+  await expect(_page).isMatch();
+  const goback = await _page.waitForXPath(
     `//button[.//span[@icon="arrow-left"]]`
   );
   await goback.click();
-  await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
-  await expect(page).isLobby();
+  await _page.waitForNavigation({ waitUntil: 'domcontentloaded' });
+  await expect(_page).isLobby();
 };
 
 export const getMatches = async (
