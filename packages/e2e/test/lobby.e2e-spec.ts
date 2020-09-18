@@ -99,24 +99,29 @@ describe('Lobby', () => {
     60 * 1000
   );
 
-  test('create local match', async () => {
-    await openCreateMatchDialog();
+  test(
+    'create local match',
+    async () => {
+      await openCreateMatchDialog();
 
-    const local = await createMatchForm.local();
+      const local = await createMatchForm.local();
 
-    await expect(local.handler).getChecked(false);
+      await expect(local.handler).getChecked(false);
 
-    await local.fill(true);
-    await expect(local.handler).getChecked(true);
+      await local.fill(true);
+      await expect(local.handler).getChecked(true);
 
-    const promise = page.waitForNavigation();
-    await createMatchForm.confirm();
-    await promise;
-    await expect(page).isMatch();
+      await Promise.all([
+        page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+        createMatchForm.confirm()
+      ]);
 
-    await leaveMatch();
-    await expect(page).isLobby();
-  });
+      await expect(page).isMatch();
+
+      await leaveMatch();
+    },
+    7 * 1000
+  );
 
   test('create match', async () => {
     const matchName = 'e2e-match';
@@ -132,7 +137,6 @@ describe('Lobby', () => {
     });
 
     await leaveMatch();
-    await expect(page).isLobby();
   });
 
   test('create private match', async () => {
@@ -155,6 +159,5 @@ describe('Lobby', () => {
     });
 
     await leaveMatch();
-    await expect(page).isLobby();
   });
 });

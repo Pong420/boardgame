@@ -30,6 +30,7 @@ export const openCreateMatchDialog = async () => {
     `//h4[contains(text(), "Create")][contains(text(), "Match")]`,
     { visible: true }
   );
+  await page.waitForTimeout(300);
 };
 
 const handleCheckbox = async (el: ElementHandle, value: boolean) => {
@@ -139,30 +140,30 @@ export const createMatch = async (options: FormOptions) => {
 
   await openCreateMatchDialog();
 
-  for (const [key, value] of Object.entries(options)) {
-    if (typeof value !== 'undefined') {
-      const item: Helper<any> = await createMatchForm[
-        key as keyof FormOptions
-      ]();
-      await item.fill(value);
-    }
+  const entries = Object.entries(options);
+
+  for (const [key, value] of entries) {
+    const item: Helper<any> = await createMatchForm[key as keyof FormOptions]();
+    await item.fill(value);
   }
 
-  await createMatchForm.confirm();
-  await page.waitForResponse(
-    res => res.ok() && /games.*\/create/.test(res.url())
-  );
-  await page.waitForNavigation();
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+    page.waitForResponse(res => res.ok() && /games.*\/create/.test(res.url())),
+    createMatchForm.confirm()
+  ]);
+
   await expect(page).isMatch();
 };
 
 export const leaveMatch = async () => {
   await expect(page).isMatch();
-  await Promise.all([
-    //
-    page.waitForNavigation(),
-    expect(page).goBack()
-  ]);
+  const goback = await page.waitForXPath(
+    `//button[.//span[@icon="arrow-left"]]`
+  );
+  await goback.click();
+  await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
+  await expect(page).isLobby();
 };
 
 export const getMatches = async (

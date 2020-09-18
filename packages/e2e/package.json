@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "jest -i"
+    "start": "jest -i --forceExit"
   },
   "devDependencies": {
     "@types/expect-puppeteer": "^4.4.3",
