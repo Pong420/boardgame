@@ -18,8 +18,16 @@ const handler = (url: RegExp, title: RegExp) => {
   };
 };
 
+export const isHomePage = handler(/.*/, /Home/);
 export const isLobbyPage = handler(/lobby/, /Lobby/);
 export const isMatchyPage = handler(/match/, /Match/);
 export const isSpectatePage = handler(/spectate/, /Spectate/);
+export const isErrorPage = handler(/error/, /Error/);
 
-expect.extend({ isLobbyPage, isMatchyPage, isSpectatePage });
+expect.extend({
+  isHomePage,
+  isLobbyPage,
+  isMatchyPage,
+  isSpectatePage,
+  isErrorPage
+});

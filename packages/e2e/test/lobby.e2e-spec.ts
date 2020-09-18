@@ -10,31 +10,15 @@ import {
   openPreferenceDialog,
   preferences
 } from '@/utils/prefernces';
-import { Page } from 'puppeteer';
+import { newPageHelper } from '@/utils/page';
+
+const newLobbyPage = newPageHelper('/lobby/tic-tac-toe');
 
 describe('Lobby', () => {
   const isGetMatchesUrl = (url: string) => /games\/tic-tac-toe/.test(url);
 
   const waitForGameList = (_page = page) =>
     _page.waitForResponse(res => res.ok() && isGetMatchesUrl(res.url()));
-
-  type Callback = (page: Page) => Promise<void>;
-
-  async function newLobbyPage(): Promise<Page>;
-  async function newLobbyPage(cb: Callback): Promise<undefined>;
-  async function newLobbyPage(cb?: Callback): Promise<Page | undefined> {
-    const context = await browser.createIncognitoBrowserContext();
-    const page = await context.newPage();
-    await expect(page).goto('/lobby/tic-tac-toe');
-
-    if (cb) {
-      await cb(page);
-      await page.close();
-      await page.browserContext().close();
-    } else {
-      return page;
-    }
-  }
 
   beforeEach(async () => {
     await expect(page).goto('/');
