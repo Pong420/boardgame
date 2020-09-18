@@ -9,6 +9,13 @@ interface Props extends Match {
   meta: GameMeta;
 }
 
+const dataFormat = (value: number): string => {
+  const d = new Date(value);
+  return [d.getHours(), d.getMinutes(), d.getSeconds()]
+    .map(n => String(n).padStart(2, '0'))
+    .join(':');
+};
+
 export function LobbyItem({
   meta,
   matchID,
@@ -43,12 +50,7 @@ export function LobbyItem({
           {description?.slice(0, 50)}
         </div>
         <div className={styles['lobby-item-footer']}>
-          <div>
-            {new Date(updatedAt)
-              .toISOString()
-              .replace(/T/, ' ')
-              .replace(/\..*/, '')}
-          </div>
+          <div>{dataFormat(updatedAt)}</div>
           <div>
             {nextPlayers.length ? (
               <JoinMatch
