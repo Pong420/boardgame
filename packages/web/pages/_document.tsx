@@ -16,9 +16,7 @@ class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head>
-          <title>Boardgame</title>
-        </Head>
+        <Head />
         <body>
           <script
             dangerouslySetInnerHTML={{
