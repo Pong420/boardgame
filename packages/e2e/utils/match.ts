@@ -1,4 +1,5 @@
 import { ElementHandle } from 'puppeteer';
+import { handleCheckbox, fillText } from './input';
 
 interface FormOptions {
   local?: boolean;
@@ -13,11 +14,11 @@ interface FormOptions {
 type Keys = keyof FormOptions;
 
 interface Helper<T> {
-  handler: ElementHandle;
-  fill: (value: T) => Promise<unknown>;
+  element: ElementHandle;
+  setTo: (value: T) => Promise<unknown>;
 }
 
-type FormHandlers = {
+type Helpers = {
   [X in Keys]: () => Promise<Helper<NonNullable<FormOptions[X]>>>;
 } & {
   confirm: () => Promise<void>;
@@ -33,41 +34,26 @@ export const openCreateMatchDialog = async () => {
   await page.waitForTimeout(300);
 };
 
-const handleCheckbox = async (el: ElementHandle, value: boolean) => {
-  const checked = await el.evaluate(c => (c as HTMLInputElement).checked);
-  if (checked !== value) await el.click();
-};
-
-const fillText = async (el: ElementHandle, value: string, clear = true) => {
-  if (clear) {
-    await el.focus();
-    await el.evaluate(el =>
-      (el as HTMLInputElement).setSelectionRange(0, 999999999)
-    );
-  }
-  await el.type(value, { delay: 50 });
-};
-
-export const createMatchForm = ((): FormHandlers => {
-  const local: FormHandlers['local'] = async () => {
-    const handler = await page.waitForXPath(`//label[text()="Local"]/input`);
-    return { handler, fill: value => handleCheckbox(handler, value) };
+export const createMatchForm = ((): Helpers => {
+  const local: Helpers['local'] = async () => {
+    const element = await page.waitForXPath(`//label[text()="Local"]/input`);
+    return { element, setTo: value => handleCheckbox(element, value) };
   };
 
-  const playerName: FormHandlers['playerName'] = async () => {
-    const handler = await page.waitForXPath(
+  const playerName: Helpers['playerName'] = async () => {
+    const element = await page.waitForXPath(
       `//div[label[text()="Your Name"]]//button`
     );
     const [playerNameInput] = await Promise.all([
       page.waitForXPath(`//div[label[text()="Your Name"]]//input`, {
         visible: true
       }),
-      handler.click()
+      element.click()
     ]);
 
     return {
-      handler,
-      fill: async value => {
+      element,
+      setTo: async value => {
         await fillText(playerNameInput, value);
         const [, confirmPlayerName] = await page.$x(
           `//button[.//span[text()="Confirm"]]`
@@ -78,47 +64,47 @@ export const createMatchForm = ((): FormHandlers => {
     };
   };
 
-  const matchName: FormHandlers['matchName'] = async () => {
-    const handler = await page.waitForXPath(
+  const matchName: Helpers['matchName'] = async () => {
+    const element = await page.waitForXPath(
       `//div[label[text()="Match Name"]]//input`
     );
     return {
-      handler,
-      fill: value => fillText(handler, value)
+      element,
+      setTo: value => fillText(element, value)
     };
   };
 
-  const numPlayers: FormHandlers['numPlayers'] = async () => {
-    const handler = await page.waitForXPath(
+  const numPlayers: Helpers['numPlayers'] = async () => {
+    const element = await page.waitForXPath(
       `//div[label[text()="Number of Players"]]//select`
     );
     return {
-      handler,
-      fill: value => handler.select(String(value))
+      element,
+      setTo: value => element.select(String(value))
     };
   };
 
-  const description: FormHandlers['description'] = async () => {
-    const handler = await page.waitForXPath(
+  const description: Helpers['description'] = async () => {
+    const element = await page.waitForXPath(
       `//div[label[contains(text(), "Description")]]//textarea`
     );
     return {
-      handler,
-      fill: value => handler.type(value, { delay: 50 })
+      element,
+      setTo: value => element.type(value, { delay: 50 })
     };
   };
 
-  const spectate: FormHandlers['spectate'] = async () => {
-    const handler = await page.waitForXPath(`//label[text()="Spectate"]/input`);
-    return { handler, fill: value => handleCheckbox(handler, value) };
+  const spectate: Helpers['spectate'] = async () => {
+    const element = await page.waitForXPath(`//label[text()="Spectate"]/input`);
+    return { element, setTo: value => handleCheckbox(element, value) };
   };
 
-  const _private: FormHandlers['private'] = async () => {
-    const handler = await page.waitForXPath(`//label[text()="Private"]/input`);
-    return { handler, fill: value => handleCheckbox(handler, value) };
+  const _private: Helpers['private'] = async () => {
+    const element = await page.waitForXPath(`//label[text()="Private"]/input`);
+    return { element, setTo: value => handleCheckbox(element, value) };
   };
 
-  const confirm: FormHandlers['confirm'] = async () => {
+  const confirm: Helpers['confirm'] = async () => {
     const [confirm] = await page.$x(`//button[.//span[text()="Confirm"]]`);
     await confirm.click();
   };
@@ -136,7 +122,7 @@ export const createMatchForm = ((): FormHandlers => {
 })();
 
 export const createMatch = async (options: FormOptions) => {
-  await expect(page).isLobby();
+  await expect(page).isLobbyPage();
 
   await openCreateMatchDialog();
 
@@ -144,7 +130,7 @@ export const createMatch = async (options: FormOptions) => {
 
   for (const [key, value] of entries) {
     const item: Helper<any> = await createMatchForm[key as keyof FormOptions]();
-    await item.fill(value);
+    await item.setTo(value);
   }
 
   await Promise.all([
@@ -153,24 +139,24 @@ export const createMatch = async (options: FormOptions) => {
     createMatchForm.confirm()
   ]);
 
-  await expect(page).isMatch();
+  await expect(page).isMatchyPage();
 };
 
 export const leaveMatch = async (_page = page) => {
-  await expect(_page).isMatch();
+  await expect(_page).isMatchyPage();
   const goback = await _page.waitForXPath(
     `//button[.//span[@icon="arrow-left"]]`
   );
   await goback.click();
   await _page.waitForNavigation({ waitUntil: 'domcontentloaded' });
-  await expect(_page).isLobby();
+  await expect(_page).isLobbyPage();
 };
 
 export const getMatches = async (
   _page = page,
   by?: { matchName?: string; description?: string }
 ) => {
-  await expect(_page).isLobby();
+  await expect(_page).isLobbyPage();
 
   const selectors = [`//div[contains(@class, "bp3-card")]`];
 

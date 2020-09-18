@@ -23,7 +23,7 @@ describe('Preference', () => {
 
   test('polling', async () => {
     const polling = await preferences.polling();
-    await expect(polling.handler).getChecked(true);
+    await expect(polling.element).isChecked(true);
   });
 
   test('dark mode', async () => {
@@ -35,12 +35,12 @@ describe('Preference', () => {
       return attr === theme;
     };
 
-    await expect(darkMode.handler).getChecked(true);
+    await expect(darkMode.element).isChecked(true);
     await expect(themeIs('dark')).resolves.toBe(true);
 
-    await darkMode.fill(false);
+    await darkMode.setTo(false);
 
-    await expect(darkMode.handler).getChecked(false);
+    await expect(darkMode.element).isChecked(false);
     await expect(themeIs('light')).resolves.toBe(true);
   });
 
@@ -54,12 +54,12 @@ describe('Preference', () => {
       return attr === theme;
     };
 
-    await expect(screenWidth.handler).getInputValue('limited');
+    await expect(screenWidth.element).isValue('limited');
     await expect(screenWidthIs('limited')).resolves.toBe(true);
 
-    await screenWidth.fill('stretch');
+    await screenWidth.setTo('stretch');
 
-    await expect(screenWidth.handler).getInputValue('stretch');
+    await expect(screenWidth.element).isValue('stretch');
     await expect(screenWidthIs('stretch')).resolves.toBe(true);
   });
 });

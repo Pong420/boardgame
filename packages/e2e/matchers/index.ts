@@ -1,4 +1,4 @@
 export * from './goback';
 export * from './goto';
-export * from './inputElement';
+export * from './input';
 export * from './page';

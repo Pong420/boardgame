@@ -1,4 +1,5 @@
 import { ElementHandle } from 'puppeteer';
+import { handleSwitch } from './input';
 
 const headingSelector = `//h4[text()="Preferences"]`;
 const dialogSelector = `${headingSelector}/../..`;
@@ -32,40 +33,35 @@ interface PreferencesOptions {
 type Keys = keyof PreferencesOptions;
 
 interface Helper<T> {
-  handler: ElementHandle;
-  fill: (value: T) => Promise<unknown>;
+  element: ElementHandle;
+  setTo: (value: T) => Promise<unknown>;
 }
 
 type Helpers = {
   [X in Keys]: () => Promise<Helper<NonNullable<PreferencesOptions[X]>>>;
 };
 
-const handleSwitch = async (el: ElementHandle, value: boolean) => {
-  const checked = await el.evaluate(c => (c as HTMLInputElement).checked);
-  if (checked !== value) await el.evaluate(el => el.parentElement?.click());
-};
-
 export const preferences = ((): Helpers => {
   const polling: Helpers['polling'] = async () => {
-    const handler = await page.waitForXPath(
+    const element = await page.waitForXPath(
       `${rowValueSelector('Polling')}/input`
     );
-    return { handler, fill: value => handleSwitch(handler, value) };
+    return { element, setTo: value => handleSwitch(element, value) };
   };
   const darkMode: Helpers['darkMode'] = async () => {
-    const handler = await page.waitForXPath(
+    const element = await page.waitForXPath(
       `${rowValueSelector('Dark Mode')}/input`
     );
-    return { handler, fill: value => handleSwitch(handler, value) };
+    return { element, setTo: value => handleSwitch(element, value) };
   };
 
   const screenWidth: Helpers['screenWidth'] = async () => {
-    const handler = await page.waitForXPath(
+    const element = await page.waitForXPath(
       `${rowValueSelector('Screen Width')}/select`
     );
     return {
-      handler,
-      fill: value => handler.select(String(value))
+      element,
+      setTo: value => element.select(String(value))
     };
   };
 

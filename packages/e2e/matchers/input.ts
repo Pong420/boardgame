@@ -22,10 +22,10 @@ const handler = <T extends keyof HTMLInputElement>(key: T) => (
       pass: false
     }));
 
-export const getChecked = handler('checked');
-export const getInputValue = handler('value');
+export const isChecked = handler('checked');
+export const isValue = handler('value');
 
 expect.extend({
-  getChecked,
-  getInputValue
+  isChecked,
+  isValue
 });

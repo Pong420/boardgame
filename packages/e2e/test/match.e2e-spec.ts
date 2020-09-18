@@ -17,12 +17,12 @@ describe('Match', () => {
     await createMatch({ playerName: 'e2e', matchName: 'e2e-test' });
 
     await page.reload({ waitUntil: ['networkidle0', 'domcontentloaded'] });
-    await expect(page).isMatch();
+    await expect(page).isMatchyPage();
 
     await expect(page).goto('/');
     await page.waitForNavigation();
     await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
-    await expect(page).isMatch();
+    await expect(page).isMatchyPage();
 
     await leaveMatch();
   });
@@ -34,8 +34,8 @@ describe('Match', () => {
     await page.evaluate(() => {
       window.history.back();
     });
-    await expect(page).isMatch();
+    await expect(page).isMatchyPage();
     await page.waitForResponse(res => res.ok() && /leave/.test(res.url()));
-    await expect(page).isLobby();
+    await expect(page).isLobbyPage();
   });
 });

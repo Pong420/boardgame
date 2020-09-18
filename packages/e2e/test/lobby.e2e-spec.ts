@@ -48,7 +48,7 @@ describe('Lobby', () => {
     const [noMatches] = await page.$x(`//div[text()="No Matches Found"]`);
 
     expect(noMatches).toBeDefined();
-    await expect(page).isLobby();
+    await expect(page).isLobbyPage();
   });
 
   // skip by default, since it needs too much time
@@ -62,8 +62,8 @@ describe('Lobby', () => {
       // test toggle polling  correctly
       await openPreferenceDialog();
       const polling = await preferences.polling();
-      await polling.fill(false);
-      await expect(polling.handler).getChecked(false);
+      await polling.setTo(false);
+      await expect(polling.element).isChecked(false);
 
       const hasResponse = await Promise.race([
         page.waitForTimeout(5000).then(() => false),
@@ -71,8 +71,8 @@ describe('Lobby', () => {
       ]);
       expect(hasResponse).toBe(false);
 
-      await polling.fill(true);
-      await expect(polling.handler).getChecked(true);
+      await polling.setTo(true);
+      await expect(polling.element).isChecked(true);
       await waitForGameList();
       await closePreferenceDialog();
 
@@ -106,17 +106,17 @@ describe('Lobby', () => {
 
       const local = await createMatchForm.local();
 
-      await expect(local.handler).getChecked(false);
+      await expect(local.element).isChecked(false);
 
-      await local.fill(true);
-      await expect(local.handler).getChecked(true);
+      await local.setTo(true);
+      await expect(local.element).isChecked(true);
 
       await Promise.all([
         page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
         createMatchForm.confirm()
       ]);
 
-      await expect(page).isMatch();
+      await expect(page).isMatchyPage();
 
       await leaveMatch();
     },
@@ -185,7 +185,7 @@ describe('Lobby', () => {
           res => res.ok() && /games.*\/join/.test(res.url())
         );
         await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
-        await expect(page).isMatch();
+        await expect(page).isMatchyPage();
         return page;
       })();
 
@@ -204,7 +204,7 @@ describe('Lobby', () => {
 
       await expect(spectatePage).goBack();
       await spectatePage.waitForNavigation({ waitUntil: 'domcontentloaded' });
-      await expect(spectatePage).isLobby();
+      await expect(spectatePage).isLobbyPage();
 
       await joinPage.close();
       await joinPage.browserContext().close();
