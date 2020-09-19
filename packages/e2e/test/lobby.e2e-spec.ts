@@ -100,7 +100,7 @@ describe('Lobby', () => {
         createMatchForm.confirm()
       ]);
 
-      await expect(page).isMatchyPage();
+      await expect(page).isMatchPage();
 
       await leaveMatch();
     },
@@ -169,7 +169,7 @@ describe('Lobby', () => {
           res => res.ok() && /games.*\/join/.test(res.url())
         );
         await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
-        await expect(page).isMatchyPage();
+        await expect(page).isMatchPage();
         return page;
       })();
 

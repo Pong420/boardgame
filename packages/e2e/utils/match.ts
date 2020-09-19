@@ -134,16 +134,20 @@ export const createMatch = async (options: FormOptions) => {
   }
 
   await Promise.all([
-    page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
-    page.waitForResponse(res => res.ok() && /games.*\/create/.test(res.url())),
+    page.waitForNavigation({ waitUntil: ['networkidle0', 'domcontentloaded'] }),
+    (options.local
+      ? Promise.resolve()
+      : page.waitForResponse(
+          res => res.ok() && /games.*\/create/.test(res.url())
+        )) as Promise<void>,
     createMatchForm.confirm()
   ]);
 
-  await expect(page).isMatchyPage();
+  await expect(page).isMatchPage();
 };
 
 export const leaveMatch = async (_page = page) => {
-  await expect(_page).isMatchyPage();
+  await expect(_page).isMatchPage();
   const goback = await _page.waitForXPath(
     `//button[.//span[@icon="arrow-left"]]`
   );
