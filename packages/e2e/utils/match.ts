@@ -31,7 +31,7 @@ export const openCreateMatchDialog = async () => {
     `//h4[contains(text(), "Create")][contains(text(), "Match")]`,
     { visible: true }
   );
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(500);
 };
 
 export const createMatchForm = ((): Helpers => {
@@ -134,7 +134,7 @@ export const createMatch = async (options: FormOptions) => {
   }
 
   await Promise.all([
-    page.waitForNavigation({ waitUntil: ['networkidle0', 'domcontentloaded'] }),
+    page.waitForNavigation({ timeout: 3000 }),
     (options.local
       ? Promise.resolve()
       : page.waitForResponse(
@@ -147,15 +147,12 @@ export const createMatch = async (options: FormOptions) => {
 };
 
 export const leaveMatch = async (_page = page) => {
+  await _page.bringToFront();
   await expect(_page).isMatchPage();
-  const goback = await _page.waitForXPath(
-    `//button[.//span[@icon="arrow-left"]]`,
-    { timeout: 500 }
-  );
+  const [goback] = await _page.$x(`//button[.//span[@icon="arrow-left"]]`);
   await goback.click();
   await _page.waitForNavigation({
-    waitUntil: 'domcontentloaded',
-    timeout: 2000
+    waitUntil: 'networkidle0'
   });
   await expect(_page).isLobbyPage();
 };
@@ -183,11 +180,20 @@ export const getMatches = async (page: Page, by?: By) => {
 export const joinMatch = async (page: Page, by?: By) => {
   await expect(page).isLobbyPage();
 
-  await page.waitForResponse(
-    res =>
-      res.ok() && res.request().method() === 'GET' && /games/.test(res.url())
-  );
-  const [match] = await getMatches(page, by);
+  async function get(): Promise<ElementHandle[]> {
+    const matches = await getMatches(page, by);
+    if (matches.length) {
+      return matches;
+    }
+    await page.waitForResponse(
+      res =>
+        res.ok() && res.request().method() === 'GET' && /games/.test(res.url())
+    );
+    return get();
+  }
+
+  const [match] = await get();
+
   const [button] = await match.$x('//button[.//span[text()="Join"]]');
   await button.click();
   await page.waitForTimeout(300);

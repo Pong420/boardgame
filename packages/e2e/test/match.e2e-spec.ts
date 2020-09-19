@@ -21,7 +21,7 @@ describe('Match', () => {
 
     await expect(page).goto('/');
     await page.waitForNavigation();
-    await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
+    await page.waitForNavigation({ waitUntil: 'networkidle0' });
     await expect(page).isMatchPage();
 
     await leaveMatch();
@@ -31,11 +31,15 @@ describe('Match', () => {
   test('leave match when history back', async () => {
     await createMatch({ playerName: 'e2e', matchName: 'e2e-test' });
 
+    const promise = Promise.all([
+      page.waitForResponse(res => res.ok() && /leave/.test(res.url())),
+      page.waitForNavigation({ waitUntil: 'networkidle0' })
+    ]);
     await page.evaluate(() => {
       window.history.back();
     });
     await expect(page).isMatchPage();
-    await page.waitForResponse(res => res.ok() && /leave/.test(res.url()));
+    await promise;
     await expect(page).isLobbyPage();
   });
 });

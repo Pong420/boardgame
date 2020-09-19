@@ -12,6 +12,13 @@ const mongoose = require('mongoose');
  */
 
 const snapshotsDir = path.resolve(__dirname, '__snapshots');
+const snapshotsSetup = (async () => {
+  await new Promise((resolve, reject) => rimraf(snapshotsDir, resolve, reject));
+
+  if (!fs.existsSync(snapshotsDir)) {
+    fs.mkdirSync(snapshotsDir);
+  }
+})();
 
 class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
   mongod = new MongoMemoryServer();
@@ -20,18 +27,8 @@ class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
     this.global.snapshotsDir = snapshotsDir;
 
     await super.setup();
-    await this.setupSnapshot();
+    await snapshotsSetup;
     await this.setupMongoMemoryServer();
-  }
-
-  async setupSnapshot() {
-    await new Promise((resolve, reject) =>
-      rimraf(snapshotsDir, resolve, reject)
-    );
-
-    if (!fs.existsSync(snapshotsDir)) {
-      fs.mkdirSync(snapshotsDir);
-    }
   }
 
   async setupMongoMemoryServer() {
@@ -54,6 +51,8 @@ class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
     await mongoose.connection.close();
 
     await this.mongod.stop();
+
+    await this.global.page.waitForTimeout(2000);
   }
   // `jest-circus` features
   // https://github.com/facebook/jest/tree/master/packages/jest-circus
