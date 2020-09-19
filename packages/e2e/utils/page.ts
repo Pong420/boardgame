@@ -5,7 +5,7 @@ type Callback = (page: Page) => Promise<void>;
 export const newPageHelper = (pathname: string) => {
   async function newPage(): Promise<Page>;
   async function newPage(cb: Callback): Promise<undefined>;
-  async function newPage(cb?: Callback): Promise<Page | undefined> {
+  async function newPage(cb?: Callback) {
     const context = await browser.createIncognitoBrowserContext();
     const page = await context.newPage();
     await expect(page).goto(pathname);

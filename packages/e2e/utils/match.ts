@@ -1,4 +1,4 @@
-import { ElementHandle } from 'puppeteer';
+import { ElementHandle, Page } from 'puppeteer';
 import { handleCheckbox, fillText } from './input';
 
 interface FormOptions {
@@ -156,11 +156,13 @@ export const leaveMatch = async (_page = page) => {
   await expect(_page).isLobbyPage();
 };
 
-export const getMatches = async (
-  _page = page,
-  by?: { matchName?: string; description?: string }
-) => {
-  await expect(_page).isLobbyPage();
+interface By {
+  matchName?: string;
+  description?: string;
+}
+
+export const getMatches = async (page: Page, by?: By) => {
+  await expect(page).isLobbyPage();
 
   const selectors = [`//div[contains(@class, "bp3-card")]`];
 
@@ -171,5 +173,34 @@ export const getMatches = async (
     selectors.push(`[.//div[text()="${by.description}"]]`);
   }
 
-  return await _page.$x(selectors.join(''));
+  return await page.$x(selectors.join(''));
+};
+
+export const joinMatch = async (page: Page, by?: By) => {
+  await expect(page).isLobbyPage();
+
+  await page.waitForResponse(
+    res =>
+      res.ok() && res.request().method() === 'GET' && /games/.test(res.url())
+  );
+  const [match] = await getMatches(page, by);
+  const [button] = await match.$x('//button[.//span[text()="Join"]]');
+  await button.click();
+  await page.waitForTimeout(300);
+
+  await Promise.all([
+    (async () => {
+      const [input] = await page.$x(`//div[label[text()="Your Name"]]//input`);
+      if (input) {
+        const [confirm] = await page.$x(`//button[.//span[text()="Confirm"]]`);
+        await input.type('e2e-p-2');
+        await confirm.click();
+      }
+    })(),
+    page.waitForResponse(res => res.ok() && /games.*\/join/.test(res.url()))
+  ]);
+
+  await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
+  await expect(page).isMatchPage();
+  return page;
 };

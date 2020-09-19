@@ -3,7 +3,8 @@ import {
   createMatchForm,
   createMatch,
   leaveMatch,
-  getMatches
+  getMatches,
+  joinMatch
 } from '@/utils/match';
 import {
   closePreferenceDialog,
@@ -152,26 +153,9 @@ describe('Lobby', () => {
       const description = 'e2e-test-description';
       await createMatch({ playerName: 'e2e', matchName, description });
 
-      const joinPage = await (async () => {
-        const page = await newLobbyPage();
-        await waitForGameList(page);
-        const [match] = await getMatches(page, { matchName, description });
-        const [button] = await match.$x('//button[.//span[text()="Join"]]');
-        await button.click();
-        await page.waitFor(300);
-        const input = await page.waitForXPath(
-          `//div[label[text()="Your Name"]]//input`
-        );
-        await input.type('e2e-p-2');
-        const [confirm] = await page.$x(`//button[.//span[text()="Confirm"]]`);
-        await confirm.click();
-        await page.waitForResponse(
-          res => res.ok() && /games.*\/join/.test(res.url())
-        );
-        await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
-        await expect(page).isMatchPage();
-        return page;
-      })();
+      const joinPage = await newLobbyPage();
+      await joinPage.waitForNavigation({ waitUntil: 'networkidle0' });
+      await joinMatch(joinPage);
 
       const spectatePage = await (async () => {
         const page = await newLobbyPage();
