@@ -11,6 +11,7 @@
     "db": "yarn workspace bgio-mongo",
     "e2e": "yarn workspace e2e",
     "dev": "lerna run dev --stream --parallel --ignore bgio-mongo",
+    "test": "lerna run test --stream",
     "build": "yarn db build && lerna run build --stream --parallel --ignore bgio-mongo",
     "postinstall": "lerna run postinstall --stream --parallel",
     "heroku-postbuild": "yarn build"

@@ -26,10 +26,14 @@ describe('Tic-Tac-Toe', () => {
         expect(idx).toBeLessThan(10);
 
         try {
-          await page.waitForXPath(
-            `${clientSelector(player)}//*[text()="Your turn"]`,
-            { timeout: 2000 }
-          );
+          const selector = `${clientSelector(player)}//*[text()="Your turn"]`;
+          const [turn] = await page.$x(selector);
+          if (!turn) {
+            await page.waitForXPath(
+              `${clientSelector(player)}//*[text()="Your turn"]`,
+              { timeout: 3000 }
+            );
+          }
         } catch (error) {
           throw new Error(`Waiting for player ${player}, cell ${idx}`);
         }
