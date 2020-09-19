@@ -1,6 +1,8 @@
 ## bigo-mongo
 
-Mongo adapter for [Boardgame.io Storage](https://boardgame.io/documentation/#/storage?id=storage);
+Mongo adapter for [boardgame.io Storage](https://boardgame.io/documentation/#/storage?id=storage);
+
+### Usage
 
 ```typescript
 import { Server } from "boardgame.io/server";
@@ -18,10 +20,12 @@ const server = Server({
 
 ### preCreateGame
 
+Custom options. Validate before create game
+
 ```typescript
 const db = new MongoStore({
   // ...
-  // validation, you must throw an error if invalid
+  // you must throw an error if invalid
   preCreateGame: async ({ metadata }) => {
     const data: Partial<SetupData> | undefined = metadata.setupData;
     const validation = () => {
@@ -35,6 +39,8 @@ const db = new MongoStore({
 ```
 
 ### Override the default API
+
+The [official approach](https://github.com/boardgameio/boardgame.io/blob/0062e5508f0e8f86c9bf9f60bd4da0c641b7e184/src/server/api.ts#L197-L200) of `GET /games/:gameName` is not efficiency. And there is a approach to override it
 
 See [overrideGetMatches.ts](packages\web\server\overrideGetMatches.ts)
 

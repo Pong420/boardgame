@@ -2705,6 +2705,14 @@
     jest-diff "^25.2.1"
     pretty-format "^25.2.1"
 
+"@types/jest@^26.0.14":
+  version "26.0.14"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-26.0.14.tgz#078695f8f65cb55c5a98450d65083b2b73e5a3f3"
+  integrity sha512-Hz5q8Vu0D288x3iWXePSn53W7hAjP0H7EQ6QvDO9c7t46mR0lNOLlfuwQ+JkVxuhygHzlzPX+0jKdA3ZgSh+Vg==
+  dependencies:
+    jest-diff "^25.2.1"
+    pretty-format "^25.2.1"
+
 "@types/json-schema@^7.0.3", "@types/json-schema@^7.0.5":
   version "7.0.6"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.6.tgz#f4c7ec43e81b319a9815115031709f26987891f0"
@@ -9347,12 +9355,43 @@ mongodb-memory-server-core@6.7.5:
   optionalDependencies:
     mongodb "3.6.2"
 
+mongodb-memory-server-core@6.7.6:
+  version "6.7.6"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-6.7.6.tgz#18e7fdeba1e4ffa445ec22308b5ec308c9021241"
+  integrity sha512-q6qLVI8C56wDZ7HAZSZ+GNL7qz2Aj42nd8CNGO7dTGlOsoThPTVnHAJfFR7qMz/xLPLxEyjR618XVuLaGtXxpA==
+  dependencies:
+    "@types/tmp" "^0.2.0"
+    camelcase "^6.0.0"
+    cross-spawn "^7.0.3"
+    debug "^4.1.1"
+    find-cache-dir "^3.3.1"
+    find-package-json "^1.2.0"
+    get-port "^5.1.1"
+    https-proxy-agent "^5.0.0"
+    lockfile "^1.0.4"
+    md5-file "^5.0.0"
+    mkdirp "^1.0.4"
+    semver "^7.3.2"
+    tar-stream "^2.1.4"
+    tmp "^0.2.1"
+    uuid "8.3.0"
+    yauzl "^2.10.0"
+  optionalDependencies:
+    mongodb "3.6.2"
+
 mongodb-memory-server@^6.7.5:
   version "6.7.5"
   resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-6.7.5.tgz#3eb4033bba56bd1822b73f581e0badc12af05401"
   integrity sha512-Ws4IRrFqCEoD27jzFHfST9lXyrgDddpLXcoQ7B0S4Sc5v3N5tpchmvueuZ0BMj4bwwBJlWl64nXNgCoooYvupw==
   dependencies:
     mongodb-memory-server-core "6.7.5"
+
+mongodb-memory-server@^6.7.6:
+  version "6.7.6"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-6.7.6.tgz#dfae0e061a117cc73ce47c379bf17134dd9680cd"
+  integrity sha512-dxAo6wik3r0H1HnAgrCZ+qR4wE54TeTdKHhvw/eL51Ez6F+0Kq+ojfGIlyK5yrV/KJ+4jGkdLg68FfAL0LCWfA==
+  dependencies:
+    mongodb-memory-server-core "6.7.6"
 
 mongodb@3.6.2:
   version "3.6.2"

@@ -23,10 +23,10 @@ export function getListGamesOptsQuery(
         : { gameover: null }
       : {}),
     ...(typeof updatedAfter === 'number'
-      ? { updatedAt: { $gte: updatedAfter } }
+      ? { updatedAt: { $gt: updatedAfter } }
       : {}),
     ...(typeof updatedBefore === 'number'
-      ? { updatedAt: { $lte: updatedBefore } }
+      ? { updatedAt: { $lt: updatedBefore } }
       : {})
   };
 }
