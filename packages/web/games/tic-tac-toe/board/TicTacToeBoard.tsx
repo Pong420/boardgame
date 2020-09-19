@@ -88,7 +88,7 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
       {winner}
 
       <div className={styles['actions']}>
-        {props.isMultiplayer && props.ctx.gameover && props.playerID && (
+        {props.credentials && props.ctx.gameover && props.playerID && (
           <PlayAgain />
         )}
       </div>
