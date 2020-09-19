@@ -5,6 +5,7 @@ import { Client } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer';
 import { MatchState } from '@/services';
 import { Redirect } from '../Redirect';
+import { Loading } from './CenterText';
 import styles from './Match.module.scss';
 
 interface Props {
@@ -18,10 +19,6 @@ const handleImport = (name: string) =>
     import(`../../games/${name}/game`),
     import(`../../games/${name}/board`)
   ]);
-
-const Loading = () => (
-  <div className={styles['match-content-loading']}>Loading...</div>
-);
 
 export function MatchContent({ loading, spectate, state }: Props) {
   const { ClientComponent } = useMemo(() => {

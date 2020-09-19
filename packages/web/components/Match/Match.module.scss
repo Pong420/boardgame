@@ -27,7 +27,7 @@
   }
 }
 
-.match-content-loading {
+.center-text {
   @include sq-dimen(100%);
   @include flex(center, center);
   @include ink-painting;
