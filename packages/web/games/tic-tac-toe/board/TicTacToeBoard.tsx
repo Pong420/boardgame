@@ -8,6 +8,7 @@
 
 import React, { ReactNode } from 'react';
 import { PlayAgain } from '@/components/PlayAgain';
+import { Disconnected } from '@/components/Match';
 import { TicTacToeBoardProps } from '../typings';
 import styles from './TicTacToeBoard.module.scss';
 
@@ -24,6 +25,10 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
       props.moves.clickCell(id);
     }
   };
+
+  if (!props.isConnected) {
+    return <Disconnected />;
+  }
 
   const tbody: ReactNode[] = [];
   for (let i = 0; i < 3; i++) {
