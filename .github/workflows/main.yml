@@ -4,7 +4,7 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [actions]
+    branches: [master]
   pull_request:
     branches: [master]
 
@@ -63,4 +63,5 @@ jobs:
         run: |
           export MONGOMS_DOWNLOAD_URL=https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
           export MONGOMS_VERSION=4.2.8
-          yarn db test
+          export CI=true
+          yarn test
