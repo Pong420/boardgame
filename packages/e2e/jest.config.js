@@ -20,6 +20,7 @@ module.exports = {
     ...tsjPreset.transform
   },
   globals: {
-    testUrl: 'http://localhost:3001'
+    testUrl: 'http://localhost:3001',
+    snapshotsDir: ''
   }
 };

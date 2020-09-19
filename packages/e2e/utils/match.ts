@@ -25,7 +25,7 @@ type Helpers = {
 };
 
 export const openCreateMatchDialog = async () => {
-  const plusBtn = await page.waitFor(`//button[.//span[@icon="plus"]]`);
+  const plusBtn = await page.waitForXPath(`//button[.//span[@icon="plus"]]`);
   await plusBtn.click();
   await page.waitForXPath(
     `//h4[contains(text(), "Create")][contains(text(), "Match")]`,
@@ -149,10 +149,14 @@ export const createMatch = async (options: FormOptions) => {
 export const leaveMatch = async (_page = page) => {
   await expect(_page).isMatchPage();
   const goback = await _page.waitForXPath(
-    `//button[.//span[@icon="arrow-left"]]`
+    `//button[.//span[@icon="arrow-left"]]`,
+    { timeout: 500 }
   );
   await goback.click();
-  await _page.waitForNavigation({ waitUntil: 'domcontentloaded' });
+  await _page.waitForNavigation({
+    waitUntil: 'domcontentloaded',
+    timeout: 2000
+  });
   await expect(_page).isLobbyPage();
 };
 

@@ -17,6 +17,8 @@ class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
   mongod = new MongoMemoryServer();
 
   async setup() {
+    this.global.snapshotsDir = snapshotsDir;
+
     await super.setup();
     await this.setupSnapshot();
     await this.setupMongoMemoryServer();
@@ -44,7 +46,7 @@ class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
   async teardown() {
     // Wait a few seconds before tearing down the page so we
     // have time to take screenshots and handle other events
-    await this.global.page.waitFor(2000);
+    await this.global.page.waitForTimeout(2000);
     await super.teardown();
 
     this.stopDevServer();

@@ -25,9 +25,14 @@ describe('Tic-Tac-Toe', () => {
         expect(idx).toBeGreaterThan(0);
         expect(idx).toBeLessThan(10);
 
-        await page.waitForXPath(
-          `${clientSelector(player)}//*[text()="Your turn"]`
-        );
+        try {
+          await page.waitForXPath(
+            `${clientSelector(player)}//*[text()="Your turn"]`,
+            { timeout: 2000 }
+          );
+        } catch (error) {
+          throw new Error(`Waiting for player ${player}, cell ${idx}`);
+        }
 
         const cells = await page.$x(`${clientSelector(player)}//td`);
         const cell = cells[idx - 1];
@@ -36,6 +41,14 @@ describe('Tic-Tac-Toe', () => {
         expect(cell).toBeDefined();
 
         await cell.click();
+
+        try {
+          await expect(
+            cell.evaluate(el => el.textContent?.trim())
+          ).resolves.toBe(player);
+        } catch (error) {
+          throw new Error(`Waiting for player ${player}, cell ${idx}`);
+        }
       } else {
         throw new Error(`player is not defined`);
       }
@@ -80,11 +93,11 @@ describe('Tic-Tac-Toe', () => {
     const p1 = page;
     const p2 = await createNewPage();
 
-    await p2.waitForNavigation({ waitUntil: 'domcontentloaded' });
-    await joinMatch(p2);
-
     const P1_CLICK = clickHandler(p1, 'O');
     const P2_CLICK = clickHandler(p2, '✕');
+
+    await p2.waitForNavigation({ waitUntil: 'domcontentloaded' });
+    await joinMatch(p2);
 
     await P1_CLICK(1);
     await P2_CLICK(5);
@@ -102,9 +115,13 @@ describe('Tic-Tac-Toe', () => {
         const [btn] = await playAgainButton(page);
         await btn.click();
         await page.waitForResponse(
-          res => res.ok() && /playAgain/.test(res.url())
+          res => res.ok() && /playAgain/.test(res.url()),
+          { timeout: 2000 }
         );
-        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+        await page.waitForNavigation({
+          waitUntil: 'domcontentloaded',
+          timeout: 500
+        });
         await expect(page).isMatchPage();
         const buttons = await playAgainButton(page);
 

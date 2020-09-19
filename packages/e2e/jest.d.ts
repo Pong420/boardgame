@@ -39,6 +39,7 @@ declare global {
   }
 
   const testUrl: string;
+  const snapshotsDir: string;
 }
 
 declare module 'puppeteer' {
