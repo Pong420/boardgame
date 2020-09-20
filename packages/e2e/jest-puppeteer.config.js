@@ -1,10 +1,8 @@
 module.exports = {
   launch: {
     // If true disable ui
-    headless: process.env.HEADLESS !== 'false' && process.env.CI !== 'true',
+    headless: process.env.CI === 'true' || process.env.HEADLESS !== 'false',
     defaultViewport: null,
-    executablePath:
-      process.env.CI === 'true' ? '/usr/bin/chromium-browser' : undefined,
     ignoreDefaultArgs: ['--disable-extensions'],
     args: ['--no-sandbox']
   },
