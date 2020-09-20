@@ -2,6 +2,7 @@
 /// <reference types="next/types/global" />
 
 declare module '*.svg';
+declare module '*.png';
 
 type Theme = 'light' | 'dark';
 type ScreenWidth = 'stretch' | 'limited';

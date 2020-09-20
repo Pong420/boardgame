@@ -9,6 +9,7 @@ import { MongoStore } from 'bgio-mongo';
 import { SetupData } from '@/typings';
 import { FlatFile } from './flatfile';
 import { game as TicTacToe } from '../games/tic-tac-toe/game';
+import { game as BigTwo } from '../games/big-two/game';
 import { overrideGetMatches } from './overrideGetMatches';
 
 export interface BgioServerOptions {
@@ -31,7 +32,7 @@ export interface BgioServerOptions {
   } catch (error) {}
 });
 
-const games = [TicTacToe] as Game[];
+const games = [TicTacToe, BigTwo] as Game[];
 
 export async function startBgioServer({
   mongoUri = process.env.MONGODB_URI
