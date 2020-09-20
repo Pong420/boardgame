@@ -10,7 +10,8 @@ import React, { ReactNode } from 'react';
 import { PlayAgain } from '@/components/PlayAgain';
 import { Disconnected } from '@/components/Match';
 import { TicTacToeBoardProps } from '../typings';
-import styles from './TicTacToeBoard.module.scss';
+import { Cell } from './Cell';
+import { Text } from './Text';
 
 const symbol = (playerID: string) =>
   (({ '0': 'O', '1': '✕' } as Record<string, string>)[playerID]);
@@ -36,28 +37,28 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
     for (let j = 0; j < 3; j++) {
       const id = 3 * i + j;
       cells.push(
-        <td
+        <Cell
           key={id}
-          className={[styles['td'], isActive(id) ? styles['active'] : '']
+          className={['cell', isActive(id) && 'active']
             .filter(Boolean)
             .join(' ')}
           onClick={() => onClick(id)}
         >
           {symbol(String(props.G.cells[id]))}
-        </td>
+        </Cell>
       );
     }
     tbody.push(<tr key={i}>{cells}</tr>);
   }
 
   let turn: ReactNode = (
-    <div className={styles['turn']}>
+    <Text>
       {props.playerID
         ? props.playerID === props.ctx.currentPlayer
           ? 'Your turn'
           : 'Waiting for ohter player'
         : `Player ${symbol(props.ctx.currentPlayer)}'s turn`}
-    </div>
+    </Text>
   );
 
   let winner: ReactNode = null;
@@ -66,7 +67,7 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
     turn = null;
 
     winner = (
-      <div className={styles['winner']}>
+      <Text>
         {props.ctx.gameover === 'draw'
           ? 'Draw'
           : props.playerID
@@ -74,17 +75,15 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
             ? 'You win'
             : 'You lose'
           : `Player ${symbol(props.ctx.gameover)} win`}
-      </div>
+      </Text>
     );
   }
 
   return (
-    <div className={styles['container']}>
-      <div className={styles['head']}>
-        {props.playerID && `You are -  ${symbol(props.playerID)}`}
-      </div>
+    <div className="container">
+      <Text>{props.playerID && `You are -  ${symbol(props.playerID)}`}</Text>
 
-      <table className={styles['board']}>
+      <table className="board">
         <tbody>{tbody}</tbody>
       </table>
 
@@ -92,21 +91,38 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
 
       {winner}
 
-      <div className={styles['actions']}>
+      <div className="actions">
         {props.credentials && props.ctx.gameover && props.playerID && (
           <PlayAgain />
         )}
       </div>
 
       <style jsx global>{`
-        .tic-tac-toe.local.num-of-player-2 .bgio-client {
-          height: 50%;
+        .tic-tac-toe {
+          .bgio-client {
+            @include flex(center, center);
+            text-align: center;
+          }
+
+          &.local.num-of-player-2 {
+            .bgio-client {
+              height: 50%;
+            }
+          }
+        }
+      `}</style>
+
+      <style jsx>{`
+        .container {
+          @include dimen(100%);
         }
 
-        .tic-tac-toe .bgio-client {
-          display: flex;
-          align-items: center;
-          text-align: center;
+        .board {
+          margin: auto;
+        }
+
+        .actions {
+          min-height: 30px;
         }
       `}</style>
     </div>
