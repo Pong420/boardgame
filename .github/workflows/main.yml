@@ -51,14 +51,14 @@ jobs:
 
       - name: install puppeteer libraries
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libgbm1
+          apk add --no-cache chromium nss freetype freetype-dev harfbuzz ca-certificates ttf-freefont
 
       - name: Install project dependencies
         if: |
           steps.cache-yarn-cache.outputs.cache-hit == false ||
           steps.cache-node-modules.outputs.cache-hit == false
         run: |
+          export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
           yarn install
 
       - name: Build project

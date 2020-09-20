@@ -3,7 +3,10 @@ module.exports = {
     // If true disable ui
     headless: process.env.HEADLESS !== 'false' && process.env.CI !== 'true',
     defaultViewport: null,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
+    executablePath:
+      process.env.CI === 'true' ? '/usr/bin/chromium-browser' : undefined,
+    ignoreDefaultArgs: ['--disable-extensions'],
+    args: ['--no-sandbox']
   },
   exitOnPageError: false
 };
