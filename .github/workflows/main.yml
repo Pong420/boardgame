@@ -60,11 +60,8 @@ jobs:
             libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
 
       - name: Install project dependencies
-        if: |
-          steps.cache-yarn-cache.outputs.cache-hit == false ||
-          steps.cache-node-modules.outputs.cache-hit == false
         run: |
-          yarn install
+          yarn install --prefer-offline
 
       - name: Build project
         run: yarn build
