@@ -17,6 +17,7 @@ import { LobbyItem } from './LobbyItem';
 import { NoMatches } from './NoMatches';
 import { CreateMatch } from './CreateMatch';
 import styles from './Lobby.module.scss';
+
 interface Props extends GameMeta {}
 
 export function Lobby(meta: Props) {

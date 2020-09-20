@@ -13525,10 +13525,10 @@ use-memo-one@^1.1.0:
   resolved "https://registry.yarnpkg.com/use-memo-one/-/use-memo-one-1.1.1.tgz#39e6f08fe27e422a7d7b234b5f9056af313bd22c"
   integrity sha512-oFfsyun+bP7RX8X2AskHNTxu+R3QdE/RC5IefMbqptmACAA/gfol1KDD5KRzPsGMa62sWxGZw+Ui43u6x4ddoQ==
 
-use-rx-hooks@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/use-rx-hooks/-/use-rx-hooks-1.6.0.tgz#e81d6fafcb356e823c246d5044f615c1c90fa0f6"
-  integrity sha512-SYThvEfOuIkHOW3pZFwaL/3V/CIE1B3heroDuBWXZnMfqXQWSMcei9oe8H+lbEIy+KYujH2GU4qmbrYYdhLJQA==
+use-rx-hooks@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/use-rx-hooks/-/use-rx-hooks-1.6.1.tgz#ac79e5d0ef8856cf7067ef03c705b9d3d9016ff5"
+  integrity sha512-ZyLIM4UBqIoXJE4obGoj/+2LLd66NY2ZGycKf825zEjmPdRA+ZjAB+982YPzBIawgq5HVSqFiEAvn60Z7ZkBEQ==
 
 use-subscription@1.4.1:
   version "1.4.1"
