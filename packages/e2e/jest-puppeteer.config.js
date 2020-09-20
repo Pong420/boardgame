@@ -6,5 +6,9 @@ module.exports = {
     ignoreDefaultArgs: ['--disable-extensions'],
     args: ['--no-sandbox']
   },
+  server: {
+    command: 'node server.js',
+    port: 3001
+  },
   exitOnPageError: false
 };

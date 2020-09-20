@@ -2,8 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const rimraf = require('rimraf');
 const PuppeteerEnvironment = require('jest-environment-puppeteer');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const { startServer } = require('../web/dist/startServer');
 const mongoose = require('mongoose');
 
 /**
@@ -20,26 +18,11 @@ const snapshotsSetup = (async () => {
   }
 })();
 
-const mongod = new MongoMemoryServer();
-
 class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
-  mongod = new MongoMemoryServer();
-
   async setup() {
     this.global.snapshotsDir = snapshotsDir;
-
     await super.setup();
     await snapshotsSetup;
-    await this.setupMongoMemoryServer();
-  }
-
-  async setupMongoMemoryServer() {
-    const mongoUri = await this.mongod.getUri();
-    this.stopDevServer = await startServer({
-      dev: false,
-      port: 3001,
-      mongoUri
-    });
   }
 
   async teardown() {
@@ -47,16 +30,6 @@ class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
     // have time to take screenshots and handle other events
     await this.global.page.waitForTimeout(2000);
     await super.teardown();
-
-    if (typeof this.stopDevServer === 'function') {
-      this.stopDevServer();
-    }
-
-    await mongoose.disconnect();
-
-    await mongod.stop();
-
-    await this.global.page.waitForTimeout(2000);
   }
   // `jest-circus` features
   // https://github.com/facebook/jest/tree/master/packages/jest-circus
