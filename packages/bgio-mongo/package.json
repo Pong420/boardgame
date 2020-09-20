@@ -18,7 +18,7 @@
     "@types/node": "^14.0.27",
     "esbuild": "^0.6.33",
     "jest": "^26.4.2",
-    "mongodb-memory-server": "^6.7.6",
+    "mongodb-memory-server-global": "^6.7.6",
     "rollup": "^2.26.11",
     "rollup-plugin-esbuild": "^2.5.0",
     "ts-jest": "^26.3.0",

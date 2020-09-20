@@ -9,7 +9,6 @@ module.exports = {
   testEnvironment: '<rootDir>/jest-environment.js',
   // testSequencer: '<rootDir>/jest-testSequencer.js',
   setupFilesAfterEnv: [
-    'expect-puppeteer',
     '<rootDir>/jest.setup.ts',
     '<rootDir>/matchers/index.ts'
   ],

@@ -20,6 +20,8 @@ const snapshotsSetup = (async () => {
   }
 })();
 
+const mongod = new MongoMemoryServer();
+
 class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
   mongod = new MongoMemoryServer();
 
@@ -46,11 +48,13 @@ class ExtendPuppeteerEnvironment extends PuppeteerEnvironment {
     await this.global.page.waitForTimeout(2000);
     await super.teardown();
 
-    this.stopDevServer();
+    if (typeof this.stopDevServer === 'function') {
+      this.stopDevServer();
+    }
 
-    await mongoose.connection.close();
+    await mongoose.disconnect();
 
-    await this.mongod.stop();
+    await mongod.stop();
 
     await this.global.page.waitForTimeout(2000);
   }

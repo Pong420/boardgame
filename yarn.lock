@@ -9331,30 +9331,6 @@ modify-values@^1.0.0:
   resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
-mongodb-memory-server-core@6.7.5:
-  version "6.7.5"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-6.7.5.tgz#f3fd1e517e8f798af8a93bb1d37a6cd0b04e7427"
-  integrity sha512-G4Wv1MAQg5B/aXpRwD5jy6Ubspcd7w4LsFl+rYJHhUgj8VMZGa4hX1pcEW26ghaw7gm24YsyXwDezHZPtxijKA==
-  dependencies:
-    "@types/tmp" "^0.2.0"
-    camelcase "^6.0.0"
-    cross-spawn "^7.0.3"
-    debug "^4.1.1"
-    find-cache-dir "^3.3.1"
-    find-package-json "^1.2.0"
-    get-port "^5.1.1"
-    https-proxy-agent "^5.0.0"
-    lockfile "^1.0.4"
-    md5-file "^5.0.0"
-    mkdirp "^1.0.4"
-    semver "^7.3.2"
-    tar-stream "^2.1.4"
-    tmp "^0.2.1"
-    uuid "8.3.0"
-    yauzl "^2.10.0"
-  optionalDependencies:
-    mongodb "3.6.2"
-
 mongodb-memory-server-core@6.7.6:
   version "6.7.6"
   resolved "https://registry.yarnpkg.com/mongodb-memory-server-core/-/mongodb-memory-server-core-6.7.6.tgz#18e7fdeba1e4ffa445ec22308b5ec308c9021241"
@@ -9379,14 +9355,15 @@ mongodb-memory-server-core@6.7.6:
   optionalDependencies:
     mongodb "3.6.2"
 
-mongodb-memory-server@^6.7.5:
-  version "6.7.5"
-  resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-6.7.5.tgz#3eb4033bba56bd1822b73f581e0badc12af05401"
-  integrity sha512-Ws4IRrFqCEoD27jzFHfST9lXyrgDddpLXcoQ7B0S4Sc5v3N5tpchmvueuZ0BMj4bwwBJlWl64nXNgCoooYvupw==
+mongodb-memory-server-global@^6.7.5, mongodb-memory-server-global@^6.7.6:
+  version "6.7.6"
+  resolved "https://registry.yarnpkg.com/mongodb-memory-server-global/-/mongodb-memory-server-global-6.7.6.tgz#1145622228ee2f0c6d1fc0e3d3b4df11c7124045"
+  integrity sha512-FR20vX25nlMw9kYCcMNKBWfkUJOT+VmF6Ll7ubVtpBhCApnOGyC2RAGNhuNYjyJ3dYbya2kKd9lWN8/VYUctGQ==
   dependencies:
-    mongodb-memory-server-core "6.7.5"
+    mongodb-memory-server "6.7.6"
+    os "^0.1.1"
 
-mongodb-memory-server@^6.7.6:
+mongodb-memory-server@6.7.6:
   version "6.7.6"
   resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-6.7.6.tgz#dfae0e061a117cc73ce47c379bf17134dd9680cd"
   integrity sha512-dxAo6wik3r0H1HnAgrCZ+qR4wE54TeTdKHhvw/eL51Ez6F+0Kq+ojfGIlyK5yrV/KJ+4jGkdLg68FfAL0LCWfA==
@@ -10070,6 +10047,11 @@ os-tmpdir@^1.0.0, os-tmpdir@~1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
   integrity sha1-u+Z0BseaqFxc/sdm/lc0VV36EnQ=
+
+os@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/os/-/os-0.1.1.tgz#208845e89e193ad4d971474b93947736a56d13f3"
+  integrity sha1-IIhF6J4ZOtTZcUdLk5R3NqVtE/M=
 
 osenv@^0.1.4, osenv@^0.1.5:
   version "0.1.5"
