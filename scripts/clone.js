@@ -13,8 +13,8 @@ const gameName = name
   .map(str => str.toLocaleLowerCase())
   .join('-');
 
-const dist = path.resolve(__dirname, '../packages/web/src/games', gameName);
-const template = path.resolve(__dirname, '../packages/web/src/games/_template');
+const dist = path.resolve(__dirname, '../packages/web/games', gameName);
+const template = path.resolve(__dirname, '../packages/web/games/_template');
 
 const exclude = ['dist', 'node_modules'];
 
