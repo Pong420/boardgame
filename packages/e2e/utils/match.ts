@@ -26,11 +26,8 @@ type Helpers = {
 
 export const openCreateMatchDialog = async () => {
   const plusBtn = await page.waitForXPath(`//button[.//span[@icon="plus"]]`);
+  await plusBtn.focus();
   await plusBtn.click();
-  await page.waitForXPath(
-    `//h4[contains(text(), "Create")][contains(text(), "Match")]`,
-    { visible: true }
-  );
   await page.waitForTimeout(500);
 };
 
@@ -45,9 +42,7 @@ export const createMatchForm = ((): Helpers => {
       `//div[label[text()="Your Name"]]//button`
     );
     const [playerNameInput] = await Promise.all([
-      page.waitForXPath(`//div[label[text()="Your Name"]]//input`, {
-        visible: true
-      }),
+      page.waitForXPath(`//div[label[text()="Your Name"]]//input`, {}),
       element.click()
     ]);
 
@@ -58,6 +53,7 @@ export const createMatchForm = ((): Helpers => {
         const [, confirmPlayerName] = await page.$x(
           `//button[.//span[text()="Confirm"]]`
         );
+        await confirmPlayerName.focus();
         await confirmPlayerName.click();
         await page.waitForTimeout(300);
       }
@@ -106,6 +102,7 @@ export const createMatchForm = ((): Helpers => {
 
   const confirm: Helpers['confirm'] = async () => {
     const [confirm] = await page.$x(`//button[.//span[text()="Confirm"]]`);
+    await confirm.focus();
     await confirm.click();
   };
 
@@ -134,7 +131,7 @@ export const createMatch = async (options: FormOptions) => {
   }
 
   await Promise.all([
-    page.waitForNavigation({ timeout: 3000 }),
+    page.waitForNavigation(),
     (options.local
       ? Promise.resolve()
       : page.waitForResponse(
@@ -149,8 +146,7 @@ export const createMatch = async (options: FormOptions) => {
 export const leaveMatch = async (_page = page) => {
   await _page.bringToFront();
   await expect(_page).isMatchPage();
-  const [goback] = await _page.$x(`//button[.//span[@icon="arrow-left"]]`);
-  await goback.click();
+  await expect(_page).goBack();
   await _page.waitForNavigation({
     waitUntil: 'networkidle0'
   });
@@ -195,6 +191,7 @@ export const joinMatch = async (page: Page, by?: By) => {
   const [match] = await get();
 
   const [button] = await match.$x('//button[.//span[text()="Join"]]');
+  await button.focus();
   await button.click();
   await page.waitForTimeout(300);
 
@@ -204,6 +201,7 @@ export const joinMatch = async (page: Page, by?: By) => {
       if (input) {
         const [confirm] = await page.$x(`//button[.//span[text()="Confirm"]]`);
         await input.type('e2e-p-2');
+        await confirm.focus();
         await confirm.click();
       }
     })(),

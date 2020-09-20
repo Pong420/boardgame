@@ -31,7 +31,7 @@ describe('others', () => {
     await expect(newPage).isHomePage();
 
     // should not changed
-    await page.reload({ waitUntil: 'networkidle2' });
+    await page.reload({ waitUntil: ['networkidle0', 'domcontentloaded'] });
     await expect(page).isErrorPage();
     await expect(newPage).isHomePage();
 

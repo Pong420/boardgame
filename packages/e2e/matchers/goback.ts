@@ -5,6 +5,7 @@ export async function goBack(page: Page): Promise<jest.CustomMatcherResult> {
     const goback = await page.waitForXPath(
       `//button[.//span[@icon="arrow-left"]]`
     );
+    await goback.focus();
     await goback.click();
     return {
       message: () => `success`,

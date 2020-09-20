@@ -10,6 +10,7 @@ const rowValueSelector = (label: string) => `${rowSelector(label)}//div[2]/*`;
 
 export const openPreferenceDialog = async () => {
   const button = await page.waitForXPath("//span[@icon='settings']/..");
+  await button.focus();
   await button.click();
   await page.waitForXPath(headingSelector, {
     visible: true
@@ -20,6 +21,7 @@ export const closePreferenceDialog = async () => {
   const close = await page.waitForXPath(
     `${headingSelector}/following-sibling::button`
   );
+  await close.focus();
   await close.click();
   await page.waitForTimeout(300);
 };

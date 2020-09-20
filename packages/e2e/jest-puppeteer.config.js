@@ -8,7 +8,8 @@ module.exports = {
   },
   server: {
     command: 'node server.js',
-    port: 3001
+    port: 3001,
+    launchTimeout: 2 * 60 * 1000
   },
   exitOnPageError: false
 };

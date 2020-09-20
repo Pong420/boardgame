@@ -66,6 +66,7 @@ describe('Lobby', () => {
         `//button[.//span[@icon="refresh"]]`
       );
 
+      await refreshBtn.focus();
       await refreshBtn.click();
       const immediately = await Promise.race([
         page.waitForTimeout(500).then(() => false),
