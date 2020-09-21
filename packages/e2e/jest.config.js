@@ -7,7 +7,7 @@ module.exports = {
   testRunner: 'jest-circus/runner',
   testMatch: ['<rootDir>/**/*(*.)@(e2e-spec|test).[tj]s?(x)'],
   testEnvironment: '<rootDir>/jest-environment.js',
-  // testSequencer: '<rootDir>/jest-testSequencer.js',
+  testSequencer: '<rootDir>/jest-testSequencer.js',
   setupFilesAfterEnv: [
     '<rootDir>/jest.setup.ts',
     '<rootDir>/matchers/index.ts'

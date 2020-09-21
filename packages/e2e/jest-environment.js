@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const rimraf = require('rimraf');
 const PuppeteerEnvironment = require('jest-environment-puppeteer');
-const mongoose = require('mongoose');
 
 /**
  *  Take snapshot after test fail, reference:
