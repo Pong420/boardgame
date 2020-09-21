@@ -23,11 +23,13 @@ export const isLobbyPage = handler(/lobby/, /Lobby/);
 export const isMatchPage = handler(/match/, /Match/);
 export const isSpectatePage = handler(/spectate/, /Spectate/);
 export const isErrorPage = handler(/error/, /Error/);
+export const isInvitationPage = handler(/invitation/, /Invitation/);
 
 expect.extend({
   isHomePage,
   isLobbyPage,
   isMatchPage,
   isSpectatePage,
-  isErrorPage
+  isErrorPage,
+  isInvitationPage
 });

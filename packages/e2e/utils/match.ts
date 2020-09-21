@@ -173,42 +173,57 @@ export const getMatches = async (page: Page, by?: By) => {
   return await page.$x(selectors.join(''));
 };
 
-export const joinMatch = async (page: Page, by?: By) => {
-  await expect(page).isLobbyPage();
+export async function clickJoinButton<T extends { $x: Page['$x'] }>(
+  page: Page,
+  handle: T
+) {
+  const [button] = await handle.$x('//button[.//span[text()="Join"]]');
 
-  async function get(): Promise<ElementHandle[]> {
-    const matches = await getMatches(page, by);
-    if (matches.length) {
-      return matches;
-    }
-    await page.waitForResponse(
-      res =>
-        res.ok() && res.request().method() === 'GET' && /games/.test(res.url())
-    );
-    return get();
-  }
+  expect(button).toBeDefined();
 
-  const [match] = await get();
-
-  const [button] = await match.$x('//button[.//span[text()="Join"]]');
   await button.focus();
   await button.click();
-  await page.waitForTimeout(300);
+  await page.waitForTimeout(1000);
 
   await Promise.all([
     (async () => {
       const [input] = await page.$x(`//div[label[text()="Your Name"]]//input`);
-      if (input) {
-        const [confirm] = await page.$x(`//button[.//span[text()="Confirm"]]`);
-        await input.type('e2e-p-2');
-        await confirm.focus();
-        await confirm.click();
-      }
+      expect(input).toBeDefined();
+      await input.focus();
+      await input.type('e2e-p-2');
+
+      const [confirm] = await page.$x(`//button[.//span[text()="Confirm"]]`);
+      expect(confirm).toBeDefined();
+      await confirm.focus();
+      await confirm.click();
     })(),
     page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
     page.waitForResponse(res => res.ok() && /games.*\/join/.test(res.url()))
   ]);
+}
+
+async function waitForMatch(page: Page, by?: By): Promise<ElementHandle[]> {
+  const matches = await getMatches(page, by);
+  if (matches.length) {
+    return matches;
+  }
+  await page.waitForResponse(
+    res =>
+      res.ok() && res.request().method() === 'GET' && /games/.test(res.url())
+  );
+  return waitForMatch(page, by);
+}
+
+export const joinMatch = async (page: Page, by?: By) => {
+  await expect(page).isLobbyPage();
+
+  const [match] = await waitForMatch(page, by);
+
+  expect(match).toBeDefined();
+
+  await clickJoinButton(page, match);
 
   await expect(page).isMatchPage();
+
   return page;
 };
