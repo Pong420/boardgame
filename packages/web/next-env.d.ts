@@ -3,6 +3,7 @@
 
 declare module '*.svg';
 declare module '*.png';
+declare module '@koa/cors';
 
 type Theme = 'light' | 'dark';
 type ScreenWidth = 'stretch' | 'limited';

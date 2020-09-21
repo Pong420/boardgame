@@ -3,6 +3,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import helmet from 'koa-helmet';
 import ratelimit from 'koa-ratelimit';
+import cors from '@koa/cors';
 import { Game } from 'boardgame.io';
 import { Server } from 'boardgame.io/server';
 import { MongoStore } from 'bgio-mongo';
@@ -62,13 +63,15 @@ export async function startBgioServer({
   }
 
   if (process.env.NODE_ENV === 'production') {
+    server.app.use(cors());
+
     server.app.use(helmet());
 
     server.app.use(
       ratelimit({
         driver: 'memory',
         db: new Map(),
-        duration: 30000,
+        duration: 60 * 1000,
         errorMessage: 'Sometimes You Just Have to Slow Down.',
         id: ctx => ctx.ip,
         headers: {

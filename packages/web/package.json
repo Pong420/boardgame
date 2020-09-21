@@ -13,6 +13,7 @@
   "dependencies": {
     "@blueprintjs/core": "^3.31.0",
     "@blueprintjs/icons": "^3.20.1",
+    "@koa/cors": "^3.1.0",
     "array-move": "^3.0.1",
     "axios": "^0.20.0",
     "bgio-mongo": "1.0.0",
