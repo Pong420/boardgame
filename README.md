@@ -63,7 +63,8 @@ node scripts/clone.js NewGameName
 
 ### TODO
 
-[ ] Room
-[ ] Tic-Tac-Toe AI
-[ ] Display player name
-[ ] Player leave notice
+- [ ] Room
+- [ ] Tic-Tac-Toe AI
+- [ ] Display player name
+- [ ] Player leave notice
+- [ ] Mongodb TTL
