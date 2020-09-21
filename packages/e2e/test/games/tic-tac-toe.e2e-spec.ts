@@ -1,6 +1,7 @@
 import { Page } from 'puppeteer';
 import { createMatch, joinMatch, leaveMatch } from '@/utils/match';
 import { newPageHelper } from '@/utils/page';
+import { waitForSocket } from '@/utils/socket';
 
 type Player = 'O' | '✕';
 
@@ -29,7 +30,7 @@ describe('Tic-Tac-Toe', () => {
 
         let count = 0;
 
-        const ready = async (player: Player): Promise<void> => {
+        const waitForMyTurn = async (player: Player): Promise<void> => {
           try {
             await page.waitForXPath(
               `${clientSelector(player)}//*[text()="Your turn"]`,
@@ -37,16 +38,17 @@ describe('Tic-Tac-Toe', () => {
             );
           } catch (error) {
             if (count < 10) {
-              await Promise.all([page.reload({ waitUntil: 'networkidle0' })]);
-              await ready(player);
-              count++;
+              await Promise.all([page.reload({ waitUntil: 'networkidle2' })]);
+              await waitForMyTurn(player);
+              // eslint-disable-next-line
+              console.log(`player ${player} retry ${count++}`);
             } else {
               throw new Error(`Waiting for ${player} click ${idx} cell`);
             }
           }
         };
 
-        await ready(player);
+        await waitForMyTurn(player);
 
         const cells = await page.$x(`${clientSelector(player)}//td`);
         const cell = cells[idx - 1];
@@ -54,17 +56,15 @@ describe('Tic-Tac-Toe', () => {
         expect(cells.length).toBe(9);
         expect(cell).toBeDefined();
 
+        await page.waitForTimeout(300); // wait for ui update ?
         await cell.click();
-
-        // required, but not sure the reason
-        await page.waitForTimeout(300);
 
         try {
           await expect(
             cell.evaluate(el => el.textContent?.trim())
           ).resolves.toBe(player);
         } catch (error) {
-          throw new Error(`Waiting for player ${player}, cell ${idx}`);
+          throw new Error(`Player ${player} not click the cell ${idx}`);
         }
       } else {
         throw new Error(`player is not defined`);
@@ -75,12 +75,8 @@ describe('Tic-Tac-Toe', () => {
   const createNewPage = newPageHelper('/lobby/tic-tac-toe');
   const isWinner = async (page: Page, player: Player, win: boolean) => {
     try {
-      page.waitForXPath(
-        `${clientSelector(player)}[.//*[contains(text(), ${
-          win ? 'win' : 'lose'
-        })]]`,
-        { timeout: 2000 }
-      );
+      const textSelector = `[.//*[contains(text(), ${win ? 'win' : 'lose'})]]`;
+      page.waitForXPath(`${clientSelector(player)}${textSelector}`);
     } catch (error) {
       throw new Error(`cannot check the winner`);
     }
@@ -128,10 +124,19 @@ describe('Tic-Tac-Toe', () => {
       await P1_CLICK(2);
       await P2_CLICK(3);
       await P1_CLICK(4);
-      await P2_CLICK(7);
+      await Promise.all([
+        Promise.all([
+          isWinner(p2, '✕', true),
+          waitForSocket(p2, 'FrameReceived')
+        ]),
+        Promise.all([
+          isWinner(p1, 'O', false),
+          waitForSocket(p1, 'FrameReceived')
+        ]),
+        P2_CLICK(7)
+      ]);
 
-      await isWinner(p2, '✕', true);
-      await isWinner(p1, 'O', false);
+      await page.waitForTimeout(100);
 
       // play again
       await Promise.all(

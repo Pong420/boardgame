@@ -205,10 +205,10 @@ export const joinMatch = async (page: Page, by?: By) => {
         await confirm.click();
       }
     })(),
+    page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
     page.waitForResponse(res => res.ok() && /games.*\/join/.test(res.url()))
   ]);
 
-  await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
   await expect(page).isMatchPage();
   return page;
 };
