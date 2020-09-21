@@ -1,10 +1,16 @@
-import React, { useRef } from 'react';
-import { Button, ButtonGroup, Classes, Dialog } from '@blueprintjs/core';
-import { useBoolean } from '@/hooks/useBoolean';
+import React, { useRef, MouseEvent, useState } from 'react';
+import {
+  Button,
+  ButtonGroup,
+  Classes,
+  Dialog,
+  IButtonProps
+} from '@blueprintjs/core';
 import { ButtonPopover } from './ButtonPopover';
 import { Input } from './Input';
 import WhatsappIcon from '../assets/iconmonstr-whatsapp-1.svg';
 import TelegramIcon from '../assets/iconmonstr-telegram-4.svg';
+import { useBoolean } from '@/hooks/useBoolean';
 
 interface Props {
   name: string;
@@ -14,6 +20,29 @@ interface Props {
 }
 
 const buttonStyle = { fontSize: 18 };
+
+function CopyButton({ onClick, ...props }: IButtonProps) {
+  const [copied, setCopied] = useState(false);
+  const timeout = useRef(setTimeout(() => void 0, 0));
+
+  return (
+    <Button
+      {...props}
+      intent="primary"
+      text={copied ? 'Copied' : 'Copy'}
+      style={{ minWidth: 60 }}
+      disabled={typeof document === 'undefined' || !('execCommand' in document)}
+      onClick={(event: MouseEvent<HTMLElement>) => {
+        if (onClick) {
+          onClick(event);
+          clearTimeout(timeout.current);
+          timeout.current = setTimeout(() => setCopied(false), 500);
+          setCopied(true);
+        }
+      }}
+    />
+  );
+}
 
 export function ShareButton({ playerName, gameName, matchID, name }: Props) {
   const [isOpen, openDialog, closeDialog] = useBoolean();
@@ -39,13 +68,8 @@ export function ShareButton({ playerName, gameName, matchID, name }: Props) {
             }}
             inputRef={inputRef}
             rightElement={
-              <Button
+              <CopyButton
                 text="Copy"
-                intent="primary"
-                disabled={
-                  typeof document === 'undefined' ||
-                  !('execCommand' in document)
-                }
                 onClick={() => {
                   inputRef.current?.select();
                   inputRef.current?.setSelectionRange(0, 99999);
