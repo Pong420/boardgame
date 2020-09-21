@@ -146,10 +146,10 @@ export const createMatch = async (options: FormOptions) => {
 export const leaveMatch = async (_page = page) => {
   await _page.bringToFront();
   await expect(_page).isMatchPage();
-  await expect(_page).goBack();
-  await _page.waitForNavigation({
-    waitUntil: 'networkidle0'
-  });
+  await Promise.all([
+    _page.waitForNavigation({ waitUntil: 'networkidle0' }),
+    expect(_page).goBack()
+  ]);
   await expect(_page).isLobbyPage();
 };
 

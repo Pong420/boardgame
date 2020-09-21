@@ -9,8 +9,10 @@ describe('Tic-Tac-Toe', () => {
   beforeAll(async () => {
     await expect(page).goto('/');
     const link = await page.waitForXPath(`//a[.//div[text()="Tic-Tac-Toe"]]`);
-    await link.click();
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'networkidle0' }),
+      link.click()
+    ]);
   });
 
   const clientSelector = (player: Player) =>
@@ -113,11 +115,12 @@ describe('Tic-Tac-Toe', () => {
       const p1 = page;
       const p2 = await createNewPage();
 
-      const P1_CLICK = clickHandler(p1, 'O');
-      const P2_CLICK = clickHandler(p2, '✕');
-
+      // wait for p2 goto lobby page
       await p2.waitForNavigation({ waitUntil: 'domcontentloaded' });
       await joinMatch(p2);
+
+      const P1_CLICK = clickHandler(p1, 'O');
+      const P2_CLICK = clickHandler(p2, '✕');
 
       await P1_CLICK(1);
       await P2_CLICK(5);
@@ -142,13 +145,13 @@ describe('Tic-Tac-Toe', () => {
       await Promise.all(
         [p1, p2].map(async page => {
           const [btn] = await playAgainButton(page);
-          await btn.click();
-          await page.waitForResponse(
-            res => res.ok() && /playAgain/.test(res.url())
-          );
-          await page.waitForNavigation({
-            waitUntil: 'networkidle2'
-          });
+          await Promise.all([
+            page.waitForResponse(
+              res => res.ok() && /playAgain/.test(res.url())
+            ),
+            page.waitForNavigation({ waitUntil: 'networkidle2' }),
+            btn.click()
+          ]);
           await expect(page).isMatchPage();
           const buttons = await playAgainButton(page);
           expect(buttons).toHaveLength(0);

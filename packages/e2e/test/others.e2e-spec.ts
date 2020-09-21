@@ -17,8 +17,10 @@ describe('others', () => {
       }
     };
 
-    await expect(page).goto('/');
-    await page.waitForNavigation({ waitUntil: 'networkidle0' });
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'networkidle0' }),
+      expect(page).goto('/')
+    ]);
     await expect(page).isHomePage();
 
     const newPage = await browser.newPage();

@@ -24,8 +24,10 @@ describe('Lobby', () => {
   beforeEach(async () => {
     await expect(page).goto('/');
     const link = await page.waitForXPath(`//a[.//div[text()="Tic-Tac-Toe"]]`);
-    await link.click();
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'networkidle0' }),
+      link.click()
+    ]);
   });
 
   test('goto lobby', async () => {
@@ -163,16 +165,20 @@ describe('Lobby', () => {
         await waitForGameList(page);
         const [match] = await getMatches(page, { matchName, description });
         const [button] = await match.$x('//button[.//span[text()="Spectate"]]');
-        await button.click();
-        await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
+        await Promise.all([
+          page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+          button.click()
+        ]);
         await expect(page).isSpectatePage();
         return page;
       })();
 
       await Promise.all([leaveMatch(), leaveMatch(joinPage)]);
 
-      await expect(spectatePage).goBack();
-      await spectatePage.waitForNavigation({ waitUntil: 'domcontentloaded' });
+      await Promise.all([
+        spectatePage.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+        expect(spectatePage).goBack()
+      ]);
       await expect(spectatePage).isLobbyPage();
 
       await joinPage.close();

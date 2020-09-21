@@ -4,8 +4,10 @@ describe('Match', () => {
   beforeAll(async () => {
     await expect(page).goto('/');
     const link = await page.waitForXPath(`//a[.//div[text()="Tic-Tac-Toe"]]`);
-    await link.click();
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'networkidle0' }),
+      link.click()
+    ]);
   });
 
   test('leave match', async () => {
