@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "rollup -c -w --environment NODE_ENV:development",
+    "dev": "next dev",
     "build:server": "rollup -c --environment NODE_ENV:production",
     "build:next": "next build",
     "build": "npm run build:next && npm run build:server",
