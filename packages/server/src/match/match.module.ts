@@ -5,9 +5,7 @@ import { MatchController } from './match.controller';
 import { Match, MatchSchema } from './schemas/match.schema';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Match.name, schema: MatchSchema }])
-  ],
+  imports: [],
   providers: [MatchService],
   controllers: [MatchController]
 })

@@ -1,6 +1,5 @@
 import { MongoError } from 'mongodb';
 import { Error as MongooseError } from 'mongoose';
-import { FastifyReply } from 'fastify';
 import {
   Catch,
   ArgumentsHost,
@@ -46,7 +45,7 @@ export function throwMongoError(error: unknown): void {
 export class MongooseExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<FastifyReply>();
+    const response = ctx.getResponse<any>();
     const [type, message] = handleMongoError(exception) || [];
 
     if (typeof type !== 'undefined') {

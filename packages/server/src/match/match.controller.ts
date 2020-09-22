@@ -1,11 +1,18 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { State } from 'boardgame.io';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { MatchService } from './match.service';
 
 @Controller('match')
 export class MatchController {
-  constructor(private readonly matchService: MatchService) {}
+  constructor(private readonly matchService: MatchService) {
+    
+  }
+
+  @Get('')
+  getMatches() {
+    return this.matchService.listGames();
+  }
 
   @Post('create')
   createMatch(@Body() metadata: CreateMatchDto) {

@@ -4,10 +4,9 @@ import {
   ExecutionContext,
   CallHandler
 } from '@nestjs/common';
-import { FastifyReply } from 'fastify';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiResponse } from '@fullstack/typings';
+import { ApiResponse } from '@/typings';
 
 export function transformResponse<T>(
   statusCode: number,
@@ -23,7 +22,7 @@ export function transformResponse<T>(
 export class ResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const http = context.switchToHttp();
-    const reply = http.getResponse<FastifyReply>();
+    const reply = http.getResponse<any>();
 
     return next
       .handle()

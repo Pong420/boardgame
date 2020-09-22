@@ -3,7 +3,6 @@ import { isObject } from 'class-validator';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Model } from 'mongoose';
-import { FastifyRequest } from 'fastify';
 import { Reflector } from '@nestjs/core';
 import {
   Injectable,
@@ -18,12 +17,8 @@ import {
 } from '@nestjs/common';
 import { CLASS_SERIALIZER_OPTIONS } from '@nestjs/common/serializer/class-serializer.constants';
 import { ClassTransformOptions } from '@nestjs/common/interfaces/external/class-transform-options.interface';
-import { PaginateResult, UserRole } from '@fullstack/typings';
 
-type Res =
-  | PlainLiteralObject
-  | Array<PlainLiteralObject>
-  | PaginateResult<unknown>;
+type Res = PlainLiteralObject | Array<PlainLiteralObject>;
 
 @Injectable({ scope: Scope.REQUEST })
 export class MongooseSerializerInterceptor implements NestInterceptor {
@@ -34,8 +29,6 @@ export class MongooseSerializerInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const contextOptions = this.getContextOptions(context);
-    const req = context.switchToHttp().getRequest<FastifyRequest>();
-    const role = UserRole[req?.user?.role];
 
     const options = {
       ...this.defaultOptions,
@@ -45,8 +38,7 @@ export class MongooseSerializerInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((res: Res) =>
         this.serialize(res, {
-          ...options,
-          groups: [...(options.groups || []), role]
+          ...options
         })
       )
     );
