@@ -16,37 +16,33 @@ import { SetupDataDto } from './setup-data.dto';
 
 class Excluded implements DTOExcluded<Schema$Match, Param$CreateMatch> {
   @Exclude()
-  id: undefined;
+  id?: undefined;
 
   @Exclude()
-  createdAt: undefined;
+  matchID?: string;
 
   @Exclude()
-  updatedAt: undefined;
+  createdAt?: number;
 
   @Exclude()
-  gameName: undefined;
+  updatedAt?: number;
 
   @Exclude()
-  players: undefined;
+  gameName?: string;
 
   @Exclude()
-  gameover: undefined;
+  players?: any;
 
   @Exclude()
-  nextMatchID: undefined;
+  gameover?: unknown;
 
   @Exclude()
-  matchID: undefined;
+  nextMatchID?: string;
 }
 
 class CreateMatch
   extends Excluded
   implements Partial<Omit<Param$CreateMatch, keyof Excluded>> {
-  @ValidateNested()
-  @Type(() => SetupDataDto)
-  setupData?: SetupData;
-
   @IsOptional()
   @IsBoolean()
   unlisted?: boolean;
@@ -60,4 +56,8 @@ export class CreateMatchDto
 
   @IsNumber()
   numPlayers: number;
+
+  @ValidateNested()
+  @Type(() => SetupDataDto)
+  setupData: SetupData;
 }

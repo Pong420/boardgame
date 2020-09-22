@@ -46,7 +46,7 @@ export type DTOExcluded<
   T extends Record<string, any>,
   P extends Record<string, any> = Record<string, any>
 > = {
-  [K in Exclude<keyof T, keyof P>]: unknown;
+  [K in Exclude<keyof T, keyof P>]?: unknown;
 };
 
 export * from './match';
