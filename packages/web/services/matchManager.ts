@@ -12,8 +12,8 @@ import { JSONParse } from '@/utils/JSONParse';
 import { createLocalStorage } from '@/utils/storage';
 import { leaveMatch } from './services';
 import { pushHistoryState } from './historyState';
-import isEqual from 'lodash/isEqual';
 import { gameMetaMap } from '@/games';
+import isEqual from 'lodash/isEqual';
 
 type Common = {
   name: string;
@@ -53,6 +53,14 @@ export const matchStorage = createLocalStorage<MultiMatchState | null>(
   'BOARDGAME_MATCH_STATE',
   null
 );
+
+export const getSpectateQuery = (
+  query: typeof router['query']
+): Required<SpectatorState> => {
+  const slug = Array.isArray(query.slug) ? query.slug : [];
+  const [name = '', matchID = '', playerID = ''] = slug;
+  return { name, matchID, playerID };
+};
 
 export function leaveMatchAndRedirect(): undefined;
 export function leaveMatchAndRedirect(

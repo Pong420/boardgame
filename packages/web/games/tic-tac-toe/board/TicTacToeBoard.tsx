@@ -8,6 +8,7 @@
 
 import React, { ReactNode } from 'react';
 import { PlayAgain } from '@/components/PlayAgain';
+import { SpectateNext } from '@/components/SpectateNext';
 import { Disconnected } from '@/components/Match';
 import { TicTacToeBoardProps } from '../typings';
 import { Cell } from './Cell';
@@ -92,9 +93,13 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
       {winner}
 
       <div className="actions">
-        {props.credentials && props.ctx.gameover && props.playerID && (
-          <PlayAgain />
-        )}
+        {props.ctx.gameover ? (
+          props.credentials ? (
+            <PlayAgain />
+          ) : (
+            <SpectateNext />
+          )
+        ) : null}
       </div>
 
       <style jsx global>{`

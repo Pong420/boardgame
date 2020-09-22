@@ -5,6 +5,7 @@ import { GetServerSideProps } from 'next';
 import { gameMetaMap } from '@/games';
 import { Match } from '@/components/Match';
 import { Toaster } from '@/utils/toaster';
+import { getSpectateQuery } from '@/services';
 
 interface Params {
   name: string;
@@ -57,13 +58,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   query
 }) => {
   const slug = Array.isArray(query.slug) ? query.slug : [];
-  const [name = '', matchID = '', playerID = ''] = slug;
 
   return {
     props: {
-      name,
-      matchID,
-      playerID,
+      ...getSpectateQuery(query),
       validParams: slug.length === 2 || slug.length === 3
     }
   };

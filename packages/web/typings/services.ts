@@ -11,8 +11,8 @@ export interface Match<T extends SetupData = SetupData> {
   gameName: string;
   players: Player[];
   setupData: T | null;
-  gameover: null; // TODO:
-  nextRoomID: string | null;
+  gameover: unknown;
+  nextMatchID?: string;
   unlisted: boolean;
   createdAt: number;
   updatedAt: number;
