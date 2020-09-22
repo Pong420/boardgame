@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
 import { createMatch, clickJoinButton, leaveMatch } from '@/utils/match';
-import { newPageHelper } from '@/utils/page';
+import { newPageHelper } from '@/utils/newPage';
 
 describe('others', () => {
   test('only allow one screen at a time', async () => {

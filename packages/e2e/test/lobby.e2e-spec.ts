@@ -11,7 +11,7 @@ import {
   openPreferenceDialog,
   preferences
 } from '@/utils/prefernces';
-import { newPageHelper } from '@/utils/page';
+import { newPageHelper } from '@/utils/newPage';
 
 const newLobbyPage = newPageHelper('/lobby/tic-tac-toe');
 

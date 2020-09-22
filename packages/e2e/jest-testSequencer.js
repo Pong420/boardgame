@@ -22,7 +22,7 @@ function compare(a, b) {
 /**
  * @param {string} path
  */
-const getOrder = path => order.findIndex(o => path.indexOf(o) !== -1) ?? -1;
+const getOrder = path => order.findIndex(o => path.indexOf(o) !== -1);
 
 class CustomSequencer extends Sequencer {
   /**

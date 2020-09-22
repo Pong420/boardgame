@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
 import { createMatch, joinMatch, leaveMatch } from '@/utils/match';
-import { newPageHelper } from '@/utils/page';
+import { newPageHelper } from '@/utils/newPage';
 import { waitForSocket } from '@/utils/socket';
 
 type Player = 'O' | '✕';
