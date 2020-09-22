@@ -33,7 +33,7 @@ type NormalizeCustomMatchers = {
 };
 
 declare global {
-  declare namespace jest {
+  namespace jest {
     // eslint-disable-next-line
     interface Matchers<R = any, T = any> extends NormalizeCustomMatchers {}
   }
