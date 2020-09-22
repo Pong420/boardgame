@@ -4,9 +4,12 @@ import dotenv from 'dotenv';
 import helmet from 'koa-helmet';
 import ratelimit from 'koa-ratelimit';
 import cors from '@koa/cors';
+import Koa from 'koa';
+import IO from 'koa-socket-2';
 import { Game } from 'boardgame.io';
 import { Server } from 'boardgame.io/server';
 import { MongoStore } from 'bgio-mongo';
+import { Server as SocketIOServer } from 'socket.io';
 import { SetupData } from '@/typings';
 import { FlatFile } from './flatfile';
 import { game as TicTacToe } from '../games/tic-tac-toe/game';
@@ -85,5 +88,7 @@ export async function startBgioServer({
     );
   }
 
-  return server;
+  return server as ReturnType<typeof Server> & {
+    app: Koa & { io: IO; _io: SocketIOServer };
+  };
 }
