@@ -8,6 +8,7 @@
   "scripts": {
     "start": "yarn web start",
     "web": "yarn workspace @boardgame/web",
+    "server": "yarn workspace @boardgame/server",
     "db": "yarn workspace bgio-mongo",
     "e2e": "yarn workspace e2e",
     "dev": "lerna run dev --stream --parallel --ignore bgio-mongo",

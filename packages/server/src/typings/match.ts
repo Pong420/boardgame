@@ -1,13 +1,15 @@
-import { AxiosError } from 'axios';
-export type ApiError = AxiosError | Error;
-
 export interface SetupData {
   spectate?: boolean;
   matchName: string;
   description?: string;
 }
 
-export interface Match<T extends SetupData = SetupData> {
+export interface Player {
+  id: number;
+  name: string;
+}
+
+export interface Schema$Match<T extends SetupData = SetupData> {
   gameName: string;
   players: Player[];
   setupData: T | null;
@@ -17,11 +19,6 @@ export interface Match<T extends SetupData = SetupData> {
   createdAt: number;
   updatedAt: number;
   matchID: string;
-}
-
-export interface Player {
-  id: number;
-  name: string;
 }
 
 export interface Param$GetMatches {
@@ -77,7 +74,9 @@ export interface Param$PlayAgain<T extends SetupData = SetupData> {
 }
 
 export interface Response$GetMatches<T extends SetupData = SetupData> {
-  matches: Match<T>[];
+  matches: Schema$Match<T>[];
 }
 
-export type Response$GetMatch<T extends SetupData = SetupData> = Match<T>;
+export type Response$GetMatch<T extends SetupData = SetupData> = Schema$Match<
+  T
+>;

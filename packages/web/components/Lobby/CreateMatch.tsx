@@ -4,7 +4,7 @@ import { catchError, switchMap, map } from 'rxjs/operators';
 import { HTMLSelect } from '@blueprintjs/core';
 import { createForm, FormProps, validators, FormItemProps } from '@/utils/form';
 import { Toaster } from '@/utils/toaster';
-import { Params$CreateMatch, GameMeta } from '@/typings';
+import { Param$CreateMatch, GameMeta } from '@/typings';
 import {
   gotoMatch,
   createMatch,
@@ -18,7 +18,7 @@ import { ButtonPopover, ButtonPopoverProps } from '../ButtonPopover';
 import { openConfirmDialog } from '../ConfirmDialog';
 import { PlayerNameControl } from '../PlayerNameControl';
 
-interface Store extends Params$CreateMatch {
+interface Store extends Param$CreateMatch {
   playerName: string;
   local?: boolean;
 }

@@ -4,11 +4,11 @@ import { Button, IButtonProps } from '@blueprintjs/core';
 import { useRxAsync } from 'use-rx-hooks';
 import { getMatch, gotoSpectate, getSpectateQuery } from '@/services';
 import { Toaster } from '@/utils/toaster';
-import { Params$GetMatch } from '@/typings';
+import { Param$GetMatch } from '@/typings';
 
 interface Props extends IButtonProps {}
 
-const request = async (params: Params$GetMatch) => {
+const request = async (params: Param$GetMatch) => {
   const response = await getMatch(params);
   if (response.data.nextMatchID) {
     await gotoSpectate({ ...params, matchID: response.data.nextMatchID });

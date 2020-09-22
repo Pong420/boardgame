@@ -8,7 +8,7 @@ import {
   matchStorage,
   MultiMatchState
 } from '@/services';
-import { Params$JoinMatch } from '@/typings';
+import { Param$JoinMatch } from '@/typings';
 import { Toaster } from '@/utils/toaster';
 import { getPlayerName } from '../PlayerNameControl';
 
@@ -16,12 +16,12 @@ interface Private {
   unlisted: boolean;
 }
 
-interface Props extends Private, Omit<Params$JoinMatch, 'playerName'> {}
+interface Props extends Private, Omit<Param$JoinMatch, 'playerName'> {}
 
 const onFailure = Toaster.apiError.bind(Toaster, 'Join Match Failure');
 
 async function _joinMatch(
-  params: Params$JoinMatch & Private
+  params: Param$JoinMatch & Private
 ): Promise<MultiMatchState> {
   const response = await joinMatch(params);
   return {

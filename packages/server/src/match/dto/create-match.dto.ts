@@ -1,0 +1,63 @@
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsBoolean,
+  ValidateNested
+} from 'class-validator';
+import { Exclude, Type } from 'class-transformer';
+import {
+  SetupData,
+  DTOExcluded,
+  Schema$Match,
+  Param$CreateMatch
+} from '@/typings';
+import { SetupDataDto } from './setup-data.dto';
+
+class Excluded implements DTOExcluded<Schema$Match, Param$CreateMatch> {
+  @Exclude()
+  id: undefined;
+
+  @Exclude()
+  createdAt: undefined;
+
+  @Exclude()
+  updatedAt: undefined;
+
+  @Exclude()
+  gameName: undefined;
+
+  @Exclude()
+  players: undefined;
+
+  @Exclude()
+  gameover: undefined;
+
+  @Exclude()
+  nextMatchID: undefined;
+
+  @Exclude()
+  matchID: undefined;
+}
+
+class CreateMatch
+  extends Excluded
+  implements Partial<Omit<Param$CreateMatch, keyof Excluded>> {
+  @ValidateNested()
+  @Type(() => SetupDataDto)
+  setupData?: SetupData;
+
+  @IsOptional()
+  @IsBoolean()
+  unlisted?: boolean;
+}
+
+export class CreateMatchDto
+  extends CreateMatch
+  implements Required<Omit<Param$CreateMatch, keyof CreateMatch>> {
+  @IsString()
+  name: string;
+
+  @IsNumber()
+  numPlayers: number;
+}
