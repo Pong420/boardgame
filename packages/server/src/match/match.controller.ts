@@ -29,7 +29,7 @@ import {
   Response$PlayAgain
 } from '@/typings';
 
-@Controller('match')
+@Controller('/api/match')
 export class MatchController {
   gameMap: Record<string, Game>;
 

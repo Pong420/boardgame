@@ -35,9 +35,6 @@ export function MatchContent({ loading, spectate, state }: Props) {
               'local' in state
                 ? (Local() as any) // FIXME:
                 : SocketIO({
-                    socketOpts: {
-                      path: `/api/socket`
-                    },
                     server:
                       typeof window === 'undefined'
                         ? ''

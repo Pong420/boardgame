@@ -31,7 +31,7 @@ export interface BgioServerOptions {
   } catch (error) {}
 });
 
-const games = [TicTacToe, BigTwo] as Game[];
+export const games = [TicTacToe, BigTwo] as Game[];
 
 export async function startBgioServer({
   mongoUri = process.env.MONGODB_URI

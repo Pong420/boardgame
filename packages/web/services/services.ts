@@ -14,8 +14,8 @@ const api = axios.create({
   baseURL: '/api'
 });
 
-export function getMatches({ name, ...params }: Param$GetMatches) {
-  return api.get<Response$GetMatches>(`/match/${name}`, { params });
+export function getMatches(params: Param$GetMatches) {
+  return api.get<Response$GetMatches>(`/match/${params.name}`, { params });
 }
 
 export function getMatch({ name, matchID }: Param$GetMatch) {

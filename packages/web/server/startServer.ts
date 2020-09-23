@@ -1,37 +1,41 @@
 import path from 'path';
-import next from 'next';
-import { startBgioServer, BgioServerOptions } from './bgio-server';
+import next, { NextApiHandler } from 'next';
+import { NestFactory } from '@nestjs/core';
+import { startBgioServer, BgioServerOptions, games } from './bgio-server';
+import { AppModule, setupApp } from '@boardgame/server';
+import { NestModule, MiddlewareConsumer, NestMiddleware } from '@nestjs/common';
 
 interface Options extends BgioServerOptions {
   port: number;
   dev: boolean;
 }
 
-export async function startServer({ dev, port, ...bgioServerOpts }: Options) {
+export async function startServer({ dev, port }: Options) {
   const app = next({ dev, dir: path.join(__dirname, '../') });
   const handle = app.getRequestHandler();
 
   try {
     await app.prepare();
 
-    const server = await startBgioServer(bgioServerOpts);
+    const nestjs = await NestFactory.create(AppModule.init(games));
 
-    server.router.all('*', async ctx => {
-      await handle(ctx.req, ctx.res);
-      ctx.respond = false;
+    setupApp(nestjs as any);
+
+    nestjs.use((req: any, res: any, next: () => void) => {
+      if (req.url.startsWith('/api')) {
+        next();
+      } else {
+        return handle(req, res);
+      }
     });
 
-    server.app.use(async (ctx, next) => {
-      ctx.res.statusCode = 200;
-      await next();
-    });
-
-    const target = await server.run(port);
-
-    // eslint-disable-next-line
     console.log(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
 
-    return () => server.kill(target);
+    await nestjs.listen(port);
+
+    return () => {
+      nestjs.close();
+    };
   } catch (e) {
     console.error(e);
     process.exit(1);

@@ -6,11 +6,10 @@ import { GetMatchesDto } from './dto';
 @Injectable()
 export class MatchService extends MongoStore {
   constructor() {
-    super({ url: '' });
-  }
-
-  async connect() {
-    return void 0;
+    super({ url: 'mongodb://localhost:27017/boardgame' });
+    this.connect().then(() => {
+      console.log('mongo connected');
+    });
   }
 
   async getMatches({ name, ...where }: GetMatchesDto) {
