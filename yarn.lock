@@ -2325,6 +2325,14 @@
     multer "1.4.2"
     tslib "2.0.1"
 
+"@nestjs/platform-socket.io@^7.4.4":
+  version "7.4.4"
+  resolved "https://registry.yarnpkg.com/@nestjs/platform-socket.io/-/platform-socket.io-7.4.4.tgz#4dd70ed21043430c403baf9ca9d7869717e6a800"
+  integrity sha512-ameDjwT19Ctj9UQ86+mnCcjsT0S6d9Mft5Iwmp3UXc6tmWxLSAZPCAawkbfSXxpkBFI9Qy8LqmZhT7L1o9iIIw==
+  dependencies:
+    socket.io "2.3.0"
+    tslib "2.0.1"
+
 "@nestjs/schematics@^7.0.0", "@nestjs/schematics@^7.1.0":
   version "7.1.2"
   resolved "https://registry.npmjs.org/@nestjs/schematics/-/schematics-7.1.2.tgz#678058436f578fc1e933da9db327a223b1ab8a73"
@@ -2341,6 +2349,14 @@
   integrity sha512-ZRIZcfql9Xc5M74jR05TvJ86z3VUUfsEYzHoEwunGnZLhcYXLT1Z3xSNE5T/MuSrJb5hPqp4DqaHmKdeuvgedw==
   dependencies:
     optional "0.1.4"
+    tslib "2.0.1"
+
+"@nestjs/websockets@^7.4.4":
+  version "7.4.4"
+  resolved "https://registry.yarnpkg.com/@nestjs/websockets/-/websockets-7.4.4.tgz#2530f2f3d2271e2880be58246271f4c7d505f167"
+  integrity sha512-XT2lRnCiw2d6IpscRFcjjkUFA0FgZYaE3On1pmW8FvQSWlHnu3Izl/TgyySJZNDKpRnmnh4IGFA4GZ6VML//1A==
+  dependencies:
+    iterare "1.2.1"
     tslib "2.0.1"
 
 "@next/react-dev-overlay@9.5.3":
@@ -3171,9 +3187,14 @@
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
 
+"@types/socket.io-client@^1.4.33":
+  version "1.4.33"
+  resolved "https://registry.yarnpkg.com/@types/socket.io-client/-/socket.io-client-1.4.33.tgz#8e705b9b3f7fba6cb329d27cd2eda222812adbf1"
+  integrity sha512-m4LnxkljsI9fMsjwpW5QhRpMixo2BeeLpFmg0AE+sS4H1pzAd/cs/ftTiL60FLZgfFa8PFRPx5KsHu8O0bADKQ==
+
 "@types/socket.io@^2.1.11":
   version "2.1.11"
-  resolved "https://registry.npmjs.org/@types/socket.io/-/socket.io-2.1.11.tgz#e0d6759880e5f9818d5297a3328b36641bae996b"
+  resolved "https://registry.yarnpkg.com/@types/socket.io/-/socket.io-2.1.11.tgz#e0d6759880e5f9818d5297a3328b36641bae996b"
   integrity sha512-bVprmqPhJMLb9ZCm8g0Xy8kwBFRbnanOWSxzWkDkkIwxTvud5tKMfAJymXX6LQbizUKCS1yima7JM4BeLqjNqA==
   dependencies:
     "@types/engine.io" "*"
@@ -13319,7 +13340,7 @@ socket.io-parser@~3.4.0:
     debug "~4.1.0"
     isarray "2.0.1"
 
-socket.io@^2.1.1, socket.io@^2.2.0:
+socket.io@2.3.0, socket.io@^2.1.1, socket.io@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/socket.io/-/socket.io-2.3.0.tgz#cd762ed6a4faeca59bc1f3e243c0969311eb73fb"
   integrity sha512-2A892lrj0GcgR/9Qk81EaY2gYhCBxurV0PfmmESO6p27QPrUK1J3zdns+5QPqvUYK2q657nSj0guoIil9+7eFg==
