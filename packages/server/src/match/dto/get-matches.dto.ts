@@ -1,19 +1,23 @@
 import { Param$GetMatches } from '@/typings';
+import { Transform } from 'class-transformer';
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class GetMatchesDto implements Param$GetMatches {
   @IsString()
   name: string;
 
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
+  @Transform(v => (typeof v === 'string' ? JSON.parse(v) : Boolean(v)))
   isGameover?: boolean;
 
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
+  @Transform(Number)
   updatedBefore?: number;
 
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
+  @Transform(Number)
   updatedAfter?: number;
 }
