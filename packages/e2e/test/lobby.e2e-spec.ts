@@ -16,11 +16,6 @@ import { newPageHelper } from '@/utils/newPage';
 const newLobbyPage = newPageHelper('/lobby/tic-tac-toe');
 
 describe('Lobby', () => {
-  const isGetMatchesUrl = (url: string) => /games\/tic-tac-toe/.test(url);
-
-  const waitForGameList = (_page = page) =>
-    _page.waitForResponse(res => res.ok() && isGetMatchesUrl(res.url()));
-
   beforeEach(async () => {
     await expect(page).goto('/');
     const link = await page.waitForXPath(`//a[.//div[text()="Tic-Tac-Toe"]]`);
@@ -30,21 +25,25 @@ describe('Lobby', () => {
     ]);
   });
 
-  test('goto lobby', async () => {
-    await waitForGameList();
-    const [noMatches] = await page.$x(`//div[text()="No Matches Found"]`);
+  test(
+    'goto lobby',
+    async () => {
+      await expect(page).waitForResponse('get-matches');
+      const [noMatches] = await page.$x(`//div[text()="No Matches Found"]`);
 
-    expect(noMatches).toBeDefined();
-    await expect(page).isLobbyPage();
-  });
+      expect(noMatches).toBeDefined();
+      await expect(page).isLobbyPage();
+    },
+    1000 * 1000
+  );
 
   // skip by default, since it needs too much time
   test.skip(
     'polling',
     async () => {
       // test polling works
-      await waitForGameList();
-      await waitForGameList();
+      await expect(page).waitForResponse('get-matches');
+      await expect(page).waitForResponse('get-matches');
 
       // test toggle polling  correctly
       await openPreferenceDialog();
@@ -54,13 +53,15 @@ describe('Lobby', () => {
 
       const hasResponse = await Promise.race([
         page.waitForTimeout(5000).then(() => false),
-        waitForGameList().then(() => true)
+        expect(page)
+          .waitForResponse('get-matches')
+          .then(() => true)
       ]);
       expect(hasResponse).toBe(false);
 
       await polling.setTo(true);
       await expect(polling.element).isChecked(true);
-      await waitForGameList();
+      await expect(page).waitForResponse('get-matches');
       await closePreferenceDialog();
 
       // test timer reset after refresh
@@ -72,13 +73,19 @@ describe('Lobby', () => {
       await refreshBtn.click();
       const immediately = await Promise.race([
         page.waitForTimeout(500).then(() => false),
-        page.waitForRequest(res => isGetMatchesUrl(res.url())).then(() => true)
+        expect(page)
+          .waitForRequest('get-matches')
+          .then(() => true)
       ]);
 
       expect(immediately).toBe(true);
 
-      const start = await waitForGameList().then(() => +new Date());
-      const end = await waitForGameList().then(() => +new Date());
+      const start = await expect(page)
+        .waitForResponse('get-matches')
+        .then(() => +new Date());
+      const end = await expect(page)
+        .waitForResponse('get-matches')
+        .then(() => +new Date());
       const delta = end - start;
 
       expect(delta >= 5 * 1000).toBe(true);
@@ -117,7 +124,7 @@ describe('Lobby', () => {
     await createMatch({ playerName: 'e2e', matchName, description });
 
     await newLobbyPage(async page => {
-      await waitForGameList(page);
+      await expect(page).waitForResponse('get-matches');
       const allMatches = await getMatches(page);
       const matches = await getMatches(page, { matchName, description });
       expect(allMatches.length).toBe(1);
@@ -139,7 +146,7 @@ describe('Lobby', () => {
     });
 
     await newLobbyPage(async page => {
-      await waitForGameList(page);
+      await expect(page).waitForResponse('get-matches');
       const allMatches = await getMatches(page);
       const matches = await getMatches(page, { matchName, description });
       expect(allMatches.length).toBe(0);
@@ -162,7 +169,7 @@ describe('Lobby', () => {
 
       const spectatePage = await (async () => {
         const page = await newLobbyPage();
-        await waitForGameList(page);
+        await expect(page).waitForResponse('get-matches');
         const [match] = await getMatches(page, { matchName, description });
         const [button] = await match.$x('//button[.//span[text()="Spectate"]]');
         await Promise.all([

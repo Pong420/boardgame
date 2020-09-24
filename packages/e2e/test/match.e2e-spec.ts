@@ -34,7 +34,7 @@ describe('Match', () => {
     await createMatch({ playerName: 'e2e', matchName: 'e2e-test' });
 
     const promise = Promise.all([
-      page.waitForResponse(res => res.ok() && /leave/.test(res.url())),
+      expect(page).waitForResponse('leave-match'),
       page.waitForNavigation({ waitUntil: 'networkidle0' })
     ]);
     await page.evaluate(() => {

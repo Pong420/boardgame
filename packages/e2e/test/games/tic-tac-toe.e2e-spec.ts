@@ -146,9 +146,7 @@ describe('Tic-Tac-Toe', () => {
         [p1, p2].map(async page => {
           const [btn] = await playAgainButton(page);
           await Promise.all([
-            page.waitForResponse(
-              res => res.ok() && /playAgain/.test(res.url())
-            ),
+            expect(page).waitForResponse('play-again'),
             page.waitForNavigation({ waitUntil: 'networkidle2' }),
             btn.click()
           ]);

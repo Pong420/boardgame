@@ -134,9 +134,7 @@ export const createMatch = async (options: FormOptions) => {
     page.waitForNavigation(),
     (options.local
       ? Promise.resolve()
-      : page.waitForResponse(
-          res => res.ok() && /games.*\/create/.test(res.url())
-        )) as Promise<void>,
+      : expect(page).waitForResponse('create-match')) as Promise<void>,
     createMatchForm.confirm()
   ]);
 
@@ -198,7 +196,7 @@ export async function clickJoinButton<T extends { $x: Page['$x'] }>(
       await confirm.click();
     })(),
     page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
-    page.waitForResponse(res => res.ok() && /games.*\/join/.test(res.url()))
+    expect(page).waitForResponse('join-match')
   ]);
 }
 
@@ -207,10 +205,7 @@ async function waitForMatch(page: Page, by?: By): Promise<ElementHandle[]> {
   if (matches.length) {
     return matches;
   }
-  await page.waitForResponse(
-    res =>
-      res.ok() && res.request().method() === 'GET' && /games/.test(res.url())
-  );
+  await expect(page).waitForResponse('get-matches');
   return waitForMatch(page, by);
 }
 

@@ -24,5 +24,8 @@ export type {
   Param$PlayAgain,
   Schema$Match,
   Response$GetMatches,
-  Response$GetMatch
+  Response$GetMatch,
+  Response$JoinMatch,
+  Response$CreateMatch,
+  Response$PlayAgain
 } from '@boardgame/server';

@@ -1,6 +1,5 @@
 import { Page } from 'puppeteer';
 
-// export async function goto(page: Page, pathname: string):
 export async function goto(
   this: jest.MatcherContext,
   page: Page,

@@ -7,7 +7,9 @@ import {
   Param$LeaveMatch,
   Param$PlayAgain,
   Response$GetMatches,
-  Response$GetMatch
+  Response$GetMatch,
+  Response$JoinMatch,
+  Response$PlayAgain
 } from '@/typings';
 
 const api = axios.create({
@@ -23,11 +25,11 @@ export function getMatch({ name, matchID }: Param$GetMatch) {
 }
 
 export function createMatch(payload: Param$CreateMatch) {
-  return api.post<{ matchID: string }>(`/match/create`, payload);
+  return api.post<Response$GetMatch>(`/match/create`, payload);
 }
 
 export function joinMatch(payload: Param$JoinMatch) {
-  return api.post<{ playerCredentials: string }>(`/match/join`, payload);
+  return api.post<Response$JoinMatch>(`/match/join`, payload);
 }
 
 export function leaveMatch(payload: Param$LeaveMatch) {
@@ -35,5 +37,5 @@ export function leaveMatch(payload: Param$LeaveMatch) {
 }
 
 export function playAgain(params: Param$PlayAgain) {
-  return api.post<{ nextMatchID: string }>(`/match/playAgain`, params);
+  return api.post<Response$PlayAgain>(`/match/playAgain`, params);
 }
