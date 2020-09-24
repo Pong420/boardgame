@@ -75,7 +75,7 @@ export class MatchController {
     const metadata = await this.matchService.getMatches(dto);
     return {
       matches: metadata.map(meta =>
-        this.createClientMatchData(meta.matchID, meta)
+        this.createClientMatchData(meta.matchID, meta.toJSON())
       )
     };
   }

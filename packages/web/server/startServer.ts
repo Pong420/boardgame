@@ -18,11 +18,7 @@ interface Options {
 
 const games = [TicTacToe, BigTwo] as Game[];
 
-export async function startServer({
-  dev,
-  port,
-  mongoUri = process.env.MONGODB_URI
-}: Options) {
+export async function startServer({ dev, port, mongoUri }: Options) {
   const nextApp = next({ dev, dir: path.join(__dirname, '../') });
   const handle = nextApp.getRequestHandler();
 
