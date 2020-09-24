@@ -27,5 +27,10 @@ export type {
   Response$GetMatch,
   Response$JoinMatch,
   Response$CreateMatch,
-  Response$PlayAgain
+  Response$PlayAgain,
+  // --- chat ---
+  Identify,
+  ChatEvent,
+  Schema$Message,
+  Param$JoinChat
 } from '@boardgame/server';

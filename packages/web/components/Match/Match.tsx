@@ -5,6 +5,7 @@ import { MatchState, getMatch, matchStorage } from '@/services';
 import { Toaster } from '@/utils/toaster';
 import { gameMetaMap } from '@/games';
 import { ApiError } from '@/typings';
+import { Chat } from '../Chat';
 import { ShareButton } from '../ShareButton';
 import { Preferences } from '../Preferences';
 import { MatchHeader } from './MatchHeader';
@@ -67,13 +68,19 @@ export function Match(state: MatchState) {
         )}
         <Preferences disablePlayerName />
       </MatchHeader>
-      {
-        <MatchContent
-          state={state}
-          spectate={spectate}
-          loading={!data || loading}
+      <MatchContent
+        state={state}
+        spectate={spectate}
+        loading={!data || loading}
+      />
+      {'playerName' in state && (
+        <Chat
+          matchID={state.matchID}
+          playerID={state.playerID}
+          playerName={state.playerName}
+          credentials={state.credentials}
         />
-      }
+      )}
     </div>
   );
 }
