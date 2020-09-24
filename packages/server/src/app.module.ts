@@ -9,6 +9,7 @@ import { MongooseExceptionFilter } from './utils/mongoose-exception-filter';
 import { MongooseSerializerInterceptor } from './utils/mongoose-serializer.interceptor';
 import { MatchModule, MatchModuleOptions } from './match/match.module';
 import { EventsModule } from './events/events.module';
+import { ChatModule } from './chat/chat.module';
 
 export interface AppModuleOptions extends MatchModuleOptions {}
 
@@ -22,7 +23,11 @@ export class AppModule {
   static init(options: AppModuleOptions): DynamicModule {
     return {
       module: AppModule,
-      imports: [MatchModule.forRoot(options), EventsModule.forRoot(options)],
+      imports: [
+        MatchModule.forRoot(options),
+        EventsModule.forRoot(options),
+        ChatModule
+      ],
       controllers: [],
       providers: [
         {

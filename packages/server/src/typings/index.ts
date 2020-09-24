@@ -23,3 +23,4 @@ export type DTOExcluded<
 };
 
 export * from './match';
+export * from './chat';
