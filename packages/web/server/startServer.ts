@@ -1,7 +1,11 @@
 import path from 'path';
 import next from 'next';
 import { Game } from 'boardgame.io';
-import { NestFactory, NestApplication } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
+import {
+  FastifyAdapter,
+  NestFastifyApplication
+} from '@nestjs/platform-fastify';
 import { AppModule, setupApp } from '@boardgame/server';
 import { game as TicTacToe } from '../games/tic-tac-toe/game';
 import { game as BigTwo } from '../games/big-two/game';
@@ -26,8 +30,9 @@ export async function startServer({
     await nextApp.prepare();
 
     if (mongoUri) {
-      const nest = await NestFactory.create<NestApplication>(
-        AppModule.init({ games, mongoUri })
+      const nest = await NestFactory.create<NestFastifyApplication>(
+        AppModule.init({ games, mongoUri }),
+        new FastifyAdapter()
       );
 
       setupApp(nest);

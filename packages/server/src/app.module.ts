@@ -1,7 +1,10 @@
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { NestApplication } from '@nestjs/core';
-import { DynamicModule, Module } from '@nestjs/common';
-import { ValidationPipe } from '@nestjs/common';
+import {
+  ValidationPipe,
+  DynamicModule,
+  Module,
+  INestApplication
+} from '@nestjs/common';
 import { MongooseExceptionFilter } from './utils/mongoose-exception-filter';
 import { MongooseSerializerInterceptor } from './utils/mongoose-serializer.interceptor';
 import { MatchModule, MatchModuleOptions } from './match/match.module';
@@ -9,7 +12,7 @@ import { EventsModule } from './events/events.module';
 
 export interface AppModuleOptions extends MatchModuleOptions {}
 
-export function setupApp(app: NestApplication): void {
+export function setupApp(app: INestApplication): void {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new MongooseExceptionFilter());
 }

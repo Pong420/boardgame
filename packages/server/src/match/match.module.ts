@@ -1,5 +1,4 @@
 import { Module, DynamicModule } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { Game } from 'boardgame.io';
 import { MatchService } from './match.service';
 import { MatchController } from './match.controller';
@@ -14,7 +13,7 @@ export class MatchModule {
   static forRoot({ games, mongoUri }: MatchModuleOptions): DynamicModule {
     return {
       imports: [],
-      module: MongooseModule,
+      module: MatchModule,
       providers: [
         MatchService,
         { provide: 'GAMES', useValue: games },
