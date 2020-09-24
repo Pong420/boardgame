@@ -1,14 +1,14 @@
 import { Module, DynamicModule } from '@nestjs/common';
-import { Game } from 'boardgame.io';
-// import { createEventGateway } from './events.gateway';
+import { MatchModule, MatchModuleOptions } from '@/match/match.module';
 import { createEventGateway } from './events.gateway';
 
 @Module({})
 export class EventsModule {
-  static forRoot(games: Game[]): DynamicModule {
+  static forRoot(options: MatchModuleOptions): DynamicModule {
     return {
       module: EventsModule,
-      providers: [...games.map(game => createEventGateway(game.name))]
+      imports: [MatchModule.forRoot(options)],
+      providers: [...options.games.map(game => createEventGateway(game))]
     };
   }
 }

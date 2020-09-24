@@ -8,7 +8,7 @@ import {
   startWith,
   switchMap
 } from 'rxjs/operators';
-import { GameMeta, Match } from '@/typings';
+import { GameMeta, Schema$Match } from '@/typings';
 import { getMatches, usePreferencesState } from '@/services';
 import { Toaster } from '@/utils/toaster';
 import { ButtonPopover } from '../ButtonPopover';
@@ -22,7 +22,7 @@ interface Props extends GameMeta {}
 
 export function Lobby(meta: Props) {
   const { name, gameName } = meta;
-  const [state, setState] = useState<Match[]>([]);
+  const [state, setState] = useState<Schema$Match[]>([]);
   const [loading, setLoading] = useState(true);
   const { polling } = usePreferencesState();
   const subject = useRef(new Subject());

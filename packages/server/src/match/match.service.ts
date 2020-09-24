@@ -1,15 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { LobbyAPI } from 'boardgame.io';
 import { MongoStore, MetadataModel, getListGamesOptsQuery } from 'bgio-mongo';
 import { GetMatchesDto } from './dto';
 
 @Injectable()
 export class MatchService extends MongoStore {
-  constructor() {
-    super({ url: 'mongodb://localhost:27017/boardgame' });
-    this.connect().then(() => {
-      console.log('mongo connected');
-    });
+  constructor(@Inject('MONGODB_URI') mongoUri: string) {
+    super({ url: mongoUri });
+    this.connect();
   }
 
   async getMatches({ name, ...where }: GetMatchesDto) {

@@ -1,4 +1,7 @@
 import { ReactNode } from 'react';
+import { AxiosError } from 'axios';
+
+export type ApiError = AxiosError | Error;
 
 export interface GameMeta {
   name: string;
@@ -10,4 +13,16 @@ export interface GameMeta {
   spectate?: 'all-players' | 'single-player';
 }
 
-export * from './services';
+export type {
+  Player,
+  SetupData,
+  Param$GetMatches,
+  Param$GetMatch,
+  Param$CreateMatch,
+  Param$JoinMatch,
+  Param$LeaveMatch,
+  Param$PlayAgain,
+  Schema$Match,
+  Response$GetMatches,
+  Response$GetMatch
+} from '@boardgame/server';

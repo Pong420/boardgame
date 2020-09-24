@@ -1,10 +1,13 @@
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { NestApplication } from '@nestjs/core';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
-import { Game } from 'boardgame.io';
 import { MongooseExceptionFilter } from './utils/mongoose-exception-filter';
-import { MatchModule } from './match/match.module';
+import { MongooseSerializerInterceptor } from './utils/mongoose-serializer.interceptor';
+import { MatchModule, MatchModuleOptions } from './match/match.module';
 import { EventsModule } from './events/events.module';
+
+export interface AppModuleOptions extends MatchModuleOptions {}
 
 export function setupApp(app: NestApplication): void {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
@@ -13,12 +16,17 @@ export function setupApp(app: NestApplication): void {
 
 @Module({})
 export class AppModule {
-  static init(games: Game[]): DynamicModule {
+  static init(options: AppModuleOptions): DynamicModule {
     return {
       module: AppModule,
-      imports: [MatchModule.forRoot(games), EventsModule.forRoot(games)],
+      imports: [MatchModule.forRoot(options), EventsModule.forRoot(options)],
       controllers: [],
-      providers: []
+      providers: [
+        {
+          provide: APP_INTERCEPTOR,
+          useClass: MongooseSerializerInterceptor
+        }
+      ]
     };
   }
 }

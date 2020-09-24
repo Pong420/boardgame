@@ -8,7 +8,7 @@ import {
   Param$PlayAgain,
   Response$GetMatches,
   Response$GetMatch
-} from '@boardgame/server';
+} from '@/typings';
 
 const api = axios.create({
   baseURL: '/api'
@@ -34,6 +34,6 @@ export function leaveMatch(payload: Param$LeaveMatch) {
   return api.post(`/match/leave`, payload);
 }
 
-export function playAgain({ name, matchID, ...params }: Param$PlayAgain) {
+export function playAgain(params: Param$PlayAgain) {
   return api.post<{ nextMatchID: string }>(`/match/playAgain`, params);
 }

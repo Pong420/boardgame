@@ -1,4 +1,3 @@
-import { Player, Response$GetMatches } from '@/typings';
 import {
   Controller,
   Post,
@@ -10,6 +9,7 @@ import {
   Query,
   ForbiddenException
 } from '@nestjs/common';
+import { Player, Response$GetMatches } from '@/typings';
 import { Game, Server } from 'boardgame.io';
 import { InitializeGame } from 'boardgame.io/internal';
 import { nanoid } from 'nanoid';
@@ -67,14 +67,14 @@ export class MatchController {
         })
       };
     }
-    throw new Error('qweqwe');
+    throw new Error('setupData is not defined');
   };
 
   @Get('/:name')
   async getMatches(@Query() dto: GetMatchesDto): Promise<Response$GetMatches> {
-    const metatadas = await this.matchService.getMatches(dto);
+    const metadata = await this.matchService.getMatches(dto);
     return {
-      matches: metatadas.map(meta =>
+      matches: metadata.map(meta =>
         this.createClientMatchData(meta.matchID, meta)
       )
     };
@@ -129,11 +129,12 @@ export class MatchController {
     });
 
     const metadata = { ...match.metadata };
+    const playerCredentials = nanoid();
+
     metadata.players[playerID].name = playerName;
+    metadata.players[playerID].credentials = playerCredentials;
 
     await this.matchService.setMetadata(matchID, metadata);
-
-    const playerCredentials = nanoid();
 
     return { playerCredentials };
   }

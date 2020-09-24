@@ -2,11 +2,12 @@ const path = require('path');
 const withPlugins = require('next-compose-plugins');
 const optimizedImages = require('next-optimized-images');
 
+// TODO: check is this required
 const withTM = require('next-transpile-modules')(['@boardgame/server']);
 
 module.exports = withPlugins(
   [
-    withTM,
+    process.env.NODE_ENV === 'development' && withTM,
     [
       optimizedImages,
       {
@@ -14,7 +15,7 @@ module.exports = withPlugins(
         handleImages: ['png', 'jpeg']
       }
     ]
-  ],
+  ].filter(Boolean),
   {
     webpack(config) {
       config.module.rules.push({
