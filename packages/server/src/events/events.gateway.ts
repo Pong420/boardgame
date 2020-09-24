@@ -12,16 +12,20 @@ import { MatchService } from '@/match/match.service';
 
 type MasterTransport = Master['transportAPI'];
 
+interface Client {
+  matchID: string;
+  playerID: string;
+  socket: Socket;
+}
+
+const clientInfo = new Map<string, Client>();
+const roomInfo = new Map<string, Set<string>>();
+
 /**
  * API that's exposed by SocketIO for the Master to send
  * information to the clients.
  */
-export function TransportAPI(
-  matchID: string,
-  socket,
-  clientInfo: Map<any, any>,
-  roomInfo: Map<any, any>
-): MasterTransport {
+export function TransportAPI(matchID: string, socket: Socket): MasterTransport {
   /**
    * Send a message to a specific client.
    */
@@ -29,8 +33,8 @@ export function TransportAPI(
     const clients = roomInfo.get(matchID).values();
     for (const client of clients) {
       const info = clientInfo.get(client);
-      if (String(info.playerID) === playerID) {
-        if (String(socket.id) === String(client)) {
+      if (info.playerID === playerID) {
+        if (socket.id === client) {
           socket.emit.apply(socket, [type, ...args]);
         } else {
           socket.to(info.socket.id).emit.apply(socket, [type, ...args]);
@@ -52,9 +56,6 @@ export function TransportAPI(
 
   return { send, sendAll };
 }
-
-const clientInfo = new Map<any, any>();
-const roomInfo = new Map<any, any>();
 
 export function createEventGateway(game: Game): Type<Provider> {
   @WebSocketGateway({ namespace: game.name })
@@ -79,7 +80,7 @@ export function createEventGateway(game: Game): Type<Provider> {
 
       let roomClients = roomInfo.get(matchID);
       if (roomClients === undefined) {
-        roomClients = new Set();
+        roomClients = new Set<string>();
         roomInfo.set(matchID, roomClients);
       }
       roomClients.add(socket.id);
@@ -89,7 +90,7 @@ export function createEventGateway(game: Game): Type<Provider> {
       const master = new Master(
         game,
         this.matchService,
-        TransportAPI(matchID, socket, clientInfo, roomInfo)
+        TransportAPI(matchID, socket)
         // this.auth
       );
 
@@ -105,7 +106,7 @@ export function createEventGateway(game: Game): Type<Provider> {
       const master = new Master(
         game,
         this.matchService,
-        TransportAPI(matchID, socket, clientInfo, roomInfo)
+        TransportAPI(matchID, socket)
         // this.auth
       );
       await master.onUpdate(action, stateID, matchID, playerID);
