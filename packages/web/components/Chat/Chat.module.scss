@@ -1,0 +1,75 @@
+@import '~styles/scss';
+
+.chat {
+  @include absolute(null, 0, 0, 0);
+  @include flex($flex-direction: column);
+  @include sq-dimen(100%);
+  max-width: 1278px;
+  padding: 0;
+}
+
+.full-screen {
+  @include margin-x(auto);
+  max-height: calc(100% - #{$header-height});
+  .chat-header {
+    display: none;
+  }
+}
+
+.bottom-right {
+  width: calc(100% - 60px);
+  height: calc(100% - 60px);
+  max-width: 400px;
+  max-height: 600px;
+  right: 15px;
+  left: auto;
+
+  .chat-header {
+    cursor: pointer;
+  }
+}
+
+.chat-header {
+  @include header;
+  flex: 0 0 auto;
+}
+
+.chat-header-title {
+  @include header-title;
+}
+
+.chat-content {
+  @include flex($flex-direction: column);
+  @include sq-dimen(100%);
+  background-color: var(--main-color);
+  padding: 20px;
+  overflow: auto;
+}
+
+.chat-footer {
+  flex: 0 0 auto;
+}
+
+.chat-bubble {
+  background-color: var(--main-diff1-color);
+  border-radius: 5px;
+  padding: 10px 15px;
+  align-self: flex-start;
+
+  + .chat-bubble {
+    margin-top: 15px;
+  }
+}
+
+.self {
+  align-self: flex-end;
+}
+
+.system {
+  align-self: center;
+}
+
+.chat-input {
+  background-color: var(--main-diff1-color);
+  padding: 15px;
+}

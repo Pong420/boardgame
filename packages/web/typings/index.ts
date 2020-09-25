@@ -30,7 +30,14 @@ export type {
   Response$PlayAgain,
   // --- chat ---
   Identify,
-  ChatEvent,
   Schema$Message,
-  Param$JoinChat
+  Param$JoinChat,
+  Param$SendMessage,
+  Param$PlayerReady
 } from '@boardgame/server';
+
+export {
+  ChatEvent,
+  MessageType,
+  MessageStatus
+} from '@boardgame/server/dist/typings';

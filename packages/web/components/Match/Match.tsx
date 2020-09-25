@@ -68,11 +68,6 @@ export function Match(state: MatchState) {
         )}
         <Preferences disablePlayerName />
       </MatchHeader>
-      <MatchContent
-        state={state}
-        spectate={spectate}
-        loading={!data || loading}
-      />
       {'playerName' in state && (
         <Chat
           matchID={state.matchID}
@@ -81,6 +76,11 @@ export function Match(state: MatchState) {
           credentials={state.credentials}
         />
       )}
+      <MatchContent
+        state={state}
+        spectate={spectate}
+        loading={!data || loading}
+      />
     </div>
   );
 }
