@@ -6,13 +6,25 @@ import {
   WsException,
   WsResponse
 } from '@nestjs/websockets';
-import { CanActivate, ExecutionContext, UseGuards } from '@nestjs/common';
+import {
+  CallHandler,
+  CanActivate,
+  ExecutionContext,
+  NestInterceptor,
+  UseGuards,
+  UseInterceptors
+} from '@nestjs/common';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Socket } from 'socket.io';
-import { ChatEvent, MessageType, Schema$Message } from '@/typings';
+import {
+  ChatEvent,
+  MessageType,
+  MessageStatus,
+  Schema$Message
+} from '@/typings';
 import {
   IdentifyDto,
   JoinChatDto,
@@ -31,12 +43,20 @@ interface Room {
   messages: Schema$Message[];
 }
 
+interface RoomResponse<T> extends WsResponse<T> {
+  room: string;
+}
+
 const store = new Map<string, Room>();
 const connected = new Map<string, IdentifyDto>();
 
-const sendMessage = (data: Schema$Message): WsResponse<Schema$Message> => ({
+const sendMessage = (
+  data: Schema$Message,
+  room?: string
+): WsResponse<Schema$Message> | RoomResponse<Schema$Message> => ({
   event: ChatEvent.Message,
-  data
+  data,
+  room
 });
 
 class AuthGuard implements CanActivate {
@@ -79,13 +99,39 @@ function handleLeave(socketId: string, dto?: IdentifyDto) {
   }
 }
 
+function isRoomMessage(data: unknown): data is RoomResponse<unknown> {
+  return (
+    data &&
+    typeof data === 'object' &&
+    typeof data['event'] === 'string' &&
+    typeof data['room'] === 'string'
+  );
+}
+
+class MsgResponseInterceptor implements NestInterceptor {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const socket: Socket = context.switchToWs().getClient();
+
+    return next.handle().pipe(
+      map(data => {
+        if (isRoomMessage(data)) {
+          socket.to(data.room).emit(data.event, data.data);
+          return data.data;
+        }
+        return data;
+      })
+    );
+  }
+}
+
+@UseInterceptors(MsgResponseInterceptor)
 @WebSocketGateway({ namespace: 'chat' })
 export class ChatGateway {
   @SubscribeMessage(ChatEvent.Join)
   onJoinChat(
     @ConnectedSocket() socket: Socket,
     @MessageBody() { matchID, playerID, playerName, credentials }: JoinChatDto
-  ): Observable<WsResponse<Schema$Message>> {
+  ) {
     socket.join(matchID);
 
     // Remove player from any previous game that it was a part of.
@@ -96,9 +142,10 @@ export class ChatGateway {
     const client: Room['players'] = { [playerID]: { playerName, credentials } };
     const joinMessage: Schema$Message = {
       playerID,
-      id: +new Date(),
+      id: String(+new Date()),
       content: playerName,
-      type: MessageType.SYSTEM
+      type: MessageType.SYSTEM,
+      status: MessageStatus.SUCCESS
     };
 
     let room: Room = {
@@ -125,17 +172,20 @@ export class ChatGateway {
 
     store.set(matchID, room);
 
-    return from(room.messages).pipe(map(sendMessage));
+    return from(room.messages).pipe(map(message => sendMessage(message)));
   }
 
   @UseGuards(AuthGuard)
   @SubscribeMessage(ChatEvent.Send)
-  onSendMessage(@MessageBody() { matchID, content, playerID }: SendMessageDto) {
+  onSendMessage(
+    @MessageBody() { id, matchID, content, playerID }: SendMessageDto
+  ) {
     const message: Schema$Message = {
-      playerID,
+      id,
       content,
-      id: +new Date(),
-      type: MessageType.CHAT
+      playerID,
+      type: MessageType.CHAT,
+      status: MessageStatus.SUCCESS
     };
 
     const data = store.get(matchID);
@@ -144,12 +194,7 @@ export class ChatGateway {
       messages: [...data.messages, message]
     });
 
-    return sendMessage({
-      playerID,
-      content,
-      id: +new Date(),
-      type: MessageType.CHAT
-    });
+    return sendMessage(message, matchID);
   }
 
   @UseGuards(AuthGuard)

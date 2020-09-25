@@ -21,14 +21,22 @@ export enum MessageType {
   CHAT
 }
 
+export enum MessageStatus {
+  PENDING,
+  SUCCESS,
+  FAILURE
+}
+
 export interface Schema$Message {
-  id: number; // timestamp,
+  id: string; // timestamp,
   playerID: string;
   content: string;
   type: MessageType;
+  status: MessageStatus;
 }
 
 export interface Param$SendMessage extends Identify {
+  id: string;
   content: string;
 }
 
