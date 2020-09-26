@@ -7,7 +7,8 @@ import {
   Get,
   Param,
   Query,
-  ForbiddenException
+  ForbiddenException,
+  BadRequestException
 } from '@nestjs/common';
 import { Player, Response$GetMatches } from '@/typings';
 import { Game, Server } from 'boardgame.io';
@@ -87,7 +88,12 @@ export class MatchController {
     const { metadata } = await this.matchService.fetch(matchID, {
       metadata: true
     });
-    return this.createClientMatchData(matchID, metadata);
+
+    if (metadata) {
+      return this.createClientMatchData(matchID, metadata);
+    }
+
+    throw new NotFoundException('Match not found');
   }
 
   @Post('create')
@@ -110,6 +116,7 @@ export class MatchController {
         unlisted: !!unlisted,
         setupData
       };
+
       const matchID = nanoid();
       const initialState = InitializeGame({ game, numPlayers, setupData });
 
@@ -128,15 +135,24 @@ export class MatchController {
       metadata: true
     });
 
-    const metadata = { ...match.metadata };
-    const playerCredentials = nanoid();
+    if (match) {
+      const metadata = { ...match.metadata };
+      const player = metadata.players[Number(playerID)];
 
-    metadata.players[playerID].name = playerName;
-    metadata.players[playerID].credentials = playerCredentials;
+      if (player && player.credentials) {
+        throw new BadRequestException('Invalid PlayerID');
+      }
 
-    await this.matchService.setMetadata(matchID, metadata);
+      const playerCredentials = nanoid();
+      player.name = playerName;
+      player.credentials = playerCredentials;
 
-    return { playerCredentials };
+      await this.matchService.setMetadata(matchID, metadata);
+
+      return { playerCredentials };
+    }
+
+    throw new NotFoundException('Match not found');
   }
 
   @Post('leave')
@@ -177,9 +193,9 @@ export class MatchController {
     const numPlayers = Object.keys(metadata.players).length;
 
     const { matchID: nextMatchID } = await this.createMatch({
-      ...metadata,
       name,
       numPlayers,
+      unlisted: metadata.unlisted,
       setupData: metadata.setupData as SetupData
     });
 

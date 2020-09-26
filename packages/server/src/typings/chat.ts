@@ -3,7 +3,8 @@ export enum ChatEvent {
   Message = 'Message',
   Send = 'Send',
   Ready = 'Ready',
-  Leave = 'Leave'
+  Leave = 'Leave',
+  Player = 'Player'
 }
 
 export interface Identify {
@@ -28,7 +29,7 @@ export enum MessageStatus {
 }
 
 export interface Schema$Message {
-  id: string; // timestamp,
+  id: string; // timestamp
   playerID: string;
   content: string;
   type: MessageType;
@@ -41,3 +42,12 @@ export interface Param$SendMessage extends Identify {
 }
 
 export interface Param$PlayerReady extends Identify {}
+
+export interface WS$Player {
+  credentials: string;
+  playerName: string;
+}
+
+export interface WSResponse$Player extends Omit<WS$Player, 'credentials'> {
+  playerID: string;
+}

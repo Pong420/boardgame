@@ -26,7 +26,7 @@ export class AppModule {
       imports: [
         MatchModule.forRoot(options),
         EventsModule.forRoot(options),
-        ChatModule
+        ChatModule.forRoot(options)
       ],
       controllers: [],
       providers: [

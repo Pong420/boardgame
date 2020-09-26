@@ -1,7 +1,14 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
+import { MatchModule, MatchModuleOptions } from '@/match/match.module';
 import { ChatGateway } from './chat.gateway';
 
-@Module({
-  providers: [ChatGateway]
-})
-export class ChatModule {}
+@Module({})
+export class ChatModule {
+  static forRoot(options: MatchModuleOptions): DynamicModule {
+    return {
+      module: ChatModule,
+      imports: [MatchModule.forRoot(options)],
+      providers: [ChatGateway]
+    };
+  }
+}
