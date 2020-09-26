@@ -2,7 +2,9 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
-  ConnectedSocket
+  ConnectedSocket,
+  OnGatewayDisconnect,
+  GatewayMetadata
 } from '@nestjs/websockets';
 import { Type, mixin, Provider, Inject } from '@nestjs/common';
 import { Socket } from 'socket.io';
@@ -57,9 +59,18 @@ export function TransportAPI(matchID: string, socket: Socket): MasterTransport {
   return { send, sendAll };
 }
 
+const PING_TIMEOUT = 20 * 1e3;
+const PING_INTERVAL = 10 * 1e3;
+
 export function createEventGateway(game: Game): Type<Provider> {
-  @WebSocketGateway({ namespace: game.name })
-  class EventsGateway {
+  const options: GatewayMetadata = {
+    namespace: game.name,
+    pingTimeout: PING_TIMEOUT,
+    pingInterval: PING_INTERVAL
+  };
+
+  @WebSocketGateway(options)
+  class EventsGateway implements OnGatewayDisconnect {
     constructor(
       @Inject(MatchService) private readonly matchService: MatchService
     ) {}
@@ -112,8 +123,7 @@ export function createEventGateway(game: Game): Type<Provider> {
       await master.onUpdate(action, stateID, matchID, playerID);
     }
 
-    @SubscribeMessage('disconnect')
-    async onDisconnect(@ConnectedSocket() socket: Socket) {
+    handleDisconnect(@ConnectedSocket() socket: Socket) {
       if (clientInfo.has(socket.id)) {
         const { matchID } = clientInfo.get(socket.id);
         roomInfo.get(matchID).delete(socket.id);
