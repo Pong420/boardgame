@@ -1,20 +1,19 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Card } from '@blueprintjs/core';
+import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Card, Icon } from '@blueprintjs/core';
 import { Param$JoinChat, Schema$Message, ChatEvent } from '@/typings';
-import { createUseCRUDReducer } from '@/hooks/crud-reducer';
+import { useScrollToBottom } from '@/hooks/useScrollToBottom';
+import { ChatProvider, useChat } from '@/hooks/useChat';
 import { MessageStatus, MessageType } from '@/typings';
-import { fromEvent, fromEventPattern } from 'rxjs';
+import { fromEventPattern } from 'rxjs';
 import { ChatInput } from './ChatInput';
+import { ChatBubble } from './ChatBubble';
 import styles from './Chat.module.scss';
 import io, { Socket } from 'socket.io-client';
+import { useBoolean } from '@/hooks/useBoolean';
 
 interface ChatProps extends Param$JoinChat {
   onReady?: () => void;
 }
-
-const useMessageReducer = createUseCRUDReducer<Schema$Message, 'id'>('id', {
-  prefill: false
-});
 
 function frommSocketIO<T>(
   socket: typeof Socket,
@@ -30,24 +29,15 @@ function fromMessage(socket: typeof Socket) {
   return frommSocketIO<Schema$Message>(socket, ChatEvent.Message);
 }
 
-export function Chat({ onReady, ...identify }: ChatProps) {
+function ChatContent({ onReady, ...identify }: ChatProps) {
   const identifyRef = useRef(identify);
-  const socketRef = useRef(io.connect('/chat'));
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [state, actions] = useMessageReducer();
-  const [autoScroll, setAutoScroll] = useState(true);
-  const messageIds = state.ids;
+  const [socket] = useState(() => io.connect('/chat'));
+  const [chatState, dispatch] = useChat();
+  const [{ autoScroll, scrollToBottom }, contentElRef] = useScrollToBottom();
+  const [collapsed, , , toggleCollapse] = useBoolean(false);
 
-  const { scrollToBottom, sendMessage, toggleReady } = useMemo(() => {
-    const socket = socketRef.current;
+  const { sendMessage } = useMemo(() => {
     const identify = identifyRef.current;
-
-    const scrollToBottom = () => {
-      const contentEl = contentRef.current;
-      if (contentEl) {
-        contentEl.scrollTop = contentEl.scrollHeight;
-      }
-    };
 
     const sendMessage = (content: string) => {
       const message: Schema$Message = {
@@ -58,13 +48,16 @@ export function Chat({ onReady, ...identify }: ChatProps) {
         status: MessageStatus.PENDING
       };
 
-      actions.create(message);
+      dispatch({ type: 'Create', payload: message });
 
       socket.emit(ChatEvent.Send, message, () => {
-        actions.update({ ...message, status: MessageStatus.SUCCESS });
+        dispatch({
+          type: 'Update',
+          payload: { ...message, status: MessageStatus.SUCCESS }
+        });
       });
 
-      scrollToBottom();
+      setTimeout(scrollToBottom, 0);
     };
 
     const toggleReady = () => {
@@ -76,65 +69,59 @@ export function Chat({ onReady, ...identify }: ChatProps) {
       sendMessage,
       toggleReady
     };
-  }, [actions]);
+  }, [socket, dispatch, scrollToBottom]);
 
   useEffect(() => {
-    const socket = socketRef.current;
-    const subscription = frommSocketIO(socket, 'connect').subscribe(() =>
-      socket.emit(ChatEvent.Join, identifyRef.current)
-    );
+    const events = [
+      frommSocketIO(socket, 'connect').subscribe(() =>
+        socket.emit(ChatEvent.Join, identifyRef.current)
+      ),
+      fromMessage(socket).subscribe(payload =>
+        dispatch({ type: 'Create', payload })
+      )
+    ];
+
     return () => {
       socket.disconnect();
-      subscription.unsubscribe();
+      events.forEach(subscription => subscription.unsubscribe());
     };
-  }, [actions]);
+  }, [socket, dispatch]);
 
   useEffect(() => {
-    const content = contentRef.current;
-    if (content) {
-      scrollToBottom();
-      const subscription = fromEvent(content, 'scroll').subscribe(() => {
-        setAutoScroll(
-          content.scrollTop >= content.scrollHeight - content.offsetHeight
-        );
-      });
-      return () => subscription.unsubscribe();
-    }
-  }, [scrollToBottom]);
-
-  useEffect(() => {
-    const subscription = fromMessage(socketRef.current).subscribe(message => {
-      actions.create(message);
-      setTimeout(() => {
-        autoScroll && scrollToBottom();
-      }, 0);
-    });
-    return () => subscription.unsubscribe();
-  }, [actions, autoScroll, scrollToBottom]);
+    autoScroll && setTimeout(scrollToBottom, 0);
+  }, [chatState, autoScroll, scrollToBottom]);
 
   return (
     <Card
       className={[
-        //
         styles.chat,
         // styles['full-screen']
-        styles['bottom-right']
-      ].join(' ')}
+        styles['bottom-right'],
+        collapsed && styles['collapsed']
+      ]
+        .filter(Boolean)
+        .join(' ')}
       elevation={2}
     >
-      <div className={styles['chat-header']}>
+      <div className={styles['chat-header']} onClick={toggleCollapse}>
         <div className={styles['chat-header-title']}>Chat</div>
         <div>
-          <Button minimal icon="chevron-up" />
+          <Icon icon={collapsed ? 'chevron-up' : 'chevron-down'} />
         </div>
       </div>
-      <div className={styles['chat-content']} ref={contentRef}>
-        {state.list.map(msg => (
-          <ChatBubble
-            {...msg}
-            key={msg.id}
-            self={identifyRef.current.playerID === msg.playerID}
-          />
+      <div className={styles['chat-content']} ref={contentElRef}>
+        {chatState.group.map(ids => (
+          <Fragment key={ids[0]}>
+            {ids.map((id, idx) => (
+              <ChatBubble
+                id={id}
+                key={id}
+                playerID={identify.playerID}
+                first={idx === 0}
+                user={idx === 0 ? `Player ${identify.playerID}` : undefined}
+              />
+            ))}
+          </Fragment>
         ))}
       </div>
       <div className={styles['chat-footer']}>
@@ -144,23 +131,10 @@ export function Chat({ onReady, ...identify }: ChatProps) {
   );
 }
 
-interface ChatBubbleProps extends Schema$Message {
-  self: boolean;
-}
-
-function ChatBubble({ type, content, self }: ChatBubbleProps) {
-  const isSystemMessage = type === MessageType.SYSTEM;
+export function Chat(props: ChatProps) {
   return (
-    <div
-      className={[
-        styles['chat-bubble'],
-        self && styles['self'],
-        isSystemMessage && styles['system']
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
-      {content}
-    </div>
+    <ChatProvider>
+      <ChatContent {...props} />
+    </ChatProvider>
   );
 }

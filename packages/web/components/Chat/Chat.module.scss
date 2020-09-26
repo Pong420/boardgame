@@ -29,8 +29,13 @@
   }
 }
 
+.collapsed {
+  transform: translateY(calc(100% - 50px));
+}
+
 .chat-header {
   @include header;
+  @include padding-x(20px);
   flex: 0 0 auto;
 }
 
@@ -48,28 +53,5 @@
 
 .chat-footer {
   flex: 0 0 auto;
-}
-
-.chat-bubble {
-  background-color: var(--main-diff1-color);
-  border-radius: 5px;
-  padding: 10px 15px;
-  align-self: flex-start;
-
-  + .chat-bubble {
-    margin-top: 15px;
-  }
-}
-
-.self {
-  align-self: flex-end;
-}
-
-.system {
-  align-self: center;
-}
-
-.chat-input {
-  background-color: var(--main-diff1-color);
-  padding: 15px;
+  padding: 10px;
 }

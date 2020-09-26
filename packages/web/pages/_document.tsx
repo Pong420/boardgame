@@ -41,7 +41,7 @@ class MyDocument extends Document {
                     localStorage.setItem(THEME, theme);
                   } catch {}
                 };
-                window.__setTheme(window.__initialTheme)
+                window.__setTheme(window.__initialTheme);
               
                 var SCREEN_WIDTH = 'BOARDGAME_SCREEN_WIDTH';
                 window.__initialScreenWidth = get(SCREEN_WIDTH, 'limited');
@@ -51,7 +51,15 @@ class MyDocument extends Document {
                     localStorage.setItem(SCREEN_WIDTH, screenWidth);
                   } catch {}
                 };
-                window.__setScreenWidth(window.__initialScreenWidth)
+                window.__setScreenWidth(window.__initialScreenWidth);
+
+                document.documentElement.setAttribute(
+                  'data-platform',
+                  navigator.platform.replace(
+                    /[A-Z]/g,
+                    (char, idx) => (idx === 0 ? '' : '-') + char.toLowerCase()
+                  )
+                );
               })();
             `
             }}

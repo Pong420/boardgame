@@ -55,7 +55,6 @@ body,
 }
 
 body {
-  @include scrollbar();
   background-color: var(--main-color);
   color: var(--text-color);
   margin: 0;
@@ -87,5 +86,12 @@ a:hover {
 [data-screen-width^='limited'] {
   .layout {
     max-width: 1280px;
+  }
+}
+
+[data-platform^='win'],
+[data-platform^='linux'] {
+  body {
+    @include scrollbar();
   }
 }
