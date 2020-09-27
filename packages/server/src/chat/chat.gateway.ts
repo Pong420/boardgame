@@ -4,11 +4,31 @@ import {
   ConnectedSocket,
   MessageBody,
   WsResponse,
-  WsException
+  WsException,
+  OnGatewayDisconnect,
+  GatewayMetadata
 } from '@nestjs/websockets';
 import { Inject, UseGuards, UseInterceptors } from '@nestjs/common';
-import { Observable, from, merge, of, empty } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import {
+  from,
+  merge,
+  of,
+  empty,
+  Subject,
+  timer,
+  race,
+  Observable,
+  throwError
+} from 'rxjs';
+import {
+  catchError,
+  filter,
+  map,
+  takeUntil,
+  mergeMap,
+  delay,
+  tap
+} from 'rxjs/operators';
 import { Socket } from 'socket.io';
 import {
   ChatEvent,
@@ -24,12 +44,14 @@ import {
   SendMessageDto,
   PlayerReadyDto
 } from './dto';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard, authenticate } from './auth.guard';
 import { ChatResponseInterceptor } from './chat-response.interceptor';
 import { Room, Rooms, Connected, RoomResponse } from './types';
 
 const rooms: Rooms = new Map();
 const connected: Connected = new Map();
+
+const connect$ = new Subject<{ socket: Socket; credentials: string }>();
 
 function send<T>(event: ChatEvent) {
   function handler(data: T): WsResponse<T>;
@@ -43,6 +65,18 @@ function send<T>(event: ChatEvent) {
 const sendMessage = send<Schema$Message>(ChatEvent.Message);
 const sendPlayer = send<WSResponse$Player>(ChatEvent.Player);
 const sendReady = send<string[]>(ChatEvent.Ready);
+
+function createMessage(
+  payload: Partial<Schema$Message> &
+    Pick<Schema$Message, 'playerID' | 'content'>
+): Schema$Message {
+  return {
+    id: String(+new Date()),
+    type: MessageType.SYSTEM,
+    status: MessageStatus.SUCCESS,
+    ...payload
+  };
+}
 
 // limit the maximum length of message
 function pushMessage(
@@ -71,19 +105,15 @@ function handleLeave(socket: Socket, dto?: IdentifyDto) {
 
     if (room) {
       const player = room.players[Number(playerID)];
-      const leaveMessage: Schema$Message = {
-        ...identify,
-        id: String(+new Date()),
-        content: `${player.playerName} leave the match`,
-        type: MessageType.SYSTEM,
-        status: MessageStatus.SUCCESS
-      };
+      const leaveMessage: Schema$Message = createMessage({
+        playerID: identify.playerID,
+        content: `${player.playerName} leave the match`
+      });
 
       if (!isStarted(room)) {
         room = removePlayer(rooms.get(matchID), playerID);
       }
       room.messages = pushMessage(room.messages, leaveMessage);
-
       rooms.set(matchID, room);
 
       return of(sendMessage(leaveMessage, matchID)).pipe(
@@ -91,11 +121,21 @@ function handleLeave(socket: Socket, dto?: IdentifyDto) {
       );
     }
   }
+  return throwError('identify not found');
 }
 
+const PING_TIMEOUT = 20 * 1e3;
+const PING_INTERVAL = 10 * 1e3;
+
+const options: GatewayMetadata = {
+  namespace: 'chat',
+  pingTimeout: PING_TIMEOUT,
+  pingInterval: PING_INTERVAL
+};
+
 @UseInterceptors(ChatResponseInterceptor)
-@WebSocketGateway({ namespace: 'chat' })
-export class ChatGateway {
+@WebSocketGateway(options)
+export class ChatGateway implements OnGatewayDisconnect {
   constructor(
     @Inject(MatchService) private readonly matchService: MatchService
   ) {}
@@ -135,13 +175,10 @@ export class ChatGateway {
 
     const newPlayer = player === null;
 
-    const joinMessage: Schema$Message = {
+    const joinMessage: Schema$Message = createMessage({
       playerID,
-      id: String(+new Date()),
-      content: `${playerName} join the match`,
-      type: MessageType.SYSTEM,
-      status: MessageStatus.SUCCESS
-    };
+      content: `${playerName} join the match`
+    });
 
     if (newPlayer) {
       room.messages = pushMessage(room.messages, joinMessage);
@@ -152,6 +189,8 @@ export class ChatGateway {
 
       rooms.set(matchID, room);
     }
+
+    connect$.next({ socket, credentials });
 
     // player event should send before message
     return merge(
@@ -228,5 +267,48 @@ export class ChatGateway {
     @MessageBody() dto: IdentifyDto
   ): Observable<RoomResponse<Schema$Message>> {
     return handleLeave(socket, dto);
+  }
+
+  handleDisconnect(@ConnectedSocket() socket: Socket) {
+    from(authenticate(rooms, socket.handshake.query))
+      .pipe(
+        mergeMap(identity => {
+          const { matchID, playerID, credentials } = identity || {};
+          const room = rooms.get(matchID);
+
+          const reconnected$ = () =>
+            connect$.pipe(filter(p => p.credentials === credentials));
+
+          const player = room.players[Number(playerID)];
+
+          const send = (content: string) => {
+            const message = createMessage({ playerID, content });
+            room.messages = pushMessage(room.messages, message);
+            rooms.set(matchID, room);
+            return sendMessage(message, matchID);
+          };
+
+          return timer(4000).pipe(
+            mergeMap(() =>
+              merge(
+                of(send(`${player.playerName} disconnected`)),
+                race([
+                  reconnected$().pipe(
+                    map(() => send(`${player.playerName} reconnected`))
+                  ),
+                  timer(6000).pipe(
+                    mergeMap(() => handleLeave(socket, identity))
+                  )
+                ])
+              )
+            ),
+            takeUntil(reconnected$().pipe(delay(100)))
+          );
+        }),
+        catchError(() => handleLeave(socket))
+      )
+      .subscribe(({ event, room, data }) => {
+        socket.to(room).emit(event, data);
+      });
   }
 }

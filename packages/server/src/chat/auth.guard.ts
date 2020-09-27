@@ -5,28 +5,40 @@ import { plainToClass } from 'class-transformer';
 import { IdentifyDto } from './dto';
 import { Rooms } from './types';
 
+export async function authenticate(
+  rooms: Rooms,
+  payload: unknown
+): Promise<IdentifyDto> {
+  const identify = plainToClass(
+    IdentifyDto,
+    payload && typeof payload === 'object' ? payload : {}
+  );
+
+  const errors = await validate(identify);
+
+  if (errors.length) {
+    throw new WsException(errors);
+  }
+
+  const { matchID, playerID, credentials } = identify;
+
+  if (rooms.has(matchID)) {
+    const { players } = rooms.get(matchID);
+    const player = players[Number(playerID)];
+    if (player && player.credentials === credentials) {
+      return identify;
+    }
+    throw new WsException('Invalid credentials');
+  }
+  throw new WsException('Invalid matchID');
+}
+
 export class AuthGuard implements CanActivate {
   constructor(private readonly rooms: Rooms) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const data = context.switchToWs().getData() || {};
-    const dto = plainToClass(IdentifyDto, data);
-    const errors = await validate(dto);
-
-    if (errors.length) {
-      throw new WsException(errors);
-    }
-
-    const { matchID, playerID, credentials } = dto;
-
-    if (this.rooms.has(matchID)) {
-      const { players } = this.rooms.get(matchID);
-      const player = players[Number(playerID)];
-      if (player && player.credentials === credentials) {
-        return true;
-      }
-      throw new WsException('Invalid credentials');
-    }
-    throw new WsException('Invalid matchID');
+    const data = context.switchToWs().getData();
+    const identify = await authenticate(this.rooms, data);
+    return !!identify;
   }
 }
