@@ -33,7 +33,9 @@ export type {
   Schema$Message,
   Param$JoinChat,
   Param$SendMessage,
-  Param$PlayerReady
+  Param$PlayerReady,
+  WS$Player,
+  WSResponse$Player
 } from '@boardgame/server';
 
 export {

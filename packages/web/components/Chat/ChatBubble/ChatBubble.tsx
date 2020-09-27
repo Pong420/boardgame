@@ -7,7 +7,6 @@ import styles from './ChatBubble.module.scss';
 interface ChatBubbleProps {
   id: string;
   playerID: string;
-  user?: string;
   first?: boolean;
 }
 
@@ -74,7 +73,7 @@ function ChatMessage({ className, user, content, status, date }: Props) {
 }
 
 export const ChatBubble = React.memo(
-  ({ id, user, first, playerID }: ChatBubbleProps) => {
+  ({ id, first, playerID }: ChatBubbleProps) => {
     const msg = useChatMessage(id);
     if (msg) {
       const date = dataFormat(Number(id));
@@ -89,7 +88,7 @@ export const ChatBubble = React.memo(
           return (
             <ChatMessage
               {...props}
-              user={user}
+              user={first && !self ? msg.playerName : undefined}
               status={self ? status : undefined}
               className={[
                 self ? styles['self'] : styles['other'],

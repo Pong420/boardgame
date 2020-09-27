@@ -1,18 +1,26 @@
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import io, { Socket } from 'socket.io-client';
+import { fromEvent, fromEventPattern } from 'rxjs';
 import { Card, Icon } from '@blueprintjs/core';
-import { Param$JoinChat, Schema$Message, ChatEvent } from '@/typings';
+import {
+  Param$JoinChat,
+  Schema$Message,
+  ChatEvent,
+  WSResponse$Player,
+  MessageStatus,
+  MessageType
+} from '@/typings';
 import { useScrollToBottom } from '@/hooks/useScrollToBottom';
 import { ChatProvider, useChat } from '@/hooks/useChat';
-import { MessageStatus, MessageType } from '@/typings';
-import { fromEventPattern } from 'rxjs';
+import { useBoolean } from '@/hooks/useBoolean';
 import { ChatInput } from './ChatInput';
 import { ChatBubble } from './ChatBubble';
+import { Disconnected } from '../Match';
 import styles from './Chat.module.scss';
-import io, { Socket } from 'socket.io-client';
-import { useBoolean } from '@/hooks/useBoolean';
 
 interface ChatProps extends Param$JoinChat {
-  onReady?: () => void;
+  start: boolean;
+  onReady: (payload: string[]) => void;
 }
 
 function frommSocketIO<T>(
@@ -25,16 +33,15 @@ function frommSocketIO<T>(
   );
 }
 
-function fromMessage(socket: typeof Socket) {
-  return frommSocketIO<Schema$Message>(socket, ChatEvent.Message);
-}
-
-function ChatContent({ onReady, ...identify }: ChatProps) {
+function ChatContent({ start, onReady, ...identify }: ChatProps) {
   const identifyRef = useRef(identify);
-  const [socket] = useState(() => io.connect('/chat'));
   const [chatState, dispatch] = useChat();
   const [{ autoScroll, scrollToBottom }, contentElRef] = useScrollToBottom();
-  const [collapsed, , , toggleCollapse] = useBoolean(false);
+  const [collapsed, , , toggleCollapse] = useBoolean(true);
+  const [connected, setConnected] = useState(false);
+  const [socket] = useState(() =>
+    io.connect('/chat', { autoConnect: false, query: identify })
+  );
 
   const { sendMessage } = useMemo(() => {
     const identify = identifyRef.current;
@@ -72,31 +79,61 @@ function ChatContent({ onReady, ...identify }: ChatProps) {
   }, [socket, dispatch, scrollToBottom]);
 
   useEffect(() => {
+    const identify = identifyRef.current;
     const events = [
-      frommSocketIO(socket, 'connect').subscribe(() =>
-        socket.emit(ChatEvent.Join, identifyRef.current)
-      ),
-      fromMessage(socket).subscribe(payload =>
-        dispatch({ type: 'Create', payload })
-      )
+      frommSocketIO(socket, 'connect').subscribe(() => {
+        setConnected(true);
+        socket.emit(ChatEvent.Join, identify);
+      }),
+      frommSocketIO(socket, 'disconnect').subscribe(() => {
+        setConnected(false);
+      }),
+      frommSocketIO<WSResponse$Player>(
+        socket,
+        ChatEvent.Player
+      ).subscribe(payload => dispatch({ type: 'UpdatePlayer', payload })),
+      frommSocketIO<Schema$Message>(
+        socket,
+        ChatEvent.Message
+      ).subscribe(payload => dispatch({ type: 'Create', payload }))
     ];
 
+    socket.disconnected && socket.open();
+
     return () => {
-      socket.disconnect();
+      socket.emit(ChatEvent.Leave, identify);
       events.forEach(subscription => subscription.unsubscribe());
     };
   }, [socket, dispatch]);
 
   useEffect(() => {
+    const identify = identifyRef.current;
+    const events = [
+      frommSocketIO<string[]>(socket, ChatEvent.Ready).subscribe(onReady),
+      fromEvent(window, 'dblclick').subscribe(() => {
+        socket.emit(ChatEvent.Ready, identify, onReady);
+      })
+    ];
+    return () => {
+      events.forEach(subscription => subscription.unsubscribe());
+    };
+  }, [socket, onReady]);
+
+  useEffect(() => {
     autoScroll && setTimeout(scrollToBottom, 0);
-  }, [chatState, autoScroll, scrollToBottom]);
+  }, [
+    chatState,
+    autoScroll,
+    scrollToBottom,
+    // for change from full-screen to bottom-right
+    start
+  ]);
 
   return (
     <Card
       className={[
         styles.chat,
-        // styles['full-screen']
-        styles['bottom-right'],
+        start ? styles['bottom-right'] : styles['full-screen'],
         collapsed && styles['collapsed']
       ]
         .filter(Boolean)
@@ -109,24 +146,29 @@ function ChatContent({ onReady, ...identify }: ChatProps) {
           <Icon icon={collapsed ? 'chevron-up' : 'chevron-down'} />
         </div>
       </div>
-      <div className={styles['chat-content']} ref={contentElRef}>
-        {chatState.group.map(ids => (
-          <Fragment key={ids[0]}>
-            {ids.map((id, idx) => (
-              <ChatBubble
-                id={id}
-                key={id}
-                playerID={identify.playerID}
-                first={idx === 0}
-                user={idx === 0 ? `Player ${identify.playerID}` : undefined}
-              />
+      {connected ? (
+        <>
+          <div className={styles['chat-content']} ref={contentElRef}>
+            {chatState.group.map(ids => (
+              <Fragment key={ids[0]}>
+                {ids.map((id, idx) => (
+                  <ChatBubble
+                    id={id}
+                    key={id}
+                    first={idx === 0}
+                    playerID={identify.playerID}
+                  />
+                ))}
+              </Fragment>
             ))}
-          </Fragment>
-        ))}
-      </div>
-      <div className={styles['chat-footer']}>
-        <ChatInput onSend={sendMessage} />
-      </div>
+          </div>
+          <div className={styles['chat-footer']}>
+            <ChatInput onSend={sendMessage} />
+          </div>
+        </>
+      ) : (
+        <Disconnected />
+      )}
     </Card>
   );
 }

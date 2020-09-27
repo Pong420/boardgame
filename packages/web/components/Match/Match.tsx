@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import router from 'next/router';
 import { useRxAsync } from 'use-rx-hooks';
 import { MatchState, getMatch, matchStorage } from '@/services';
@@ -15,6 +15,7 @@ import styles from './Match.module.scss';
 interface State {
   matchName: string;
   spectate?: boolean;
+  numPlayers: number;
 }
 
 const onFailure = (error: ApiError) => {
@@ -35,7 +36,7 @@ const onFailure = (error: ApiError) => {
 export function Match(state: MatchState) {
   const _getMatch = useCallback(async (): Promise<State> => {
     if ('local' in state) {
-      return { matchName: 'Local' };
+      return { matchName: 'Local', numPlayers: 0 };
     }
 
     const { data } = await getMatch({
@@ -46,7 +47,8 @@ export function Match(state: MatchState) {
     return data.setupData
       ? {
           ...data,
-          ...data.setupData
+          ...data.setupData,
+          numPlayers: data.players.length
         }
       : Promise.reject('Invalid match');
   }, [state]);
@@ -54,6 +56,13 @@ export function Match(state: MatchState) {
   const [{ data, loading }] = useRxAsync(_getMatch, { onFailure });
   const { matchName, spectate } = data || {};
   const { gameName } = gameMetaMap[state.name];
+  const [started, setStarted] = useState(!('playerName' in state));
+
+  const onReady = useCallback(
+    (payload: string[]) =>
+      setStarted(!!data && payload.length === data.numPlayers),
+    [data]
+  );
 
   return (
     <div className={styles['match']}>
@@ -68,19 +77,23 @@ export function Match(state: MatchState) {
         )}
         <Preferences disablePlayerName />
       </MatchHeader>
-      {'playerName' in state && (
+      {'playerName' in state && data && (
         <Chat
           matchID={state.matchID}
           playerID={state.playerID}
           playerName={state.playerName}
           credentials={state.credentials}
+          start={started}
+          onReady={onReady}
         />
       )}
-      <MatchContent
-        state={state}
-        spectate={spectate}
-        loading={!data || loading}
-      />
+      {started && (
+        <MatchContent
+          state={state}
+          spectate={spectate}
+          loading={!data || loading}
+        />
+      )}
     </div>
   );
 }

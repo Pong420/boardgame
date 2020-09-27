@@ -27,10 +27,10 @@
   .chat-header {
     cursor: pointer;
   }
-}
 
-.collapsed {
-  transform: translateY(calc(100% - 50px));
+  &.collapsed {
+    transform: translateY(calc(100% - 50px));
+  }
 }
 
 .chat-header {
@@ -46,9 +46,16 @@
 .chat-content {
   @include flex($flex-direction: column);
   @include sq-dimen(100%);
+  @include padding-x(20px);
   background-color: var(--main-color);
-  padding: 20px;
   overflow: auto;
+
+  // for firefox, since it ignore the scroll padding
+  &:before,
+  &:after {
+    @include padding-y(10px);
+    content: '';
+  }
 }
 
 .chat-footer {
