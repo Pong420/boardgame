@@ -1,7 +1,7 @@
 @import '~styles/scss';
 
 .chat {
-  @include absolute(null, 0, 0, 0);
+  @include fixed(null, 0, 0, 0);
   @include flex($flex-direction: column);
   @include sq-dimen(100%);
   max-width: 1278px;
@@ -41,6 +41,7 @@
 
 .chat-header-title {
   @include header-title;
+  @include flex(center);
 }
 
 .chat-content {
@@ -61,4 +62,16 @@
 .chat-footer {
   flex: 0 0 auto;
   padding: 10px;
+}
+
+.unread {
+  $size: 20px;
+  @include sq-dimen($size);
+  border-radius: 50%;
+  background-color: $pt-intent-danger;
+  font-size: 10px;
+  line-height: $size;
+  margin-top: 5px;
+  margin-left: 5px;
+  text-align: center;
 }

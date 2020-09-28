@@ -15,6 +15,7 @@ import { ChatProvider, useChat } from '@/hooks/useChat';
 import { useBoolean } from '@/hooks/useBoolean';
 import { ChatInput } from './ChatInput';
 import { ChatBubble } from './ChatBubble';
+import { UnreadCount } from './UnreadCount';
 import { Disconnected } from '../Match';
 import styles from './Chat.module.scss';
 
@@ -35,10 +36,12 @@ function frommSocketIO<T>(
 
 function ChatContent({ start, onReady, ...identify }: ChatProps) {
   const identifyRef = useRef(identify);
-  const [chatState, dispatch] = useChat();
-  const [{ autoScroll, scrollToBottom }, contentElRef] = useScrollToBottom();
+  const [{ group, unread }, dispatch] = useChat();
   const [collapsed, , , toggleCollapse] = useBoolean(true);
   const [connected, setConnected] = useState(false);
+  const [{ autoScroll, scrollToBottom }, contentElRef] = useScrollToBottom(
+    connected
+  );
   const [socket] = useState(() =>
     io.connect('/chat', { autoConnect: false, query: identify })
   );
@@ -102,6 +105,8 @@ function ChatContent({ start, onReady, ...identify }: ChatProps) {
 
     return () => {
       socket.emit(ChatEvent.Leave, identify);
+      // disable for development ?
+      // socket.disconnected && socket.disconnect();
       events.forEach(subscription => subscription.unsubscribe());
     };
   }, [socket, dispatch]);
@@ -122,7 +127,7 @@ function ChatContent({ start, onReady, ...identify }: ChatProps) {
   useEffect(() => {
     autoScroll && setTimeout(scrollToBottom, 0);
   }, [
-    chatState,
+    group,
     autoScroll,
     scrollToBottom,
     // for change from full-screen to bottom-right
@@ -141,7 +146,9 @@ function ChatContent({ start, onReady, ...identify }: ChatProps) {
       elevation={2}
     >
       <div className={styles['chat-header']} onClick={toggleCollapse}>
-        <div className={styles['chat-header-title']}>Chat</div>
+        <div className={styles['chat-header-title']}>
+          Chat <UnreadCount count={unread.length} />
+        </div>
         <div>
           <Icon icon={collapsed ? 'chevron-up' : 'chevron-down'} />
         </div>
@@ -149,7 +156,7 @@ function ChatContent({ start, onReady, ...identify }: ChatProps) {
       {connected ? (
         <>
           <div className={styles['chat-content']} ref={contentElRef}>
-            {chatState.group.map(ids => (
+            {group.map(ids => (
               <Fragment key={ids[0]}>
                 {ids.map((id, idx) => (
                   <ChatBubble

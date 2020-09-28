@@ -8,6 +8,7 @@ interface Message extends Schema$Message {
 
 interface State {
   list: string[];
+  unread: string[];
   group: string[][];
   byIds: Record<string, Message>;
   players: Record<string, WSResponse$Player>;
@@ -32,9 +33,20 @@ interface UpdatePlayer {
   payload: WSResponse$Player;
 }
 
-type Actions = Create | Update | Reset | UpdatePlayer;
+interface ReadMessage {
+  type: 'ReadMessage';
+  payload: string;
+}
 
-const initialState: State = { list: [], group: [], byIds: {}, players: {} };
+type Actions = Create | Update | Reset | UpdatePlayer | ReadMessage;
+
+const initialState: State = {
+  list: [],
+  unread: [],
+  group: [],
+  byIds: {},
+  players: {}
+};
 
 const StateContext = React.createContext<State | undefined>(undefined);
 const DispatchContext = React.createContext<
@@ -46,7 +58,10 @@ function reducer(state = initialState, action: Actions): State {
     case 'Create':
       return (() => {
         const { id, type, playerID } = action.payload;
+
+        // for development fast refresh
         if (state.list.includes(id)) {
+          console.warn('duplicate id', action.payload.content);
           return reducer(state, { ...action, type: 'Update' });
         }
 
@@ -69,6 +84,7 @@ function reducer(state = initialState, action: Actions): State {
           ...state,
           group,
           list: [...state.list, id],
+          unread: [...state.unread, id],
           byIds: {
             ...state.byIds,
             [id]: {
@@ -100,6 +116,21 @@ function reducer(state = initialState, action: Actions): State {
             [action.payload.playerID]: action.payload
           }
         };
+      })();
+
+    case 'ReadMessage':
+      return (() => {
+        const idx = state.unread.indexOf(action.payload);
+        if (idx >= 0) {
+          return {
+            ...state,
+            unread: [
+              ...state.unread.slice(0, idx),
+              ...state.unread.slice(idx + 1)
+            ]
+          };
+        }
+        return state;
       })();
 
     case 'Reset':
@@ -134,16 +165,18 @@ const subject = new BehaviorSubject(initialState);
 
 export function useChatMessage(id: string) {
   const [msg, setMsg] = useState<Message>();
+  const [unread, setUnread] = useState<boolean>(false);
 
   useEffect(() => {
     const subscription = subject.subscribe(state => {
       const newMsg = state.byIds[id];
       setMsg(msg => (msg?.status === newMsg?.status ? msg : newMsg));
+      setUnread(state.unread.includes(id));
     });
     return () => subscription.unsubscribe();
   }, [id]);
 
-  return msg;
+  return [msg, unread] as const;
 }
 
 export function ChatProvider({ children }: { children: React.ReactNode }) {
