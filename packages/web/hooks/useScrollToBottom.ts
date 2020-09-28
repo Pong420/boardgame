@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { fromEvent } from 'rxjs';
 
-export function useScrollToBottom() {
+export function useScrollToBottom(flag?: any) {
   const [autoScroll, setAutoScroll] = useState(true);
   const contentElRef = useRef<HTMLDivElement>(null);
 
@@ -26,7 +26,7 @@ export function useScrollToBottom() {
       });
       return () => subscription.unsubscribe();
     }
-  }, [scrollToBottom]);
+  }, [scrollToBottom, flag]);
 
   return [{ autoScroll, scrollToBottom }, contentElRef] as const;
 }
