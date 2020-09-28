@@ -125,11 +125,12 @@ function ChatContent({ start, onReady, ...identify }: ChatProps) {
   }, [socket, onReady]);
 
   useEffect(() => {
-    autoScroll && setTimeout(scrollToBottom, 0);
+    autoScroll && !collapsed && setTimeout(scrollToBottom, 0);
   }, [
     group,
     autoScroll,
     scrollToBottom,
+    collapsed,
     // for change from full-screen to bottom-right
     start
   ]);

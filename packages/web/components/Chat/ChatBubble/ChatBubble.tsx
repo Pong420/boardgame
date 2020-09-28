@@ -4,6 +4,7 @@ import { Icon } from '@blueprintjs/core';
 import { useChatDispatch, useChatMessage } from '@/hooks/useChat';
 import { MessageStatus, MessageType } from '@/typings';
 import styles from './ChatBubble.module.scss';
+import { startWith } from 'rxjs/operators';
 
 interface Props {
   className?: string;
@@ -89,14 +90,16 @@ export const ChatBubble = React.memo(
       const el = ref.current;
       const scroller = el && el.parentElement;
       if (unread && el && scroller instanceof HTMLElement) {
-        const subscription = fromEvent(scroller, 'scroll').subscribe(() => {
-          if (
-            scroller.scrollTop + scroller.offsetHeight >=
-            el.offsetTop + el.offsetHeight - scroller.offsetTop
-          ) {
-            dispatch({ type: 'ReadMessage', payload: id });
-          }
-        });
+        const subscription = fromEvent(scroller, 'scroll')
+          .pipe(startWith(null))
+          .subscribe(() => {
+            if (
+              scroller.scrollTop + scroller.offsetHeight >=
+              el.offsetTop + el.offsetHeight - scroller.offsetTop
+            ) {
+              dispatch({ type: 'ReadMessage', payload: id });
+            }
+          });
         return () => subscription.unsubscribe();
       }
     }, [id, unread, dispatch]);
