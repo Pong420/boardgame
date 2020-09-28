@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
-import { fromEventPattern } from 'rxjs';
+import { fromEventPattern, timer, zip } from 'rxjs';
+import { buffer, debounceTime, switchMap, take } from 'rxjs/operators';
 import { Card, Icon } from '@blueprintjs/core';
 import {
   Param$JoinChat,
@@ -16,7 +17,7 @@ import { useBoolean } from '@/hooks/useBoolean';
 import { ChatInput } from './ChatInput';
 import { ChatBubble } from './ChatBubble';
 import { UnreadCount } from './UnreadCount';
-import { Disconnected } from '../Match';
+import { Disconnected, Loading } from '../Match';
 import { ReadyButton } from '../ReadyButton';
 import styles from './Chat.module.scss';
 
@@ -37,10 +38,13 @@ function ChatContent(identify: ChatProps) {
   const [{ group, unread, started }, dispatch] = useChat();
   const [collapsed, , , toggleCollapse] = useBoolean(true);
   const [connected, setConnected] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [{ autoScroll, scrollToBottom }, contentElRef] = useScrollToBottom(
     connected
   );
-  const [socket] = useState(() => io.connect('/chat', { query: identify }));
+  const [socket] = useState(() =>
+    io.connect('/chat', { query: identify, forceNew: true })
+  );
 
   const { sendMessage, toggleReady } = useMemo(() => {
     const identify = identifyRef.current;
@@ -80,28 +84,48 @@ function ChatContent(identify: ChatProps) {
 
   useEffect(() => {
     const identify = identifyRef.current;
+    const connect$ = frommSocketIO(socket, 'connect');
+    const disconnect$ = frommSocketIO(socket, 'disconnect');
+    const ready$ = frommSocketIO<string[]>(socket, ChatEvent.Ready);
+    const players$ = frommSocketIO<(WS$Player | null)[]>(
+      socket,
+      ChatEvent.Player
+    );
+    const message$ = frommSocketIO<Schema$Message>(socket, ChatEvent.Message);
+    const aggregatedMessage$ = message$.pipe(
+      buffer(message$.pipe(debounceTime(100)))
+    );
+
     const events = [
-      frommSocketIO(socket, 'connect').subscribe(() => {
+      zip(connect$, ready$, players$)
+        .pipe(switchMap(() => timer(100)))
+        .subscribe(() => {
+          setMounted(true);
+        }),
+      connect$.subscribe(() => {
         socket.emit(ChatEvent.Join, identify);
         setConnected(true);
       }),
-      frommSocketIO(socket, 'disconnect').subscribe(() => {
+      disconnect$.subscribe(() => {
         setConnected(false);
       }),
-      frommSocketIO<string[]>(socket, ChatEvent.Ready).subscribe(payload => {
+      ready$.subscribe(payload => {
         dispatch({ type: 'Ready', payload });
       }),
-      frommSocketIO<(WS$Player | null)[]>(
-        socket,
-        ChatEvent.Player
-      ).subscribe(payload => dispatch({ type: 'UpdatePlayer', payload })),
-      frommSocketIO<Schema$Message>(
-        socket,
-        ChatEvent.Message
-      ).subscribe(payload => dispatch({ type: 'Create', payload }))
+      players$.subscribe(payload =>
+        dispatch({ type: 'UpdatePlayer', payload })
+      ),
+      aggregatedMessage$.subscribe(payload =>
+        dispatch({ type: 'Create', payload })
+      ),
+      aggregatedMessage$.pipe(take(1)).subscribe(messages => {
+        messages.forEach(({ id }) => {
+          dispatch({ type: 'ReadMessage', payload: id });
+        });
+      })
     ];
 
-    socket.disconnected && socket.open();
+    dispatch({ type: 'Reset' });
 
     return () => {
       socket.emit(ChatEvent.Leave, identify);
@@ -122,16 +146,41 @@ function ChatContent(identify: ChatProps) {
     started
   ]);
 
+  const chatContent = (
+    <>
+      <div className={styles['chat-content']} ref={contentElRef}>
+        {group.map(ids => (
+          <Fragment key={ids[0]}>
+            {ids.map((id, idx) => (
+              <ChatBubble
+                id={id}
+                key={id}
+                first={idx === 0}
+                playerID={identify.playerID}
+              />
+            ))}
+          </Fragment>
+        ))}
+      </div>
+      <div className={styles['chat-footer']}>
+        <ChatInput onSend={sendMessage} />
+        {!started && (
+          <ReadyButton playerID={identify.playerID} toggleReady={toggleReady} />
+        )}
+      </div>
+    </>
+  );
+
+  const className = [
+    styles.chat,
+    started ? styles['bottom-right'] : styles['full-screen'],
+    collapsed && styles['collapsed']
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <Card
-      className={[
-        styles.chat,
-        started ? styles['bottom-right'] : styles['full-screen'],
-        collapsed && styles['collapsed']
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
+    <Card className={className}>
       <div className={styles['chat-header']} onClick={toggleCollapse}>
         <div className={styles['chat-header-title']}>
           Chat <UnreadCount count={unread.length} />
@@ -140,35 +189,7 @@ function ChatContent(identify: ChatProps) {
           <Icon icon={collapsed ? 'chevron-up' : 'chevron-down'} />
         </div>
       </div>
-      {connected ? (
-        <>
-          <div className={styles['chat-content']} ref={contentElRef}>
-            {group.map(ids => (
-              <Fragment key={ids[0]}>
-                {ids.map((id, idx) => (
-                  <ChatBubble
-                    id={id}
-                    key={id}
-                    first={idx === 0}
-                    playerID={identify.playerID}
-                  />
-                ))}
-              </Fragment>
-            ))}
-          </div>
-          <div className={styles['chat-footer']}>
-            <ChatInput onSend={sendMessage} />
-            {!started && (
-              <ReadyButton
-                playerID={identify.playerID}
-                toggleReady={toggleReady}
-              />
-            )}
-          </div>
-        </>
-      ) : (
-        <Disconnected />
-      )}
+      {mounted ? connected ? chatContent : <Disconnected /> : <Loading />}
     </Card>
   );
 }

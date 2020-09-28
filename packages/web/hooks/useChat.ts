@@ -2,19 +2,20 @@ import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { BehaviorSubject } from 'rxjs';
 import { MessageType, Schema$Message, WS$Player } from '@/typings';
 
+export type ChatPlayer = null | (WS$Player & { ready: boolean });
+
 interface State {
   started: boolean;
   list: string[];
   unread: string[];
   group: string[][];
   byIds: Record<string, Schema$Message>;
-  players: (WS$Player | null)[];
-  ready: string[];
+  players: ChatPlayer[];
 }
 
 interface Create {
   type: 'Create';
-  payload: Schema$Message;
+  payload: Schema$Message | Schema$Message[];
 }
 
 interface Update {
@@ -28,7 +29,7 @@ interface Reset {
 
 interface UpdatePlayer {
   type: 'UpdatePlayer';
-  payload: State['players'];
+  payload: (WS$Player | null)[];
 }
 
 interface ReadMessage {
@@ -49,7 +50,6 @@ const initialState: State = {
   unread: [],
   group: [],
   players: [],
-  ready: [],
   byIds: {}
 };
 
@@ -60,20 +60,37 @@ const DispatchContext = React.createContext<
   React.Dispatch<Actions> | undefined
 >(undefined);
 
-function isStarted(players: State['players'], ready: string[]) {
-  return players.every(p => p && ready.includes(p.playerID));
+function isStarted(players: UpdatePlayer['payload'], ready: string[]) {
+  return players.reduce(
+    (state, p) => {
+      const player = p && { ...p, ready: ready.includes(p.playerID) };
+      return {
+        ...state,
+        players: [...state.players, player],
+        started: state.started && !!player?.ready
+      };
+    },
+    { players: [], started: true } as Pick<State, 'players' | 'started'>
+  );
 }
 
 function reducer(state = initialState, action: Actions): State {
   switch (action.type) {
     case 'Create':
       return (() => {
+        if (Array.isArray(action.payload)) {
+          return action.payload.reduce(
+            (state, payload) => reducer(state, { type: 'Create', payload }),
+            state
+          );
+        }
+
         const { id } = action.payload;
 
         // for development fast refresh
         if (state.list.includes(id)) {
           console.warn('duplicate id', action.payload.content);
-          return reducer(state, { ...action, type: 'Update' });
+          return state;
         }
 
         let { group } = state;
@@ -120,8 +137,7 @@ function reducer(state = initialState, action: Actions): State {
       return (() => {
         return {
           ...state,
-          players: action.payload,
-          started: isStarted(action.payload, state.ready)
+          ...isStarted(action.payload, [])
         };
       })();
 
@@ -143,8 +159,7 @@ function reducer(state = initialState, action: Actions): State {
     case 'Ready':
       return {
         ...state,
-        ready: action.payload,
-        started: isStarted(state.players, action.payload)
+        ...isStarted(state.players, action.payload)
       };
 
     case 'Reset':

@@ -101,18 +101,22 @@ function handleLeave(socket: Socket, dto?: IdentifyDto) {
 
       room = removePlayer(rooms.get(matchID), playerID);
       room.messages = pushMessage(room.messages, leaveMessage);
-      rooms.set(matchID, room);
 
-      return merge(
-        of(sendMessage(leaveMessage, matchID)).pipe(
-          tap(() => socket.leave(matchID))
-        ),
-        of(sendPlayer(room.players, matchID)),
-        of(sendReady(room.ready, matchID))
-      );
+      if (room.players.some(p => p !== null)) {
+        rooms.set(matchID, room);
+
+        return merge(
+          of(sendMessage(leaveMessage, matchID)).pipe(
+            tap(() => socket.leave(matchID))
+          ),
+          of(sendPlayer(room.players, matchID)),
+          of(sendReady(room.ready, matchID))
+        );
+      } else {
+        // rooms.delete(matchID);
+      }
     }
   }
-
   // don't throw an error, leave match and disconnect may have conflict
   return empty();
 }

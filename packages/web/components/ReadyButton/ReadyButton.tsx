@@ -10,14 +10,46 @@ interface Props {
 }
 
 export function ReadyButton({ playerID, toggleReady }: Props) {
-  const [{ ready, players }] = useChat();
+  const [{ players }] = useChat();
   const [isOpen, open, close] = useBoolean(true);
-  const isReady = ready.includes(playerID);
-  const ohterPlayersReady =
-    players.findIndex(
-      p => !p || (p.playerID !== playerID && !ready.includes(p.playerID))
-    ) === -1;
-  const waitingForMe = ohterPlayersReady && !isReady;
+  const isReady = !!players[Number(playerID)]?.ready;
+  const playersNotReady = players.filter(p => !p || !p.ready);
+  const waitingForMe = playersNotReady.length === 1 && !isReady;
+
+  const content = waitingForMe ? (
+    <div className={styles['waiting-for-me']}>
+      Other players are ready. How about you?
+    </div>
+  ) : (
+    <>
+      <div className={styles['ready-header']}>
+        Players <Button minimal icon="cross" onClick={close} />
+      </div>
+      <div className={styles['ready-content']}>
+        {players.map((player, idx) => {
+          return (
+            <div className={styles['ready-player']} key={idx}>
+              {player?.ready ? (
+                <Icon
+                  className={styles['ready-player-active']}
+                  icon="tick-circle"
+                />
+              ) : (
+                <Icon icon="circle" />
+              )}
+              <div className={styles['ready-player-name']}>
+                {playerID === player?.playerID
+                  ? 'You'
+                  : player?.playerName === 'You'
+                  ? `P${player.playerID}`
+                  : player?.playerName}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
 
   return (
     <Popover
@@ -28,39 +60,7 @@ export function ReadyButton({ playerID, toggleReady }: Props) {
       canEscapeKeyClose={false}
       content={
         <>
-          {waitingForMe ? (
-            <div className={styles['waiting-for-me']}>
-              Other players are ready. How about you ?
-            </div>
-          ) : (
-            <>
-              <div className={styles['ready-header']}>
-                Players <Button minimal icon="cross" onClick={close} />
-              </div>
-              <div className={styles['ready-content']}>
-                {players.map((player, idx) => {
-                  const isReady = ready.includes(player?.playerID || '');
-                  return (
-                    <div className={styles['ready-player']} key={idx}>
-                      {isReady ? (
-                        <Icon
-                          className={styles['ready-player-active']}
-                          icon="tick-circle"
-                        />
-                      ) : (
-                        <Icon icon="circle" />
-                      )}
-                      <div className={styles['ready-player-name']}>
-                        {playerID === player?.playerID
-                          ? 'You'
-                          : player?.playerName}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
+          {content}
           <Button
             fill
             intent="primary"
