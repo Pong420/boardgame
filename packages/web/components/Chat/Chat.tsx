@@ -43,7 +43,7 @@ function ChatContent({ start, onReady, ...identify }: ChatProps) {
     connected
   );
   const [socket] = useState(() =>
-    io.connect('/chat', { autoConnect: false, query: identify })
+    io.connect('/chat', { autoConnect: false, forceNew: true, query: identify })
   );
 
   const { sendMessage } = useMemo(() => {
