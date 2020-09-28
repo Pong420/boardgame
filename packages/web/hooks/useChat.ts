@@ -1,17 +1,13 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { BehaviorSubject } from 'rxjs';
-import { MessageType, Schema$Message, WSResponse$Player } from '@/typings';
-
-interface Message extends Schema$Message {
-  playerName: string;
-}
+import { MessageType, Schema$Message, WS$Player } from '@/typings';
 
 interface State {
   list: string[];
   unread: string[];
   group: string[][];
-  byIds: Record<string, Message>;
-  players: Record<string, WSResponse$Player>;
+  byIds: Record<string, Schema$Message>;
+  players: (WS$Player | null)[];
 }
 
 interface Create {
@@ -30,7 +26,7 @@ interface Reset {
 
 interface UpdatePlayer {
   type: 'UpdatePlayer';
-  payload: WSResponse$Player;
+  payload: State['players'];
 }
 
 interface ReadMessage {
@@ -45,7 +41,7 @@ const initialState: State = {
   unread: [],
   group: [],
   byIds: {},
-  players: {}
+  players: []
 };
 
 const StateContext = React.createContext<State | undefined>(undefined);
@@ -57,7 +53,7 @@ function reducer(state = initialState, action: Actions): State {
   switch (action.type) {
     case 'Create':
       return (() => {
-        const { id, type, playerID } = action.payload;
+        const { id } = action.payload;
 
         // for development fast refresh
         if (state.list.includes(id)) {
@@ -71,9 +67,10 @@ function reducer(state = initialState, action: Actions): State {
 
         if (
           msg &&
-          msg.type === type &&
           msg.type === MessageType.CHAT &&
-          msg.playerID === playerID
+          action.payload.type === MessageType.CHAT &&
+          msg.playerID === action.payload.playerID &&
+          msg.playerName === action.payload.playerName
         ) {
           group = [...group.slice(0, group.length - 1), [...last, id]];
         } else {
@@ -87,10 +84,7 @@ function reducer(state = initialState, action: Actions): State {
           unread: [...state.unread, id],
           byIds: {
             ...state.byIds,
-            [id]: {
-              ...action.payload,
-              playerName: state.players[action.payload.playerID]?.playerName
-            }
+            [id]: action.payload
           }
         };
       })();
@@ -111,10 +105,7 @@ function reducer(state = initialState, action: Actions): State {
       return (() => {
         return {
           ...state,
-          players: {
-            ...state.players,
-            [action.payload.playerID]: action.payload
-          }
+          players: action.payload
         };
       })();
 
@@ -164,7 +155,7 @@ export function useChat() {
 const subject = new BehaviorSubject(initialState);
 
 export function useChatMessage(id: string) {
-  const [msg, setMsg] = useState<Message>();
+  const [msg, setMsg] = useState<Schema$Message>();
   const [unread, setUnread] = useState<boolean>(false);
 
   useEffect(() => {

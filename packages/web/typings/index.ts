@@ -31,11 +31,12 @@ export type {
   // --- chat ---
   Identify,
   Schema$Message,
+  Schema$ChatMessage,
+  Schema$SystemMessage,
   Param$JoinChat,
   Param$SendMessage,
   Param$PlayerReady,
-  WS$Player,
-  WSResponse$Player
+  WS$Player
 } from '@boardgame/server';
 
 export {

@@ -4,22 +4,25 @@ import {
   MessageStatus,
   MessageType,
   Param$SendMessage,
-  Schema$Message
+  Schema$ChatMessage
 } from '@/typings';
 import { IdentifyDto } from './identify.dto';
 
 export class SendMessageDto
   extends IdentifyDto
-  implements Schema$Message, Param$SendMessage {
+  implements Schema$ChatMessage, Param$SendMessage {
   @IsString()
   id: string;
 
   @Exclude()
-  type: MessageType;
+  type: MessageType.CHAT;
 
   @Exclude()
   status: MessageStatus;
 
   @IsString()
   content: string;
+
+  @IsString()
+  playerName: string;
 }

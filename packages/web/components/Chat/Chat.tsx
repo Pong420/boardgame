@@ -6,9 +6,9 @@ import {
   Param$JoinChat,
   Schema$Message,
   ChatEvent,
-  WSResponse$Player,
   MessageStatus,
-  MessageType
+  MessageType,
+  WS$Player
 } from '@/typings';
 import { useScrollToBottom } from '@/hooks/useScrollToBottom';
 import { ChatProvider, useChat } from '@/hooks/useChat';
@@ -91,7 +91,7 @@ function ChatContent({ start, onReady, ...identify }: ChatProps) {
       frommSocketIO(socket, 'disconnect').subscribe(() => {
         setConnected(false);
       }),
-      frommSocketIO<WSResponse$Player>(
+      frommSocketIO<(WS$Player | null)[]>(
         socket,
         ChatEvent.Player
       ).subscribe(payload => dispatch({ type: 'UpdatePlayer', payload })),

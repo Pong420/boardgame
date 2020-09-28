@@ -104,13 +104,13 @@ export const ChatBubble = React.memo(
     if (msg) {
       const date = dataFormat(Number(id));
       const { status, ...common } = msg;
-      const self = msg.playerID === playerID;
       const props: Props = { ...common, date };
 
       switch (msg.type) {
         case MessageType.SYSTEM:
           return <SystemMessage {...props} ref={ref} />;
         case MessageType.CHAT:
+          const self = msg.playerID === playerID;
           return (
             <ChatMessage
               {...props}
@@ -118,8 +118,8 @@ export const ChatBubble = React.memo(
               user={first && !self ? msg.playerName : undefined}
               status={self ? status : undefined}
               className={[
-                self ? styles['self'] : styles['other'],
-                first ? styles['first'] : undefined
+                first ? styles['first'] : undefined,
+                self ? styles['self'] : styles['other']
               ]
                 .filter(Boolean)
                 .join(' ')}

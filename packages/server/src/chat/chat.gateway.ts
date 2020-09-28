@@ -9,7 +9,7 @@ import {
   GatewayMetadata
 } from '@nestjs/websockets';
 import { Inject, UseGuards, UseInterceptors } from '@nestjs/common';
-import { from, merge, of, empty, Subject, timer, race, Observable } from 'rxjs';
+import { from, merge, of, empty, Subject, timer, race } from 'rxjs';
 import {
   catchError,
   filter,
@@ -25,7 +25,8 @@ import {
   MessageType,
   MessageStatus,
   Schema$Message,
-  WSResponse$Player
+  Schema$SystemMessage,
+  Schema$ChatMessage
 } from '@/typings';
 import { MatchService } from '@/match/match.service';
 import {
@@ -53,13 +54,12 @@ function send<T>(event: ChatEvent) {
 }
 
 const sendMessage = send<Schema$Message>(ChatEvent.Message);
-const sendPlayer = send<WSResponse$Player>(ChatEvent.Player);
+const sendPlayer = send<Room['players']>(ChatEvent.Player);
 const sendReady = send<string[]>(ChatEvent.Ready);
 
-function createMessage(
-  payload: Partial<Schema$Message> &
-    Pick<Schema$Message, 'playerID' | 'content'>
-): Schema$Message {
+function createSysmMessage(
+  payload: Partial<Schema$SystemMessage> & Pick<Schema$SystemMessage, 'content'>
+): Schema$SystemMessage {
   return {
     id: String(+new Date()),
     type: MessageType.SYSTEM,
@@ -95,19 +95,20 @@ function handleLeave(socket: Socket, dto?: IdentifyDto) {
 
     if (room) {
       const player = room.players[Number(playerID)];
-      const leaveMessage: Schema$Message = createMessage({
-        playerID: identify.playerID,
+      const leaveMessage = createSysmMessage({
         content: `${player.playerName} leave the match`
       });
 
-      if (!isStarted(room)) {
-        room = removePlayer(rooms.get(matchID), playerID);
-      }
+      room = removePlayer(rooms.get(matchID), playerID);
       room.messages = pushMessage(room.messages, leaveMessage);
       rooms.set(matchID, room);
 
-      return of(sendMessage(leaveMessage, matchID)).pipe(
-        tap(() => socket.leave(matchID))
+      return merge(
+        of(sendMessage(leaveMessage, matchID)).pipe(
+          tap(() => socket.leave(matchID))
+        ),
+        of(sendPlayer(room.players, matchID)),
+        of(sendReady(room.ready, matchID))
       );
     }
   }
@@ -167,8 +168,7 @@ export class ChatGateway implements OnGatewayDisconnect {
 
     const newPlayer = player === null;
 
-    const joinMessage: Schema$Message = createMessage({
-      playerID,
+    const joinMessage: Schema$Message = createSysmMessage({
       content: `${playerName} join the match`
     });
 
@@ -184,47 +184,32 @@ export class ChatGateway implements OnGatewayDisconnect {
 
     connect$.next({ socket, credentials });
 
-    // player event should send before message
     return merge(
+      of(sendPlayer(room.players)),
       of({ event: ChatEvent.Ready, data: room.ready }),
-      from(room.players).pipe(
-        map((player, idx) => {
-          if (player) {
-            const { credentials, ...payload } = player;
-            return sendPlayer({ playerID: String(idx), ...payload });
-          }
-          return empty();
-        })
-      ),
+      from(room.messages).pipe(map(message => sendMessage(message))),
       newPlayer
-        ? [
-            sendPlayer({ playerID, playerName }, matchID),
-            sendMessage(joinMessage, matchID)
-          ]
-        : [],
-      from(room.messages).pipe(map(message => sendMessage(message)))
+        ? [sendPlayer(room.players, matchID), sendMessage(joinMessage, matchID)]
+        : []
     );
   }
 
   @UseGuards(new AuthGuard(rooms))
   @SubscribeMessage(ChatEvent.Send)
   onSendMessage(
-    @MessageBody() { id, matchID, content, playerID }: SendMessageDto
+    @MessageBody()
+    { matchID, ...params }: SendMessageDto
   ): RoomResponse<Schema$Message> {
-    const message: Schema$Message = {
-      id,
-      content,
-      playerID,
+    const message: Schema$ChatMessage = {
+      ...params,
       type: MessageType.CHAT,
       status: MessageStatus.SUCCESS
     };
-
     const data = rooms.get(matchID);
     rooms.set(matchID, {
       ...data,
       messages: pushMessage(data.messages, message)
     });
-
     return sendMessage(message, matchID);
   }
 
@@ -254,10 +239,7 @@ export class ChatGateway implements OnGatewayDisconnect {
 
   @UseGuards(new AuthGuard(rooms))
   @SubscribeMessage(ChatEvent.Leave)
-  onLeave(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() dto: IdentifyDto
-  ): Observable<RoomResponse<Schema$Message>> {
+  onLeave(@ConnectedSocket() socket: Socket, @MessageBody() dto: IdentifyDto) {
     return handleLeave(socket, dto);
   }
 
@@ -274,13 +256,13 @@ export class ChatGateway implements OnGatewayDisconnect {
           const player = room.players[Number(playerID)];
 
           const send = (content: string) => {
-            const message = createMessage({ playerID, content });
+            const message = createSysmMessage({ content });
             room.messages = pushMessage(room.messages, message);
             rooms.set(matchID, room);
             return sendMessage(message, matchID);
           };
 
-          return timer(3500).pipe(
+          return timer(2500).pipe(
             mergeMap(() =>
               merge(
                 of(send(`${player.playerName} disconnected`)),
@@ -288,7 +270,18 @@ export class ChatGateway implements OnGatewayDisconnect {
                   reconnected$().pipe(
                     map(() => send(`${player.playerName} reconnected`))
                   ),
-                  timer(3000).pipe(
+                  timer(3500).pipe(
+                    mergeMap(async () => {
+                      const { metadata } = await this.matchService.fetch(
+                        matchID,
+                        {
+                          metadata: true
+                        }
+                      );
+                      delete metadata.players[playerID].name;
+                      delete metadata.players[playerID].credentials;
+                      await this.matchService.setMetadata(matchID, metadata);
+                    }),
                     mergeMap(() => handleLeave(socket, identity))
                   )
                 ])
