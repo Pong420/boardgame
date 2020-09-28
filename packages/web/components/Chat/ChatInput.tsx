@@ -10,8 +10,10 @@ interface Props {
 export function ChatInput({ onSend }: Props) {
   const [value, setValue] = useState('');
   const send = () => {
-    onSend(value);
-    setValue('');
+    if (value) {
+      onSend(value);
+      setValue('');
+    }
   };
 
   return (
