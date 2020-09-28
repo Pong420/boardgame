@@ -3,6 +3,7 @@ import Head from 'next/head';
 import router from 'next/router';
 import { GetServerSideProps } from 'next';
 import { Match } from '@/components/Match';
+import { ChatProvider } from '@/hooks/useChat';
 import { gameMetaMap } from '@/games';
 import { historyState, MatchState } from '@/services';
 
@@ -30,7 +31,11 @@ export default function MatchPage({ name, matchID }: Props) {
         <Head>
           <title>Boardgame | Match | {meta.gameName}</title>
         </Head>
-        {state && meta ? <Match {...state} /> : null}
+        {state && meta ? (
+          <ChatProvider key={matchID}>
+            <Match {...state} />
+          </ChatProvider>
+        ) : null}
       </>
     );
   }

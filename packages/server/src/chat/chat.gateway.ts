@@ -175,6 +175,7 @@ export class ChatGateway implements OnGatewayDisconnect {
     if (newPlayer) {
       room.messages = pushMessage(room.messages, joinMessage);
       room.players[Number(playerID)] = {
+        playerID,
         playerName,
         credentials
       };

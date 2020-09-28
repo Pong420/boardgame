@@ -1,13 +1,15 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { BehaviorSubject } from 'rxjs';
 import { MessageType, Schema$Message, WS$Player } from '@/typings';
 
 interface State {
+  started: boolean;
   list: string[];
   unread: string[];
   group: string[][];
   byIds: Record<string, Schema$Message>;
   players: (WS$Player | null)[];
+  ready: string[];
 }
 
 interface Create {
@@ -34,20 +36,33 @@ interface ReadMessage {
   payload: string;
 }
 
-type Actions = Create | Update | Reset | UpdatePlayer | ReadMessage;
+interface Ready {
+  type: 'Ready';
+  payload: string[];
+}
+
+type Actions = Create | Update | Reset | UpdatePlayer | ReadMessage | Ready;
 
 const initialState: State = {
+  started: false,
   list: [],
   unread: [],
   group: [],
-  byIds: {},
-  players: []
+  players: [],
+  ready: [],
+  byIds: {}
 };
+
+const defaultDeps = Object.keys(initialState) as (keyof State)[];
 
 const StateContext = React.createContext<State | undefined>(undefined);
 const DispatchContext = React.createContext<
   React.Dispatch<Actions> | undefined
 >(undefined);
+
+function isStarted(players: State['players'], ready: string[]) {
+  return players.every(p => p && ready.includes(p.playerID));
+}
 
 function reducer(state = initialState, action: Actions): State {
   switch (action.type) {
@@ -105,7 +120,8 @@ function reducer(state = initialState, action: Actions): State {
       return (() => {
         return {
           ...state,
-          players: action.payload
+          players: action.payload,
+          started: isStarted(action.payload, state.ready)
         };
       })();
 
@@ -124,6 +140,13 @@ function reducer(state = initialState, action: Actions): State {
         return state;
       })();
 
+    case 'Ready':
+      return {
+        ...state,
+        ready: action.payload,
+        started: isStarted(state.players, action.payload)
+      };
+
     case 'Reset':
       return initialState;
 
@@ -132,12 +155,34 @@ function reducer(state = initialState, action: Actions): State {
   }
 }
 
-export function useChatState() {
+const subject = new BehaviorSubject(initialState);
+
+export function useChatState(deps = defaultDeps) {
   const context = React.useContext(StateContext);
-  if (context === undefined) {
+  const [state, setState] = useState<State | undefined>(context);
+  const ref = useRef(deps);
+
+  if (state === undefined) {
     throw new Error('useChatState must be used within a ChatProvider');
   }
-  return context;
+
+  useEffect(() => {
+    const deps = ref.current || [];
+    const subscription = subject.subscribe(newState => {
+      setState(state =>
+        deps.some(k => {
+          if (!state) return true;
+          if (state[k] !== newState[k]) return true;
+          return false;
+        })
+          ? newState
+          : state
+      );
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return state;
 }
 
 export function useChatDispatch() {
@@ -148,11 +193,9 @@ export function useChatDispatch() {
   return context;
 }
 
-export function useChat() {
-  return [useChatState(), useChatDispatch()] as const;
+export function useChat(deps?: (keyof State)[]) {
+  return [useChatState(deps), useChatDispatch()] as const;
 }
-
-const subject = new BehaviorSubject(initialState);
 
 export function useChatMessage(id: string) {
   const [msg, setMsg] = useState<Schema$Message>();

@@ -60,8 +60,14 @@
 }
 
 .chat-footer {
+  @include flex(center);
   flex: 0 0 auto;
   padding: 10px;
+
+  .chat-input {
+    flex: 1 1 auto;
+    margin-right: 10px;
+  }
 }
 
 .unread {

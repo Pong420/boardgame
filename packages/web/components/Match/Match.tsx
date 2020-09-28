@@ -1,10 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import router from 'next/router';
 import { useRxAsync } from 'use-rx-hooks';
 import { MatchState, getMatch, matchStorage } from '@/services';
 import { Toaster } from '@/utils/toaster';
 import { gameMetaMap } from '@/games';
 import { ApiError } from '@/typings';
+import { useChatState } from '@/hooks/useChat';
 import { Chat } from '../Chat';
 import { ShareButton } from '../ShareButton';
 import { Preferences } from '../Preferences';
@@ -56,13 +57,7 @@ export function Match(state: MatchState) {
   const [{ data, loading }] = useRxAsync(_getMatch, { onFailure });
   const { matchName, spectate } = data || {};
   const { gameName } = gameMetaMap[state.name];
-  const [started, setStarted] = useState(!('playerName' in state));
-
-  const onReady = useCallback(
-    (payload: string[]) =>
-      setStarted(!!data && payload.length === data.numPlayers),
-    [data]
-  );
+  const { started } = useChatState(['started']);
 
   return (
     <div className={styles['match']}>
@@ -83,8 +78,6 @@ export function Match(state: MatchState) {
           playerID={state.playerID}
           playerName={state.playerName}
           credentials={state.credentials}
-          start={started}
-          onReady={onReady}
         />
       )}
       {started && (

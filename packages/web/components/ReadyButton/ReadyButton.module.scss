@@ -1,0 +1,49 @@
+@import '~styles/scss';
+
+.ready-popover {
+  :global {
+    .#{$ns}-popover-content {
+      padding: 10px 15px 20px;
+    }
+  }
+}
+
+.ready-header {
+  @include flex(center, space-between);
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.ready-content {
+  min-width: 200px;
+  max-width: 300px;
+  margin-bottom: 10px;
+}
+
+.ready-player {
+  @include flex(center);
+  @include padding-y(15px);
+  @include padding-x(10px);
+  border-top: 1px solid var(--accent-color);
+  word-break: break-all;
+
+  svg {
+    @include sq-dimen(18px);
+  }
+}
+
+.ready-player-active {
+  color: $pt-intent-success;
+}
+
+.ready-player-name {
+  font-weight: bold;
+  font-size: 16px;
+  margin-left: 15px;
+}
+
+.waiting-for-me {
+  font-size: 16px;
+  margin-bottom: 20px;
+}

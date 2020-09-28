@@ -55,6 +55,7 @@ export interface Param$SendMessage extends Identify {
 export interface Param$PlayerReady extends Identify {}
 
 export interface WS$Player {
+  playerID: string;
   credentials: string;
   playerName: string;
 }
