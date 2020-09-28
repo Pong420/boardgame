@@ -9,17 +9,7 @@ import {
   GatewayMetadata
 } from '@nestjs/websockets';
 import { Inject, UseGuards, UseInterceptors } from '@nestjs/common';
-import {
-  from,
-  merge,
-  of,
-  empty,
-  Subject,
-  timer,
-  race,
-  Observable,
-  throwError
-} from 'rxjs';
+import { from, merge, of, empty, Subject, timer, race, Observable } from 'rxjs';
 import {
   catchError,
   filter,
@@ -121,7 +111,9 @@ function handleLeave(socket: Socket, dto?: IdentifyDto) {
       );
     }
   }
-  return throwError('identify not found');
+
+  // don't throw an error, leave match and disconnect may have conflict
+  return empty();
 }
 
 const PING_TIMEOUT = 20 * 1e3;
@@ -288,7 +280,7 @@ export class ChatGateway implements OnGatewayDisconnect {
             return sendMessage(message, matchID);
           };
 
-          return timer(4000).pipe(
+          return timer(3500).pipe(
             mergeMap(() =>
               merge(
                 of(send(`${player.playerName} disconnected`)),
@@ -296,13 +288,13 @@ export class ChatGateway implements OnGatewayDisconnect {
                   reconnected$().pipe(
                     map(() => send(`${player.playerName} reconnected`))
                   ),
-                  timer(6000).pipe(
+                  timer(3000).pipe(
                     mergeMap(() => handleLeave(socket, identity))
                   )
                 ])
               )
             ),
-            takeUntil(reconnected$().pipe(delay(100)))
+            takeUntil(reconnected$().pipe(delay(1)))
           );
         }),
         catchError(() => handleLeave(socket))
