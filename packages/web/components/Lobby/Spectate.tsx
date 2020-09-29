@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button, Dialog, Icon } from '@blueprintjs/core';
-import { gotoSpectate, SpectatorState } from '@/services';
+import { gotoSpectate, SpectateState } from '@/services';
 import { Player, GameMeta } from '@/typings';
 import { useBoolean } from '@/hooks/useBoolean';
 import styles from './Lobby.module.scss';
 
-interface Props extends Omit<SpectatorState, 'playerID'> {
+interface Props extends Omit<SpectateState, 'playerID' | 'spectate'> {
   allow?: boolean;
   players: Player[];
   type?: GameMeta['spectate'];
@@ -21,7 +21,9 @@ export function Spectate({ allow, type, players, ...props }: Props) {
         text={text}
         disabled={!allow}
         onClick={() =>
-          type === 'single-player' ? openDialog() : gotoSpectate(props)
+          type === 'single-player'
+            ? openDialog()
+            : gotoSpectate({ ...props, spectate: true })
         }
       />
       <Dialog title="Select Player View" isOpen={isOpen} onClose={closeDialog}>
@@ -31,7 +33,13 @@ export function Spectate({ allow, type, players, ...props }: Props) {
               <div
                 className={styles['player-view-dialog-row']}
                 key={name}
-                onClick={() => gotoSpectate({ ...props, playerID: String(id) })}
+                onClick={() =>
+                  gotoSpectate({
+                    ...props,
+                    spectate: true,
+                    playerID: String(id)
+                  })
+                }
               >
                 {name} <Icon icon="chevron-right" />
               </div>

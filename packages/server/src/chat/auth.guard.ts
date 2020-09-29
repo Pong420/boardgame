@@ -2,8 +2,8 @@ import { WsException } from '@nestjs/websockets';
 import { CanActivate, ExecutionContext } from '@nestjs/common';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
+import { Rooms } from '@/typings';
 import { IdentifyDto } from './dto';
-import { Rooms } from './types';
 
 export async function authenticate(
   rooms: Rooms,

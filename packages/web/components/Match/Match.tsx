@@ -1,17 +1,18 @@
 import React, { useCallback } from 'react';
 import router from 'next/router';
 import { useRxAsync } from 'use-rx-hooks';
-import { MatchState, getMatch, matchStorage } from '@/services';
 import { Toaster } from '@/utils/toaster';
 import { gameMetaMap } from '@/games';
-import { ApiError } from '@/typings';
-import { useChatState } from '@/hooks/useChat';
+import { ApiError, Param$GetMatch } from '@/typings';
+import { ChatProvider, useChatState } from '@/hooks/useChat';
+import { MatchState, getMatch, matchStorage, isMatchState } from '@/services';
 import { Chat } from '../Chat';
 import { ShareButton } from '../ShareButton';
 import { Preferences } from '../Preferences';
 import { MatchHeader } from './MatchHeader';
 import { MatchContent } from './MatchContent';
 import styles from './Match.module.scss';
+import { CenterText } from './CenterText';
 
 interface State {
   matchName: string;
@@ -34,25 +35,28 @@ const onFailure = (error: ApiError) => {
   router.push('/');
 };
 
-export function Match(state: MatchState) {
+function MatchComponent(state: MatchState) {
+  const { name, matchID }: Partial<Param$GetMatch> = isMatchState(
+    state,
+    'local'
+  )
+    ? {}
+    : { name: state.name, matchID: state.matchID };
+
   const _getMatch = useCallback(async (): Promise<State> => {
-    if ('local' in state) {
-      return { matchName: 'Local', numPlayers: 0 };
+    if (name && matchID) {
+      const { data } = await getMatch({ name, matchID });
+
+      return data.setupData
+        ? {
+            ...data,
+            ...data.setupData,
+            numPlayers: data.players.length
+          }
+        : Promise.reject('Invalid match');
     }
-
-    const { data } = await getMatch({
-      name: state.name,
-      matchID: state.matchID
-    });
-
-    return data.setupData
-      ? {
-          ...data,
-          ...data.setupData,
-          numPlayers: data.players.length
-        }
-      : Promise.reject('Invalid match');
-  }, [state]);
+    return { matchName: 'Local', numPlayers: 0 };
+  }, [name, matchID]);
 
   const [{ data, loading }] = useRxAsync(_getMatch, { onFailure });
   const { matchName, spectate } = data || {};
@@ -62,7 +66,7 @@ export function Match(state: MatchState) {
   return (
     <div className={styles['match']}>
       <MatchHeader title={[gameName, matchName].filter(Boolean).join(' - ')}>
-        {'playerName' in state && (
+        {isMatchState(state, 'multi') && (
           <ShareButton
             gameName={gameName}
             name={state.name}
@@ -72,7 +76,7 @@ export function Match(state: MatchState) {
         )}
         <Preferences disablePlayerName />
       </MatchHeader>
-      {'playerName' in state && data && (
+      {isMatchState(state, 'multi') && data && (
         <Chat
           matchID={state.matchID}
           playerID={state.playerID}
@@ -80,7 +84,8 @@ export function Match(state: MatchState) {
           credentials={state.credentials}
         />
       )}
-      {started && (
+      {spectate && !started && <CenterText text="Waiting for match start" />}
+      {(isMatchState(state, 'local') || started) && (
         <MatchContent
           state={state}
           spectate={spectate}
@@ -88,5 +93,13 @@ export function Match(state: MatchState) {
         />
       )}
     </div>
+  );
+}
+
+export function Match(state: MatchState) {
+  return (
+    <ChatProvider>
+      <MatchComponent {...state} />
+    </ChatProvider>
   );
 }

@@ -1,8 +1,8 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { BehaviorSubject } from 'rxjs';
-import { MessageType, Schema$Message, WS$Player } from '@/typings';
+import { MessageType, Schema$Message, WsPlayer } from '@/typings';
 
-export type ChatPlayer = null | (WS$Player & { ready: boolean });
+export type ChatPlayer = null | (WsPlayer & { ready: boolean });
 
 interface State {
   started: boolean;
@@ -29,7 +29,7 @@ interface Reset {
 
 interface UpdatePlayer {
   type: 'UpdatePlayer';
-  payload: (WS$Player | null)[];
+  payload: (WsPlayer | null)[];
 }
 
 interface ReadMessage {
@@ -39,7 +39,7 @@ interface ReadMessage {
 
 interface Ready {
   type: 'Ready';
-  payload: string[];
+  payload: string;
 }
 
 type Actions = Create | Update | Reset | UpdatePlayer | ReadMessage | Ready;
@@ -60,10 +60,11 @@ const DispatchContext = React.createContext<
   React.Dispatch<Actions> | undefined
 >(undefined);
 
-function isStarted(players: UpdatePlayer['payload'], ready: string[]) {
+function isStarted(players: UpdatePlayer['payload'], playerID?: string) {
   return players.reduce(
     (state, p) => {
-      const player = p && { ...p, ready: ready.includes(p.playerID) };
+      const player =
+        p && (p.playerID === playerID ? { ...p, ready: !p.ready } : p);
       return {
         ...state,
         players: [...state.players, player],
@@ -134,12 +135,16 @@ function reducer(state = initialState, action: Actions): State {
       })();
 
     case 'UpdatePlayer':
-      return (() => {
-        return {
-          ...state,
-          ...isStarted(action.payload, [])
-        };
-      })();
+      return {
+        ...state,
+        ...isStarted(action.payload)
+      };
+
+    case 'Ready':
+      return {
+        ...state,
+        ...isStarted(state.players, action.payload)
+      };
 
     case 'ReadMessage':
       return (() => {
@@ -155,12 +160,6 @@ function reducer(state = initialState, action: Actions): State {
         }
         return state;
       })();
-
-    case 'Ready':
-      return {
-        ...state,
-        ...isStarted(state.players, action.payload)
-      };
 
     case 'Reset':
       return initialState;
@@ -228,7 +227,7 @@ export function useChatMessage(id: string) {
   return [msg, unread] as const;
 }
 
-export function ChatProvider({ children }: { children: React.ReactNode }) {
+export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -240,4 +239,4 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     { value: state },
     React.createElement(DispatchContext.Provider, { value: dispatch }, children)
   );
-}
+};

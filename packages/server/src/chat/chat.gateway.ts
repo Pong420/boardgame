@@ -9,7 +9,7 @@ import {
   GatewayMetadata
 } from '@nestjs/websockets';
 import { Inject, UseGuards, UseInterceptors } from '@nestjs/common';
-import { from, merge, of, empty, Subject, timer, race } from 'rxjs';
+import { from, merge, of, Subject, timer, race, throwError } from 'rxjs';
 import {
   catchError,
   filter,
@@ -26,7 +26,12 @@ import {
   MessageStatus,
   Schema$Message,
   Schema$SystemMessage,
-  Schema$ChatMessage
+  Schema$ChatMessage,
+  Room,
+  Rooms,
+  Connected,
+  RoomResponse,
+  WsPlayer
 } from '@/typings';
 import { MatchService } from '@/match/match.service';
 import {
@@ -37,12 +42,11 @@ import {
 } from './dto';
 import { AuthGuard, authenticate } from './auth.guard';
 import { ChatResponseInterceptor } from './chat-response.interceptor';
-import { Room, Rooms, Connected, RoomResponse } from './types';
 
 const rooms: Rooms = new Map();
 const connected: Connected = new Map();
 
-const connect$ = new Subject<{ socket: Socket; credentials: string }>();
+const connect$ = new Subject<{ credentials: string }>();
 
 function send<T>(event: ChatEvent) {
   function handler(data: T): WsResponse<T>;
@@ -55,7 +59,6 @@ function send<T>(event: ChatEvent) {
 
 const sendMessage = send<Schema$Message>(ChatEvent.Message);
 const sendPlayer = send<Room['players']>(ChatEvent.Player);
-const sendReady = send<string[]>(ChatEvent.Ready);
 
 function createSysmMessage(
   payload: Partial<Schema$SystemMessage> & Pick<Schema$SystemMessage, 'content'>
@@ -76,49 +79,40 @@ function pushMessage(
   return [...messages, message].slice(Math.max(0, messages.length - 100));
 }
 
-const isStarted = (room: Room) => room.ready.length === room.players.length;
+const isStarted = (room: Room) => room.players.every(p => p.ready);
 
-function removePlayer(room: Room, playerID: string): Room {
-  const data = { ...room };
-  data.players[Number(playerID)] = null;
-  data.ready = data.ready.filter(id => id !== playerID);
-  return data;
-}
+function handleLeave(socket: Socket, identify?: IdentifyDto) {
+  identify = identify || connected.get(socket.id);
 
-function handleLeave(socket: Socket, dto?: IdentifyDto) {
-  const identify: IdentifyDto | undefined = connected.get(socket.id) || dto;
   if (identify) {
     const { matchID, playerID } = identify;
-    let room = { ...rooms.get(matchID) };
-
-    connected.delete(socket.id);
+    const room = { ...rooms.get(matchID) };
 
     if (room) {
-      const player = room.players[Number(playerID)];
+      const idx = Number(playerID);
+      const player = room.players[idx];
       const leaveMessage = createSysmMessage({
         content: `${player.playerName} leave the match`
       });
 
-      room = removePlayer(rooms.get(matchID), playerID);
+      room.players[idx] = null;
       room.messages = pushMessage(room.messages, leaveMessage);
+      rooms.set(matchID, room);
 
       if (room.players.some(p => p !== null)) {
-        rooms.set(matchID, room);
-
-        return merge(
-          of(sendMessage(leaveMessage, matchID)).pipe(
-            tap(() => socket.leave(matchID))
-          ),
-          of(sendPlayer(room.players, matchID)),
-          of(sendReady(room.ready, matchID))
-        );
+        return merge([
+          sendMessage(leaveMessage, matchID),
+          sendPlayer(room.players, matchID)
+        ]).pipe(tap(() => socket.leave(matchID)));
       } else {
-        // rooms.delete(matchID);
+        rooms.delete(matchID);
       }
     }
+
+    connected.delete(socket.id);
   }
-  // don't throw an error, leave match and disconnect may have conflict
-  return empty();
+
+  return throwError(`handleLeave error, identify is not defined`);
 }
 
 const PING_TIMEOUT = 20 * 1e3;
@@ -152,7 +146,6 @@ export class ChatGateway implements OnGatewayDisconnect {
     if (!room) {
       const match = await this.matchService.fetch(matchID, { state: true });
       room = {
-        ready: [],
         messages: [],
         players: Array.from<null>({ length: match.state.ctx.numPlayers }).map(
           () => null
@@ -179,6 +172,7 @@ export class ChatGateway implements OnGatewayDisconnect {
     if (newPlayer) {
       room.messages = pushMessage(room.messages, joinMessage);
       room.players[Number(playerID)] = {
+        ready: false,
         playerID,
         playerName,
         credentials
@@ -187,11 +181,11 @@ export class ChatGateway implements OnGatewayDisconnect {
       rooms.set(matchID, room);
     }
 
-    connect$.next({ socket, credentials });
+    connect$.next({ credentials });
 
     return merge(
       of(sendPlayer(room.players)),
-      of({ event: ChatEvent.Ready, data: room.ready }),
+      // TODO: send into array ?
       from(room.messages).pipe(map(message => sendMessage(message))),
       newPlayer
         ? [sendPlayer(room.players, matchID), sendMessage(joinMessage, matchID)]
@@ -222,30 +216,33 @@ export class ChatGateway implements OnGatewayDisconnect {
   @SubscribeMessage(ChatEvent.Ready)
   onReady(
     @MessageBody() { matchID, playerID }: PlayerReadyDto
-  ): RoomResponse<string[]> {
+  ): RoomResponse<WsPlayer[]> {
     const room = rooms.get(matchID);
-    const { ready, ...rest } = room;
 
     if (isStarted(room)) {
       throw new WsException('Cannot change ready state after match started');
     }
 
-    const newReadyState = ready.includes(playerID)
-      ? ready.filter(id => id !== playerID)
-      : [...ready, playerID];
+    const idx = Number(playerID);
+    const player = room.players[idx];
+    const players = [
+      ...room.players.slice(0, idx),
+      { ...player, ready: !player.ready },
+      ...room.players.slice(idx + 1)
+    ];
 
-    rooms.set(matchID, {
-      ...rest,
-      ready: newReadyState
-    });
+    rooms.set(matchID, { ...room, players });
 
-    return sendReady(newReadyState, matchID);
+    return sendPlayer(players, matchID);
   }
 
   @UseGuards(new AuthGuard(rooms))
   @SubscribeMessage(ChatEvent.Leave)
-  onLeave(@ConnectedSocket() socket: Socket, @MessageBody() dto: IdentifyDto) {
-    return handleLeave(socket, dto);
+  onLeave(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() identify: IdentifyDto
+  ) {
+    return handleLeave(socket, identify);
   }
 
   handleDisconnect(@ConnectedSocket() socket: Socket) {
@@ -255,8 +252,9 @@ export class ChatGateway implements OnGatewayDisconnect {
           const { matchID, playerID, credentials } = identity || {};
           const room = rooms.get(matchID);
 
-          const reconnected$ = () =>
-            connect$.pipe(filter(p => p.credentials === credentials));
+          const reconnected$ = connect$.pipe(
+            filter(p => p.credentials === credentials)
+          );
 
           const player = room.players[Number(playerID)];
 
@@ -272,33 +270,35 @@ export class ChatGateway implements OnGatewayDisconnect {
               merge(
                 of(send(`${player.playerName} disconnected`)),
                 race([
-                  reconnected$().pipe(
+                  reconnected$.pipe(
                     map(() => send(`${player.playerName} reconnected`))
                   ),
                   timer(3500).pipe(
-                    mergeMap(async () => {
-                      const { metadata } = await this.matchService.fetch(
-                        matchID,
-                        {
-                          metadata: true
-                        }
-                      );
-                      delete metadata.players[playerID].name;
-                      delete metadata.players[playerID].credentials;
-                      await this.matchService.setMetadata(matchID, metadata);
+                    mergeMap(() => {
+                      return this.matchService.leaveMatch(identity);
                     }),
-                    mergeMap(() => handleLeave(socket, identity))
+                    mergeMap(() => {
+                      return handleLeave(socket, identity);
+                    })
                   )
                 ])
               )
             ),
-            takeUntil(reconnected$().pipe(delay(1)))
+            takeUntil(reconnected$.pipe(delay(1)))
           );
         }),
-        catchError(() => handleLeave(socket))
+        catchError(() => {
+          return handleLeave(socket);
+        })
       )
-      .subscribe(({ event, room, data }) => {
-        socket.to(room).emit(event, data);
-      });
+      .subscribe(
+        ({ event, room, data }) => {
+          socket.to(room).emit(event, data);
+        },
+        error => {
+          // eslint-disable-next-line
+          console.log(error);
+        }
+      );
   }
 }

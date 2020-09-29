@@ -11,8 +11,8 @@ interface Props {
 
 export function ReadyButton({ playerID, toggleReady }: Props) {
   const [{ players }] = useChat();
-  const [isOpen, open, close] = useBoolean(true);
   const isReady = !!players[Number(playerID)]?.ready;
+  const [isOpen, open, close] = useBoolean(!isReady);
   const playersNotReady = players.filter(p => !p || !p.ready);
   const waitingForMe = playersNotReady.length === 1 && !isReady;
 

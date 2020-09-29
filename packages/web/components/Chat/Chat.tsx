@@ -9,15 +9,17 @@ import {
   ChatEvent,
   MessageStatus,
   MessageType,
-  WS$Player
+  WsPlayer,
+  WsError
 } from '@/typings';
 import { useScrollToBottom } from '@/hooks/useScrollToBottom';
 import { useChat } from '@/hooks/useChat';
 import { useBoolean } from '@/hooks/useBoolean';
+import { Toaster } from '@/utils/toaster';
 import { ChatInput } from './ChatInput';
 import { ChatBubble } from './ChatBubble';
 import { UnreadCount } from './UnreadCount';
-import { Disconnected, Loading } from '../Match';
+import { Disconnected, Loading } from '../Match/CenterText';
 import { ReadyButton } from '../ReadyButton';
 import styles from './Chat.module.scss';
 
@@ -25,7 +27,7 @@ interface ChatProps extends Param$JoinChat {}
 
 function frommSocketIO<T>(
   socket: typeof Socket,
-  event: ChatEvent | 'connect' | 'disconnect'
+  event: ChatEvent | 'connect' | 'disconnect' | 'exception'
 ) {
   return fromEventPattern<T>(
     handler => socket.on(event, handler),
@@ -33,17 +35,18 @@ function frommSocketIO<T>(
   );
 }
 
-function ChatContent(identify: ChatProps) {
+// @refresh reset
+export function Chat(identify: ChatProps) {
   const identifyRef = useRef(identify);
   const [{ group, unread, started }, dispatch] = useChat();
   const [collapsed, , , toggleCollapse] = useBoolean(true);
   const [connected, setConnected] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [{ autoScroll, scrollToBottom }, contentElRef] = useScrollToBottom(
-    connected
+    connected && mounted
   );
   const [socket] = useState(() =>
-    io.connect('/chat', { query: identify, forceNew: true })
+    io.connect('/chat', { query: identify, autoConnect: false, forceNew: true })
   );
 
   const { sendMessage, toggleReady } = useMemo(() => {
@@ -71,8 +74,8 @@ function ChatContent(identify: ChatProps) {
     };
 
     const toggleReady = () => {
-      socket.emit(ChatEvent.Ready, identify, (payload: string[]) => {
-        dispatch({ type: 'Ready', payload });
+      socket.emit(ChatEvent.Ready, identify, () => {
+        dispatch({ type: 'Ready', payload: identify.playerID });
       });
     };
 
@@ -86,8 +89,8 @@ function ChatContent(identify: ChatProps) {
     const identify = identifyRef.current;
     const connect$ = frommSocketIO(socket, 'connect');
     const disconnect$ = frommSocketIO(socket, 'disconnect');
-    const ready$ = frommSocketIO<string[]>(socket, ChatEvent.Ready);
-    const players$ = frommSocketIO<(WS$Player | null)[]>(
+    const exception$ = frommSocketIO<WsError>(socket, 'exception');
+    const players$ = frommSocketIO<(WsPlayer | null)[]>(
       socket,
       ChatEvent.Player
     );
@@ -97,7 +100,7 @@ function ChatContent(identify: ChatProps) {
     );
 
     const events = [
-      zip(connect$, ready$, players$)
+      zip(connect$, players$)
         .pipe(switchMap(() => timer(100)))
         .subscribe(() => {
           setMounted(true);
@@ -109,8 +112,8 @@ function ChatContent(identify: ChatProps) {
       disconnect$.subscribe(() => {
         setConnected(false);
       }),
-      ready$.subscribe(payload => {
-        dispatch({ type: 'Ready', payload });
+      exception$.subscribe(error => {
+        return Toaster.failure(error);
       }),
       players$.subscribe(payload =>
         dispatch({ type: 'UpdatePlayer', payload })
@@ -127,10 +130,11 @@ function ChatContent(identify: ChatProps) {
 
     dispatch({ type: 'Reset' });
 
+    socket.disconnected && socket.connect();
+
     return () => {
       socket.emit(ChatEvent.Leave, identify);
-      // disable for development ?
-      socket.disconnected && socket.disconnect();
+      socket.connected && socket.disconnect();
       events.forEach(subscription => subscription.unsubscribe());
     };
   }, [socket, dispatch]);
@@ -157,6 +161,7 @@ function ChatContent(identify: ChatProps) {
                 key={id}
                 first={idx === 0}
                 playerID={identify.playerID}
+                readyMsgDeps={collapsed}
               />
             ))}
           </Fragment>
@@ -192,8 +197,4 @@ function ChatContent(identify: ChatProps) {
       {mounted ? connected ? chatContent : <Disconnected /> : <Loading />}
     </Card>
   );
-}
-
-export function Chat(props: ChatProps) {
-  return <ChatContent {...props} />;
 }

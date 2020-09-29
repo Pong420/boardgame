@@ -1,3 +1,5 @@
+import { WsResponse } from '@nestjs/websockets';
+
 export enum ChatEvent {
   Join = 'Join',
   Message = 'Message',
@@ -54,8 +56,35 @@ export interface Param$SendMessage extends Identify {
 
 export interface Param$PlayerReady extends Identify {}
 
-export interface WS$Player {
+export interface WsPlayer {
+  ready: boolean;
   playerID: string;
-  credentials: string;
   playerName: string;
+  credentials: string;
+}
+
+export interface Room {
+  players: Array<WsPlayer | null>;
+  messages: Schema$Message[];
+}
+
+export type Rooms = Map<string, Room>;
+export type Connected = Map<string, Identify>;
+
+export interface RoomResponse<T = unknown> extends WsResponse<T> {
+  room: string;
+}
+
+export function isRoomMessage(data: unknown): data is RoomResponse<unknown> {
+  return (
+    data &&
+    typeof data === 'object' &&
+    typeof data['event'] === 'string' &&
+    typeof data['room'] === 'string'
+  );
+}
+
+export interface WsError {
+  status: string;
+  message: string;
 }

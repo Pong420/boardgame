@@ -157,22 +157,7 @@ export class MatchController {
 
   @Post('leave')
   async leaveMatch(@Body() dto: LeaveMatchDto): Promise<void> {
-    const { matchID, playerID, credentials } = dto;
-    const { metadata } = await this.matchService.fetch(dto.matchID, {
-      metadata: true
-    });
-
-    if (credentials !== metadata.players[playerID].credentials) {
-      throw new ForbiddenException('Invalid credentials ' + credentials);
-    }
-
-    delete metadata.players[playerID].name;
-    delete metadata.players[playerID].credentials;
-    if (Object.values(metadata.players).some(player => player.name)) {
-      await this.matchService.setMetadata(matchID, metadata);
-    } else {
-      await this.matchService.wipe(matchID);
-    }
+    await this.matchService.leaveMatch(dto);
   }
 
   @Post('playAgain')

@@ -9,7 +9,8 @@ export function UnreadCount({ count }: Props) {
   const [value, setValue] = useState(0);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setValue(Math.min(99, count)), 250);
+    // value of timeout should be greater then the delay in chat bubble
+    const timeout = setTimeout(() => setValue(Math.min(99, count)), 350);
     return () => clearTimeout(timeout);
   }, [count]);
 

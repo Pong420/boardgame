@@ -32,12 +32,29 @@ export type MultiMatchState = Common & {
   unlisted: boolean;
 };
 
-export type SpectatorState = Common & {
+export type SpectateState = Common & {
   matchID: string;
+  spectate: boolean;
   playerID?: string;
 };
 
-export type MatchState = LocalMatchState | MultiMatchState | SpectatorState;
+export type MatchState = LocalMatchState | MultiMatchState | SpectateState;
+
+export function isMatchState(s: unknown, type: 'local'): s is LocalMatchState;
+export function isMatchState(s: unknown, type: 'multi'): s is MultiMatchState;
+export function isMatchState(s: unknown, type: 'spectate'): s is SpectateState;
+export function isMatchState(state: unknown, type: string) {
+  if (state && typeof state === 'object') {
+    switch (type) {
+      case 'local':
+        return 'local' in state;
+      case 'multi':
+        return 'playerName' in state;
+      case 'spectate':
+        return 'spectate' in state;
+    }
+  }
+}
 
 export const gotoMatch = (state: MatchState) => {
   const pathname = `/match/${state.name}/`;
@@ -45,7 +62,7 @@ export const gotoMatch = (state: MatchState) => {
   return router.push({ pathname, query: state }, pathname);
 };
 
-export const gotoSpectate = ({ name, matchID, playerID }: SpectatorState) => {
+export const gotoSpectate = ({ name, matchID, playerID }: SpectateState) => {
   return router.push(`/spectate/${name}/${matchID}/${playerID || ''}`);
 };
 
@@ -56,7 +73,7 @@ export const matchStorage = createLocalStorage<MultiMatchState | null>(
 
 export const getSpectateQuery = (
   query: typeof router['query']
-): Required<SpectatorState> => {
+): Required<SpectateState> => {
   const slug = Array.isArray(query.slug) ? query.slug : [];
   const [name = '', matchID = '', playerID = ''] = slug;
   return { name, matchID, playerID };

@@ -49,7 +49,9 @@ export default function SpectatePage({
         <title>Boardgame | Spectate</title>
       </Head>
 
-      {!error && <Match name={name} matchID={matchID} playerID={playerID} />}
+      {!error && (
+        <Match name={name} matchID={matchID} playerID={playerID} spectate />
+      )}
     </>
   );
 }

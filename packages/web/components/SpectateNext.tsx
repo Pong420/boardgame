@@ -11,7 +11,11 @@ interface Props extends IButtonProps {}
 const request = async (params: Param$GetMatch) => {
   const response = await getMatch(params);
   if (response.data.nextMatchID) {
-    await gotoSpectate({ ...params, matchID: response.data.nextMatchID });
+    await gotoSpectate({
+      ...params,
+      spectate: true,
+      matchID: response.data.nextMatchID
+    });
   } else {
     Toaster.failure({
       message: 'Next match have not started, you may try again later'

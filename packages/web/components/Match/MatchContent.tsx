@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import { Game } from 'boardgame.io';
 import { Client } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer';
-import { MatchState } from '@/services';
+import { MatchState, isMatchState } from '@/services';
 import { Redirect } from '../Redirect';
 import { Loading } from './CenterText';
 import styles from './Match.module.scss';
@@ -49,7 +49,7 @@ export function MatchContent({ loading, spectate, state }: Props) {
   }, [state]);
 
   const getContent = (): ReactNode => {
-    if ('local' in state) {
+    if (isMatchState(state, 'local')) {
       return Array.from({ length: state.numPlayers }, (_, idx) => (
         <ClientComponent
           key={idx}
@@ -59,7 +59,7 @@ export function MatchContent({ loading, spectate, state }: Props) {
       ));
     }
 
-    if ('playerName' in state) {
+    if (isMatchState(state, 'multi')) {
       return (
         <ClientComponent
           matchID={state.matchID}

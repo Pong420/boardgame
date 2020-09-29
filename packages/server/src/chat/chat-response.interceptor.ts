@@ -1,13 +1,12 @@
 import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { map } from 'rxjs/operators';
-import { isRoomMessage } from './types';
+import { isRoomMessage } from '@/typings';
 
 // send a message to other players in the room
 export class ChatResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler) {
     const socket: Socket = context.switchToWs().getClient();
-
     return next.handle().pipe(
       map(data => {
         if (isRoomMessage(data)) {
