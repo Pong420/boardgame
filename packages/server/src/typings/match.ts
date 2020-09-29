@@ -1,5 +1,5 @@
 export interface SetupData {
-  spectate?: boolean;
+  allowSpectate?: boolean;
   matchName: string;
   description?: string;
 }

@@ -5,7 +5,7 @@ import { Player, GameMeta } from '@/typings';
 import { useBoolean } from '@/hooks/useBoolean';
 import styles from './Lobby.module.scss';
 
-interface Props extends Omit<SpectateState, 'playerID' | 'spectate'> {
+interface Props extends Omit<SpectateState, 'playerID' | 'isSpectator'> {
   allow?: boolean;
   players: Player[];
   type?: GameMeta['spectate'];
@@ -23,7 +23,7 @@ export function Spectate({ allow, type, players, ...props }: Props) {
         onClick={() =>
           type === 'single-player'
             ? openDialog()
-            : gotoSpectate({ ...props, spectate: true })
+            : gotoSpectate({ ...props, isSpectator: true })
         }
       />
       <Dialog title="Select Player View" isOpen={isOpen} onClose={closeDialog}>
@@ -36,7 +36,7 @@ export function Spectate({ allow, type, players, ...props }: Props) {
                 onClick={() =>
                   gotoSpectate({
                     ...props,
-                    spectate: true,
+                    isSpectator: true,
                     playerID: String(id)
                   })
                 }

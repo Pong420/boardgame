@@ -54,7 +54,7 @@ export function Invitation({ name, matchID }: Props) {
             name={match.gameName}
             matchID={match.matchID}
             players={match.players}
-            allow={!!match.setupData?.spectate}
+            allow={!!match.setupData?.allowSpectate}
             type={meta.spectate}
           />
         </div>

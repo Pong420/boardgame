@@ -9,9 +9,9 @@ import { Loading } from './CenterText';
 import styles from './Match.module.scss';
 
 interface Props {
-  spectate?: boolean;
   state: MatchState;
   loading?: boolean;
+  isSpectator?: boolean;
 }
 
 const handleImport = (name: string) =>
@@ -20,7 +20,7 @@ const handleImport = (name: string) =>
     import(`../../games/${name}/board`)
   ]);
 
-export function MatchContent({ loading, spectate, state }: Props) {
+export function MatchContent({ loading, state, isSpectator }: Props) {
   const { ClientComponent } = useMemo(() => {
     const ClientComponent = dynamic<any>(
       () =>
@@ -69,7 +69,7 @@ export function MatchContent({ loading, spectate, state }: Props) {
       );
     }
 
-    if (spectate) {
+    if (isSpectator) {
       return (
         <ClientComponent matchID={state.matchID} playerID={state.playerID} />
       );

@@ -74,7 +74,7 @@ function CreateMatchForm({
         ...initialValues,
         unlisted: false,
         numPlayers: numPlayersOps[0],
-        setupData: { matchName: '', spectate: true }
+        setupData: { matchName: '', allowSpectate: true }
       }}
     >
       <FormItem name="local" valuePropName="checked">
@@ -124,7 +124,10 @@ function CreateMatchForm({
         <TextArea />
       </HiddenIfLocal>
 
-      <HiddenIfLocal name={['setupData', 'spectate']} valuePropName="checked">
+      <HiddenIfLocal
+        name={['setupData', 'allowSpectate']}
+        valuePropName="checked"
+      >
         <Checkbox>Spectate</Checkbox>
       </HiddenIfLocal>
 

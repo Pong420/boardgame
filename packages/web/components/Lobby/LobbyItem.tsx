@@ -35,7 +35,7 @@ export function LobbyItem({
   const { name, spectate: spectateType } = meta;
 
   if (setupData) {
-    const { matchName, description, spectate } = setupData;
+    const { matchName, description, allowSpectate } = setupData;
     return (
       <Card className={styles['lobby-item']} elevation={1}>
         <div className={styles['lobby-item-header']}>
@@ -64,7 +64,7 @@ export function LobbyItem({
                 name={name}
                 matchID={matchID}
                 players={players}
-                allow={spectate}
+                allow={allowSpectate}
                 type={spectateType}
               />
             )}

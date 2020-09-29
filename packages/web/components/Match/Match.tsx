@@ -16,8 +16,8 @@ import { CenterText } from './CenterText';
 
 interface State {
   matchName: string;
-  spectate?: boolean;
   numPlayers: number;
+  allowSpectate?: boolean;
 }
 
 const onFailure = (error: ApiError) => {
@@ -59,7 +59,7 @@ function MatchComponent(state: MatchState) {
   }, [name, matchID]);
 
   const [{ data, loading }] = useRxAsync(_getMatch, { onFailure });
-  const { matchName, spectate } = data || {};
+  const { matchName, allowSpectate } = data || {};
   const { gameName } = gameMetaMap[state.name];
   const { started } = useChatState(['started']);
 
@@ -84,12 +84,14 @@ function MatchComponent(state: MatchState) {
           credentials={state.credentials}
         />
       )}
-      {spectate && !started && <CenterText text="Waiting for match start" />}
+      {isMatchState(state, 'spectate') && !started && (
+        <CenterText text="Waiting for match start" />
+      )}
       {(isMatchState(state, 'local') || started) && (
         <MatchContent
           state={state}
-          spectate={spectate}
           loading={!data || loading}
+          isSpectator={allowSpectate}
         />
       )}
     </div>

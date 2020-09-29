@@ -50,7 +50,7 @@ export default function SpectatePage({
       </Head>
 
       {!error && (
-        <Match name={name} matchID={matchID} playerID={playerID} spectate />
+        <Match name={name} matchID={matchID} playerID={playerID} isSpectator />
       )}
     </>
   );

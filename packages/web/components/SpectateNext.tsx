@@ -13,7 +13,7 @@ const request = async (params: Param$GetMatch) => {
   if (response.data.nextMatchID) {
     await gotoSpectate({
       ...params,
-      spectate: true,
+      isSpectator: true,
       matchID: response.data.nextMatchID
     });
   } else {

@@ -34,8 +34,8 @@ export type MultiMatchState = Common & {
 
 export type SpectateState = Common & {
   matchID: string;
-  spectate: boolean;
   playerID?: string;
+  isSpectator: boolean;
 };
 
 export type MatchState = LocalMatchState | MultiMatchState | SpectateState;
@@ -51,7 +51,7 @@ export function isMatchState(state: unknown, type: string) {
       case 'multi':
         return 'playerName' in state;
       case 'spectate':
-        return 'spectate' in state;
+        return 'isSpectator' in state;
     }
   }
 }
@@ -76,7 +76,7 @@ export const getSpectateQuery = (
 ): Required<SpectateState> => {
   const slug = Array.isArray(query.slug) ? query.slug : [];
   const [name = '', matchID = '', playerID = ''] = slug;
-  return { name, matchID, playerID, spectate: true };
+  return { name, matchID, playerID, isSpectator: true };
 };
 
 export function leaveMatchAndRedirect(): undefined;
