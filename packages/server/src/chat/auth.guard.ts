@@ -1,9 +1,10 @@
 import { WsException } from '@nestjs/websockets';
-import { CanActivate, ExecutionContext } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Inject } from '@nestjs/common';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { Rooms } from '@/typings';
 import { IdentifyDto } from './dto';
+import { MemeoryStorage } from './memeory.providers';
 
 export async function authenticate(
   rooms: Rooms,
@@ -34,7 +35,7 @@ export async function authenticate(
 }
 
 export class AuthGuard implements CanActivate {
-  constructor(private readonly rooms: Rooms) {}
+  constructor(@Inject(MemeoryStorage.Rooms) private readonly rooms: Rooms) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const data = context.switchToWs().getData();

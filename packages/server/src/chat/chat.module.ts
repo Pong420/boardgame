@@ -1,6 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { MatchModule, MatchModuleOptions } from '@/match/match.module';
 import { ChatGateway } from './chat.gateway';
+import { memeoryStorageProviders } from './memeory.providers';
 
 @Module({})
 export class ChatModule {
@@ -8,7 +9,7 @@ export class ChatModule {
     return {
       module: ChatModule,
       imports: [MatchModule.forRoot(options)],
-      providers: [ChatGateway]
+      providers: [ChatGateway, ...memeoryStorageProviders]
     };
   }
 }
