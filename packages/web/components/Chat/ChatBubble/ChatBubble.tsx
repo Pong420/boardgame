@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { fromEvent } from 'rxjs';
 import { startWith, delay } from 'rxjs/operators';
-import { Icon } from '@blueprintjs/core';
+import { Icon, Colors } from '@blueprintjs/core';
 import { useChatDispatch, useChatMessage } from '@/hooks/useChat';
 import { MessageStatus, MessageType } from '@/typings';
 import styles from './ChatBubble.module.scss';
@@ -35,9 +35,9 @@ function Status({ status }: { status?: MessageStatus }) {
     case MessageStatus.PENDING:
       return <Icon icon="more" />;
     case MessageStatus.SUCCESS:
-      return <Icon icon="tick" />;
+      return <Icon icon="tick" color={Colors.GREEN3} />;
     case MessageStatus.FAILURE:
-      return <Icon icon="error" />;
+      return <Icon icon="error" color={Colors.RED3} />;
     default:
       return null;
   }

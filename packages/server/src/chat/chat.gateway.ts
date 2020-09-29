@@ -137,14 +137,18 @@ export class ChatGateway implements OnGatewayDisconnect {
     @MessageBody() dto: JoinChatDto
   ) {
     const { matchID, playerID, playerName, credentials } = dto;
-    socket.join(matchID);
-
-    connected.set(socket.id, { matchID, playerID, credentials });
 
     let room: Room = rooms.get(matchID);
 
+    const match = await this.matchService.fetch(matchID, {
+      state: true,
+      metadata: true
+    });
+
+    // TODO: check match return
+    if (!match) throw new WsException('Match not found');
+
     if (!room) {
-      const match = await this.matchService.fetch(matchID, { state: true });
       room = {
         messages: [],
         players: Array.from<null>({ length: match.state.ctx.numPlayers }).map(
@@ -153,7 +157,8 @@ export class ChatGateway implements OnGatewayDisconnect {
       };
     }
 
-    const player = room.players[Number(playerID)];
+    const idx = Number(playerID);
+    const player = match.metadata.players[idx];
 
     if (typeof player === 'undefined') {
       throw new WsException('Invalud playerID');
@@ -163,7 +168,7 @@ export class ChatGateway implements OnGatewayDisconnect {
       throw new WsException('Invalid credentials');
     }
 
-    const newPlayer = player === null;
+    const newPlayer = !room.players[idx];
 
     const joinMessage: Schema$Message = createSysmMessage({
       content: `${playerName} join the match`
@@ -180,6 +185,10 @@ export class ChatGateway implements OnGatewayDisconnect {
 
       rooms.set(matchID, room);
     }
+
+    socket.join(matchID);
+
+    connected.set(socket.id, { matchID, playerID, credentials });
 
     connect$.next({ credentials });
 

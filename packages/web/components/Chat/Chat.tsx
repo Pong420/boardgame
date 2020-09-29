@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { fromEventPattern, timer, zip } from 'rxjs';
 import { buffer, debounceTime, switchMap, take } from 'rxjs/operators';
-import { Card, Icon } from '@blueprintjs/core';
+import { Classes, Icon } from '@blueprintjs/core';
 import {
   Param$JoinChat,
   Schema$Message,
@@ -63,11 +63,13 @@ export function Chat(identify: ChatProps) {
 
       dispatch({ type: 'Create', payload: message });
 
+      const update = (status: MessageStatus) =>
+        dispatch({ type: 'Update', payload: { ...message, status } });
+      const timeout = setTimeout(() => update(MessageStatus.FAILURE), 2 * 1000);
+
       socket.emit(ChatEvent.Send, message, () => {
-        dispatch({
-          type: 'Update',
-          payload: { ...message, status: MessageStatus.SUCCESS }
-        });
+        clearTimeout(timeout);
+        update(MessageStatus.SUCCESS);
       });
 
       setTimeout(scrollToBottom, 0);
@@ -178,14 +180,16 @@ export function Chat(identify: ChatProps) {
 
   const className = [
     styles.chat,
-    started ? styles['bottom-right'] : styles['full-screen'],
+    ...(started
+      ? [Classes.CARD, Classes.elevationClass(2), styles['bottom-right']]
+      : [styles['full-screen']]),
     collapsed && styles['collapsed']
   ]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <Card className={className}>
+    <div className={className}>
       <div className={styles['chat-header']} onClick={toggleCollapse}>
         <div className={styles['chat-header-title']}>
           Chat <UnreadCount count={unread.length} />
@@ -195,6 +199,6 @@ export function Chat(identify: ChatProps) {
         </div>
       </div>
       {mounted ? connected ? chatContent : <Disconnected /> : <Loading />}
-    </Card>
+    </div>
   );
 }
