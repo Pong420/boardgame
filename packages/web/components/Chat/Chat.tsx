@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
+import router from 'next/router';
 import { fromEventPattern, timer, zip } from 'rxjs';
 import { buffer, debounceTime, switchMap, take } from 'rxjs/operators';
 import { Classes, Icon } from '@blueprintjs/core';
@@ -101,6 +102,7 @@ export function Chat(identify: ChatProps) {
       buffer(message$.pipe(debounceTime(100)))
     );
 
+    const originUrl = router.asPath;
     const events = [
       zip(connect$, players$)
         .pipe(switchMap(() => timer(100)))
@@ -127,6 +129,16 @@ export function Chat(identify: ChatProps) {
         messages.forEach(({ id }) => {
           dispatch({ type: 'ReadMessage', payload: id });
         });
+      }),
+      // leave match and disconnect should not put at `useEffect` callback
+      fromEventPattern<string>(
+        handler => router.events.on('routeChangeStart', handler),
+        handler => router.events.off('routeChangeStart', handler)
+      ).subscribe(url => {
+        if (originUrl !== url) {
+          socket.emit(ChatEvent.Leave, identify);
+          socket.connected && socket.disconnect();
+        }
       })
     ];
 
@@ -135,8 +147,6 @@ export function Chat(identify: ChatProps) {
     socket.disconnected && socket.connect();
 
     return () => {
-      socket.emit(ChatEvent.Leave, identify);
-      socket.connected && socket.disconnect();
       events.forEach(subscription => subscription.unsubscribe());
     };
   }, [socket, dispatch]);
