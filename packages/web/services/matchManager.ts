@@ -76,7 +76,7 @@ export const getSpectateQuery = (
 ): Required<SpectateState> => {
   const slug = Array.isArray(query.slug) ? query.slug : [];
   const [name = '', matchID = '', playerID = ''] = slug;
-  return { name, matchID, playerID };
+  return { name, matchID, playerID, spectate: true };
 };
 
 export function leaveMatchAndRedirect(): undefined;
