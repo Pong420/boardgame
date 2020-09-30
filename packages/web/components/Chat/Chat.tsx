@@ -152,15 +152,8 @@ export function Chat(identify: ChatProps) {
   }, [socket, dispatch]);
 
   useEffect(() => {
-    autoScroll && !collapsed && setTimeout(scrollToBottom, 0);
-  }, [
-    group,
-    autoScroll,
-    scrollToBottom,
-    collapsed,
-    // for change from full-screen to bottom-right
-    started
-  ]);
+    autoScroll && (!started || !collapsed) && setTimeout(scrollToBottom, 0);
+  }, [group, autoScroll, scrollToBottom, collapsed, started]);
 
   const chatContent = (
     <>
