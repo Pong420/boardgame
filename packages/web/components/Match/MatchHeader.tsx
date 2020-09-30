@@ -14,6 +14,10 @@ interface Props {
 
 const onFailure = Toaster.apiError.bind(Toaster, 'Leave Match Failure');
 
+const Blank = () => (
+  <Button minimal icon="blank" style={{ visibility: 'hidden' }} />
+);
+
 function LeaveMatchButton() {
   const [{ loading }, { fetch }] = useRxAsync(leaveMatchAndRedirect, {
     defer: true,
@@ -48,11 +52,16 @@ function LeaveMatchButton() {
 }
 
 export function MatchHeader({ title, children }: Props) {
+  const buttons = Array.isArray(children)
+    ? children.filter(el => React.isValidElement(el))
+    : [];
   return (
     <div className={styles['match-header']}>
       <div>
         <LeaveMatchButton />
-        <Button minimal icon="blank" style={{ visibility: 'hidden' }} />
+        {buttons.slice(1).map((_, idx) => (
+          <Blank key={idx} />
+        ))}
       </div>
       <div className={styles['match-header-title']}>{title}</div>
       <div>{children}</div>

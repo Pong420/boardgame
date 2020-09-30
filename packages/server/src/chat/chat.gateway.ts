@@ -9,15 +9,7 @@ import {
 } from '@nestjs/websockets';
 import { Inject, UseGuards, UseInterceptors } from '@nestjs/common';
 import { from, merge, of, Subject, timer, race, throwError } from 'rxjs';
-import {
-  catchError,
-  filter,
-  map,
-  takeUntil,
-  mergeMap,
-  delay,
-  tap
-} from 'rxjs/operators';
+import { filter, map, takeUntil, mergeMap, delay, tap } from 'rxjs/operators';
 import { Socket } from 'socket.io';
 import {
   ChatEvent,
@@ -233,18 +225,15 @@ export class ChatGateway implements OnGatewayDisconnect {
             ),
             takeUntil(reconnected$.pipe(delay(1)))
           );
-        }),
-        catchError(() => {
-          return this.handleLeave(socket);
         })
       )
       .subscribe(
         ({ event, room, data }) => {
           socket.to(room).emit(event, data);
         },
-        error => {
+        () => {
           // eslint-disable-next-line
-          console.log(error);
+          // console.log(error);
         }
       );
   }
@@ -267,14 +256,14 @@ export class ChatGateway implements OnGatewayDisconnect {
         room.messages = pushMessage(room.messages, leaveMessage);
         this.rooms.set(matchID, room);
 
-        if (room.players.some(p => p !== null)) {
-          return merge([
-            sendMessage(leaveMessage, matchID),
-            sendPlayer(room.players, matchID)
-          ]).pipe(tap(() => socket.leave(matchID)));
-        } else {
+        if (room.players.every(p => p === null)) {
           this.rooms.delete(matchID);
         }
+
+        return merge([
+          sendMessage(leaveMessage, matchID),
+          sendPlayer(room.players, matchID)
+        ]).pipe(tap(() => socket.leave(matchID)));
       }
 
       this.connected.delete(socket.id);

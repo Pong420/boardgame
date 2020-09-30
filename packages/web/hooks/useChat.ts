@@ -2,15 +2,13 @@ import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { BehaviorSubject } from 'rxjs';
 import { MessageType, Schema$Message, WsPlayer } from '@/typings';
 
-export type ChatPlayer = null | (WsPlayer & { ready: boolean });
-
 interface State {
   started: boolean;
   list: string[];
   unread: string[];
   group: string[][];
   byIds: Record<string, Schema$Message>;
-  players: ChatPlayer[];
+  players: (WsPlayer | null)[];
 }
 
 interface Create {

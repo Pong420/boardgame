@@ -10,7 +10,11 @@ export class ChatResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map(data => {
         if (isRoomMessage(data)) {
-          socket.to(data.room).emit(data.event, data.data);
+          for (const name of data.namespaces) {
+            socket.server.nsps[`/${name}`]
+              .to(data.room)
+              .emit(data.event, data.data);
+          }
           return data.data;
         }
         return data;

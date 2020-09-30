@@ -72,5 +72,14 @@ export const Toaster = {
       intent: Intent.DANGER,
       message: renderMessage(prefix || 'Error', getErrorMessage(error))
     });
+  },
+  info(options: IToastOptions) {
+    toasterSubject.next({
+      ...defaultOptions,
+      ...options,
+      icon: 'info-sign',
+      intent: Intent.PRIMARY,
+      message: renderMessage('Info', options.message)
+    });
   }
 };

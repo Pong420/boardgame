@@ -30,16 +30,15 @@ export function MatchContent({ loading, state, isSpectator }: Props) {
             game: game as Game,
             board: Board,
             loading: Loading,
-            numPlayers: 'local' in state ? state.numPlayers : undefined,
-            multiplayer:
-              'local' in state
-                ? (Local() as any) // FIXME:
-                : SocketIO({
-                    server:
-                      typeof window === 'undefined'
-                        ? ''
-                        : window.location.origin
-                  })
+            numPlayers: isMatchState(state, 'local')
+              ? state.numPlayers
+              : undefined,
+            multiplayer: isMatchState(state, 'local')
+              ? (Local() as any) // FIXME:
+              : SocketIO({
+                  server:
+                    typeof window === 'undefined' ? '' : window.location.origin
+                })
           })
         ),
       { loading: Loading }
@@ -86,7 +85,7 @@ export function MatchContent({ loading, state, isSpectator }: Props) {
     <div
       className={[
         styles['match-content'],
-        ...('local' in state
+        ...(isMatchState(state, 'local')
           ? ['local', `num-of-player-${state.numPlayers}`]
           : ['multi']),
         state.name

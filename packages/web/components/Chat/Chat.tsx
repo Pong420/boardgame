@@ -66,6 +66,7 @@ export function Chat(identify: ChatProps) {
 
       const update = (status: MessageStatus) =>
         dispatch({ type: 'Update', payload: { ...message, status } });
+
       const timeout = setTimeout(() => update(MessageStatus.FAILURE), 2 * 1000);
 
       socket.emit(ChatEvent.Send, message, () => {
@@ -78,7 +79,7 @@ export function Chat(identify: ChatProps) {
 
     const toggleReady = () => {
       socket.emit(ChatEvent.Ready, identify, () => {
-        dispatch({ type: 'Ready', payload: identify.playerID });
+        // dispatch({ type: 'Ready', payload: identify.playerID });
       });
     };
 
@@ -130,7 +131,6 @@ export function Chat(identify: ChatProps) {
           dispatch({ type: 'ReadMessage', payload: id });
         });
       }),
-      // leave match and disconnect should not put at `useEffect` callback
       fromEventPattern<string>(
         handler => router.events.on('routeChangeStart', handler),
         handler => router.events.off('routeChangeStart', handler)

@@ -33,3 +33,33 @@
   @include ink-painting;
   font-size: 40px;
 }
+
+.spectator {
+  @include sq-dimen(100%);
+  @include flex(center, center, column);
+
+  table {
+    border: 1px solid var(--text-color);
+  }
+
+  th,
+  td {
+    min-width: 200px;
+    text-align: center !important;
+  }
+}
+
+.spectator-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.canceled {
+  @include sq-dimen(100%);
+  @include flex(center, center, column);
+}
+
+.canceled-text {
+  @include ink-painting;
+}

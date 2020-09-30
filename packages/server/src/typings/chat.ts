@@ -6,7 +6,8 @@ export enum ChatEvent {
   Send = 'Send',
   Ready = 'Ready',
   Leave = 'Leave',
-  Player = 'Player'
+  Player = 'Player',
+  Spectate = 'Spectate'
 }
 
 export interface Identify {
@@ -73,6 +74,7 @@ export type Connected = Map<string, Identify>;
 
 export interface RoomResponse<T = unknown> extends WsResponse<T> {
   room: string;
+  namespaces: string[];
 }
 
 export function isRoomMessage(data: unknown): data is RoomResponse<unknown> {
@@ -80,7 +82,8 @@ export function isRoomMessage(data: unknown): data is RoomResponse<unknown> {
     data &&
     typeof data === 'object' &&
     typeof data['event'] === 'string' &&
-    typeof data['room'] === 'string'
+    typeof data['room'] === 'string' &&
+    Array.isArray(data['namespaces'])
   );
 }
 

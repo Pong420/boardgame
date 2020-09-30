@@ -11,8 +11,8 @@ import { ShareButton } from '../ShareButton';
 import { Preferences } from '../Preferences';
 import { MatchHeader } from './MatchHeader';
 import { MatchContent } from './MatchContent';
+import { Spectator } from './Spectator';
 import styles from './Match.module.scss';
-import { CenterText } from './CenterText';
 
 interface State {
   matchName: string;
@@ -85,7 +85,7 @@ function MatchComponent(state: MatchState) {
         />
       )}
       {isMatchState(state, 'spectate') && !started && (
-        <CenterText text="Waiting for match start" />
+        <Spectator name={state.name} matchID={state.matchID} />
       )}
       {(isMatchState(state, 'local') || started) && (
         <MatchContent
