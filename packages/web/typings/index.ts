@@ -1,7 +1,16 @@
 import { ReactNode } from 'react';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 
-export type ApiError = AxiosError | Error;
+// nestjs error format
+interface ApiErrorValue {
+  statusCode: number;
+  message: string | string[];
+  error?: string;
+}
+
+export interface ApiError extends Omit<AxiosError, 'response'> {
+  response?: AxiosResponse<ApiErrorValue | string>;
+}
 
 export interface GameMeta {
   name: string;

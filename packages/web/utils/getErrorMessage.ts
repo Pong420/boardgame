@@ -1,11 +1,13 @@
-import { ApiError } from '../typings';
+import { ApiError } from '@/typings';
 
-export function getErrorMessage(error?: ApiError | string): string {
-  if (typeof error === 'object' && 'response' in error && error.response) {
+export function getErrorMessage(error: ApiError): string {
+  if (error.response) {
     const { data } = error.response;
     if (typeof data === 'string') {
       return error.response.statusText;
     }
+    const { message } = data;
+    return Array.isArray(message) ? message[0] : message;
   }
 
   if (error instanceof Error) {
