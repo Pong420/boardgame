@@ -9,20 +9,17 @@ import {
   RoomResponse
 } from '@/typings';
 
-function send<T>(event: ChatEvent, namespaces: string[]) {
+function send<T>(event: ChatEvent, extraNamespaces?: string[]) {
   function handler(data: T): WsResponse<T>;
   function handler(data: T, room: string): RoomResponse<T>;
   function handler(data: T, room?: string) {
-    return { event, data, room, namespaces };
+    return { event, data, room, extraNamespaces };
   }
   return handler;
 }
 
-export const sendMessage = send<Schema$Message>(ChatEvent.Message, ['chat']);
-export const sendPlayer = send<Room['players']>(ChatEvent.Player, [
-  'chat',
-  'spectate'
-]);
+export const sendMessage = send<Schema$Message>(ChatEvent.Message, []);
+export const sendPlayer = send<Room['players']>(ChatEvent.Player, ['spectate']);
 
 export function createSysmMessage(
   payload: Partial<Schema$SystemMessage> & Pick<Schema$SystemMessage, 'content'>
