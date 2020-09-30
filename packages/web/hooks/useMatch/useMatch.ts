@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { Schema$Message } from '@/typings';
 import {
   matchReducer,
@@ -15,7 +15,8 @@ const DispatchContext = React.createContext<
   React.Dispatch<UseMatchActions> | undefined
 >(undefined);
 
-const subject = new Subject<UseMatchState>();
+// cannot use Subject
+const subject = new BehaviorSubject(initialState);
 
 export function useMatchState(_deps = defaultDeps) {
   const [state, setState] = useState<UseMatchState>(initialState);
