@@ -9,6 +9,9 @@ import {
 import { AppModule, setupApp } from '@boardgame/server';
 import { game as TicTacToe } from '../games/tic-tac-toe/game';
 import { game as BigTwo } from '../games/big-two/game';
+import rateLimit from 'fastify-rate-limit';
+import helmet from 'fastify-helmet';
+import compression from 'fastify-compress';
 
 interface Options {
   port: number;
@@ -32,6 +35,13 @@ export async function startServer({ dev, port, mongoUri }: Options) {
       );
 
       setupApp(nest);
+
+      nest.register(compression, { encodings: ['gzip', 'deflate'] });
+      nest.register(helmet);
+      nest.register(rateLimit, {
+        max: 100,
+        timeWindow: 5 * 60 * 1000
+      });
 
       nest.use((req: any, res: any, next: () => void) => {
         if (req.url.startsWith('/api')) {
