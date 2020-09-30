@@ -11,7 +11,6 @@ import {
 import { JSONParse } from '@/utils/JSONParse';
 import { createLocalStorage } from '@/utils/storage';
 import { leaveMatch } from './services';
-import { pushHistoryState } from './historyState';
 import { gameMetaMap } from '@/games';
 import isEqual from 'lodash/isEqual';
 
@@ -58,7 +57,6 @@ export function isMatchState(state: unknown, type: string) {
 
 export const gotoMatch = (state: MatchState) => {
   const pathname = `/match/${state.name}/`;
-  pushHistoryState(state);
   return router.push({ pathname, query: state }, pathname);
 };
 

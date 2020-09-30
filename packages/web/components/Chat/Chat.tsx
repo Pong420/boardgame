@@ -79,7 +79,7 @@ export function Chat(identify: ChatProps) {
 
     const toggleReady = () => {
       socket.emit(ChatEvent.Ready, identify, () => {
-        // dispatch({ type: 'Ready', payload: identify.playerID });
+        dispatch({ type: 'Ready', payload: identify.playerID });
       });
     };
 

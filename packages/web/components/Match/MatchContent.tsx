@@ -1,4 +1,4 @@
-import React, { useMemo, ReactNode } from 'react';
+import React, { useMemo, useState, ReactNode, ComponentProps } from 'react';
 import dynamic from 'next/dynamic';
 import { Game } from 'boardgame.io';
 import { Client } from 'boardgame.io/react';
@@ -20,32 +20,35 @@ const handleImport = (name: string) =>
     import(`../../games/${name}/board`)
   ]);
 
-export function MatchContent({ loading, state, isSpectator }: Props) {
+export function MatchContent({ state, loading, isSpectator }: Props) {
+  const { name } = state;
+  const [clientOpts] = useState<Partial<Parameters<typeof Client>[0]>>({
+    ...(isMatchState(state, 'local')
+      ? { numPlayers: state.numPlayers, multiplayer: Local() as any }
+      : {
+          multiplayer: SocketIO({
+            server: typeof window === 'undefined' ? '' : window.location.origin
+          })
+        })
+  });
+
   const { ClientComponent } = useMemo(() => {
-    const ClientComponent = dynamic<any>(
+    const ClientComponent = dynamic<ComponentProps<ReturnType<typeof Client>>>(
       () =>
-        handleImport(state.name).then(([{ game }, { Board }]) =>
+        handleImport(name).then(([{ game }, { Board }]) =>
           Client({
             debug: false,
             game: game as Game,
             board: Board,
             loading: Loading,
-            numPlayers: isMatchState(state, 'local')
-              ? state.numPlayers
-              : undefined,
-            multiplayer: isMatchState(state, 'local')
-              ? (Local() as any) // FIXME:
-              : SocketIO({
-                  server:
-                    typeof window === 'undefined' ? '' : window.location.origin
-                })
+            ...clientOpts
           })
         ),
-      { loading: Loading }
+      { loading: Loading, ssr: false }
     );
 
     return { ClientComponent };
-  }, [state]);
+  }, [name, clientOpts]);
 
   const getContent = (): ReactNode => {
     if (isMatchState(state, 'local')) {
