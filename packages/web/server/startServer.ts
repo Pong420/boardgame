@@ -38,10 +38,13 @@ export async function startServer({ dev, port, mongoUri }: Options) {
 
       nest.register(compression, { encodings: ['gzip', 'deflate'] });
       nest.register(helmet);
-      nest.register(rateLimit, {
-        max: 100,
-        timeWindow: 5 * 60 * 1000
-      });
+
+      if (process.env.NODE_ENV === 'production') {
+        nest.register(rateLimit, {
+          max: 100,
+          timeWindow: 5 * 60 * 1000
+        });
+      }
 
       nest.use((req: any, res: any, next: () => void) => {
         if (req.url.startsWith('/api')) {
