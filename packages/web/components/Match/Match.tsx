@@ -4,7 +4,7 @@ import { useRxAsync } from 'use-rx-hooks';
 import { Toaster } from '@/utils/toaster';
 import { gameMetaMap } from '@/games';
 import { ApiError, Param$GetMatch } from '@/typings';
-import { ChatProvider, useChatState } from '@/hooks/useChat';
+import { MatchProvider, useMatchState } from '@/hooks/useMatch';
 import { MatchState, getMatch, matchStorage, isMatchState } from '@/services';
 import { Chat } from '../Chat';
 import { ShareButton } from '../ShareButton';
@@ -61,7 +61,7 @@ function MatchComponent(state: MatchState) {
   const [{ data, loading }] = useRxAsync(_getMatch, { onFailure });
   const { matchName, allowSpectate } = data || {};
   const { gameName } = gameMetaMap[state.name];
-  const { started } = useChatState(['started']);
+  const { started } = useMatchState(['started']);
 
   return (
     <div className={styles['match']}>
@@ -100,8 +100,8 @@ function MatchComponent(state: MatchState) {
 
 export function Match(state: MatchState) {
   return (
-    <ChatProvider>
+    <MatchProvider>
       <MatchComponent {...state} />
-    </ChatProvider>
+    </MatchProvider>
   );
 }

@@ -4,7 +4,7 @@ import router from 'next/router';
 import { fromEventPattern } from 'rxjs';
 import { Colors, HTMLTable, Icon } from '@blueprintjs/core';
 import { ChatEvent, WsError, WsPlayer } from '@/typings';
-import { useChat } from '@/hooks/useChat';
+import { useMatch } from '@/hooks/useMatch';
 import { Toaster } from '@/utils/toaster';
 import { Loading } from './CenterText';
 import styles from './Match.module.scss';
@@ -26,7 +26,7 @@ function frommSocketIO<T>(
 
 export function Spectator({ name, matchID }: Props) {
   const [socket] = useState(() => io.connect('/spectate', { forceNew: true }));
-  const [{ players }, dispatch] = useChat(['started', 'players']);
+  const [{ players }, dispatch] = useMatch(['started', 'players']);
 
   useEffect(() => {
     const onPlayerUpdate = (payload: (WsPlayer | null)[]) => {

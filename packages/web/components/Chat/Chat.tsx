@@ -14,7 +14,7 @@ import {
   WsError
 } from '@/typings';
 import { useScrollToBottom } from '@/hooks/useScrollToBottom';
-import { useChat } from '@/hooks/useChat';
+import { useMatch } from '@/hooks/useMatch';
 import { useBoolean } from '@/hooks/useBoolean';
 import { Toaster } from '@/utils/toaster';
 import { ChatInput } from './ChatInput';
@@ -39,7 +39,7 @@ function frommSocketIO<T>(
 // @refresh reset
 export function Chat(identify: ChatProps) {
   const identifyRef = useRef(identify);
-  const [{ group, unread, started }, dispatch] = useChat();
+  const [{ group, unread, started }, dispatch] = useMatch();
   const [collapsed, , , toggleCollapse] = useBoolean(true);
   const [connected, setConnected] = useState(false);
   const [mounted, setMounted] = useState(false);

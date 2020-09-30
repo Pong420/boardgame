@@ -1,8 +1,6 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { BehaviorSubject } from 'rxjs';
 import { MessageType, Schema$Message, WsPlayer } from '@/typings';
 
-interface State {
+export interface UseMatchState {
   started: boolean;
   list: string[];
   unread: string[];
@@ -40,9 +38,15 @@ interface Ready {
   payload: string;
 }
 
-type Actions = Create | Update | Reset | UpdatePlayer | ReadMessage | Ready;
+export type UseMatchActions =
+  | Create
+  | Update
+  | Reset
+  | UpdatePlayer
+  | ReadMessage
+  | Ready;
 
-const initialState: State = {
+export const initialState: UseMatchState = {
   started: false,
   list: [],
   unread: [],
@@ -51,14 +55,7 @@ const initialState: State = {
   byIds: {}
 };
 
-const defaultDeps = Object.keys(initialState) as (keyof State)[];
-
-const StateContext = React.createContext<State | undefined>(undefined);
-const DispatchContext = React.createContext<
-  React.Dispatch<Actions> | undefined
->(undefined);
-
-function isStarted(players: UpdatePlayer['payload'], playerID?: string) {
+function isMatchStarted(players: UpdatePlayer['payload'], playerID?: string) {
   return players.reduce(
     (state, p) => {
       const player =
@@ -69,17 +66,21 @@ function isStarted(players: UpdatePlayer['payload'], playerID?: string) {
         started: state.started && !!player?.ready
       };
     },
-    { players: [], started: true } as Pick<State, 'players' | 'started'>
+    { players: [], started: true } as Pick<UseMatchState, 'players' | 'started'>
   );
 }
 
-function reducer(state = initialState, action: Actions): State {
+export function matchReducer(
+  state = initialState,
+  action: UseMatchActions
+): UseMatchState {
   switch (action.type) {
     case 'Create':
       return (() => {
         if (Array.isArray(action.payload)) {
           return action.payload.reduce(
-            (state, payload) => reducer(state, { type: 'Create', payload }),
+            (state, payload) =>
+              matchReducer(state, { type: 'Create', payload }),
             state
           );
         }
@@ -135,13 +136,13 @@ function reducer(state = initialState, action: Actions): State {
     case 'UpdatePlayer':
       return {
         ...state,
-        ...isStarted(action.payload)
+        ...isMatchStarted(action.payload)
       };
 
     case 'Ready':
       return {
         ...state,
-        ...isStarted(state.players, action.payload)
+        ...isMatchStarted(state.players, action.payload)
       };
 
     case 'ReadMessage':
@@ -166,75 +167,3 @@ function reducer(state = initialState, action: Actions): State {
       throw new Error(`invalid action type`);
   }
 }
-
-const subject = new BehaviorSubject(initialState);
-
-export function useChatState(deps = defaultDeps) {
-  const context = React.useContext(StateContext);
-  const [state, setState] = useState<State | undefined>(context);
-  const ref = useRef(deps);
-
-  if (state === undefined) {
-    throw new Error('useChatState must be used within a ChatProvider');
-  }
-
-  useEffect(() => {
-    const deps = ref.current || [];
-    const subscription = subject.subscribe(newState => {
-      setState(state =>
-        deps.some(k => {
-          if (!state) return true;
-          if (state[k] !== newState[k]) return true;
-          return false;
-        })
-          ? newState
-          : state
-      );
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  return state;
-}
-
-export function useChatDispatch() {
-  const context = React.useContext(DispatchContext);
-  if (context === undefined) {
-    throw new Error('useChatDispatch must be used within a ChatProvider');
-  }
-  return context;
-}
-
-export function useChat(deps?: (keyof State)[]) {
-  return [useChatState(deps), useChatDispatch()] as const;
-}
-
-export function useChatMessage(id: string) {
-  const [msg, setMsg] = useState<Schema$Message>();
-  const [unread, setUnread] = useState<boolean>(false);
-
-  useEffect(() => {
-    const subscription = subject.subscribe(state => {
-      const newMsg = state.byIds[id];
-      setMsg(msg => (msg?.status === newMsg?.status ? msg : newMsg));
-      setUnread(state.unread.includes(id));
-    });
-    return () => subscription.unsubscribe();
-  }, [id]);
-
-  return [msg, unread] as const;
-}
-
-export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  useEffect(() => {
-    subject.next(state);
-  }, [state]);
-
-  return React.createElement(
-    StateContext.Provider,
-    { value: state },
-    React.createElement(DispatchContext.Provider, { value: dispatch }, children)
-  );
-};

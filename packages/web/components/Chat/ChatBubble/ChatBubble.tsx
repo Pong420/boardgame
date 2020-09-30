@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useRef } from 'react';
 import { fromEvent } from 'rxjs';
 import { startWith, delay } from 'rxjs/operators';
 import { Icon, Colors } from '@blueprintjs/core';
-import { useChatDispatch, useChatMessage } from '@/hooks/useChat';
+import { useMatchDispatch, useChatMessage } from '@/hooks/useMatch';
 import { MessageStatus, MessageType } from '@/typings';
 import styles from './ChatBubble.module.scss';
 
@@ -106,7 +106,7 @@ const ChatMessage = React.forwardRef<HTMLDivElement, Props>(
 export const ChatBubble = React.memo(
   ({ id, first, playerID, readyMsgDeps }: ChatBubbleProps) => {
     const [msg, unread] = useChatMessage(id);
-    const dispatch = useChatDispatch();
+    const dispatch = useMatchDispatch();
     const ref = useRef<HTMLDivElement>(null);
     const self = msg?.type === MessageType.CHAT && msg.playerID === playerID;
 

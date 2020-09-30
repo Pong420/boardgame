@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Icon, Popover } from '@blueprintjs/core';
 import { useBoolean } from '@/hooks/useBoolean';
-import { useChat } from '@/hooks/useChat';
+import { useMatch } from '@/hooks/useMatch';
 import styles from './ReadyButton.module.scss';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function ReadyButton({ playerID, toggleReady }: Props) {
-  const [{ players }] = useChat();
+  const [{ players }] = useMatch();
   const isReady = !!players[Number(playerID)]?.ready;
   const [isOpen, open, close] = useBoolean(!isReady);
   const playersNotReady = players.filter(p => !p || !p.ready);
