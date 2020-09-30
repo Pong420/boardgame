@@ -9,7 +9,15 @@ import {
 } from '@nestjs/websockets';
 import { Inject, UseGuards, UseInterceptors } from '@nestjs/common';
 import { from, merge, of, Subject, timer, race, throwError } from 'rxjs';
-import { filter, map, takeUntil, mergeMap, delay, tap } from 'rxjs/operators';
+import {
+  filter,
+  map,
+  takeUntil,
+  mergeMap,
+  delay,
+  tap,
+  finalize
+} from 'rxjs/operators';
 import { Socket } from 'socket.io';
 import {
   ChatEvent,
@@ -120,12 +128,14 @@ export class ChatGateway implements OnGatewayDisconnect {
 
     this.connected.set(socket.id, { matchID, playerID, credentials });
 
-    connect$.next({ credentials });
-
     return merge(
       of(sendPlayer(room.players)),
       // TODO: send into array ?
-      from(room.messages).pipe(map(message => sendMessage(message))),
+      from(room.messages).pipe(
+        map(message => sendMessage(message)),
+        // make sure reconnect message is emiited after origin message
+        finalize(() => connect$.next({ credentials }))
+      ),
       newPlayer
         ? [sendPlayer(room.players, matchID), sendMessage(joinMessage, matchID)]
         : []
@@ -185,47 +195,45 @@ export class ChatGateway implements OnGatewayDisconnect {
   }
 
   handleDisconnect(@ConnectedSocket() socket: Socket) {
-    from(authenticate(this.rooms, socket.handshake.query))
+    const identity = socket.handshake.query;
+    const { matchID, playerID, credentials } = identity;
+
+    const reconnected$ = connect$.pipe(
+      filter(p => p.credentials === credentials)
+    );
+
+    const send = (getContent: (player: WsPlayer) => string) => {
+      const room = this.rooms.get(matchID);
+      const player = room.players[Number(playerID)];
+      const message = createSysmMessage({ content: getContent(player) });
+      room.messages = pushMessage(room.messages, message);
+      this.rooms.set(matchID, room);
+      return sendMessage(message, matchID);
+    };
+
+    const reconnectOrLeave$ = race([
+      reconnected$.pipe(
+        map(() => send(player => `${player.playerName} reconnected`))
+      ),
+      timer(5000).pipe(
+        mergeMap(() => this.matchService.leaveMatch(identity)),
+        mergeMap(() => this.handleLeave(socket, identity))
+      )
+    ]);
+
+    const disconnectTimeout$ = timer(5000).pipe(
+      mergeMap(() =>
+        merge(
+          of(send(player => `${player.playerName} disconnected`)),
+          reconnectOrLeave$
+        )
+      )
+    );
+
+    from(authenticate(this.rooms, identity))
       .pipe(
-        mergeMap(identity => {
-          const { matchID, playerID, credentials } = identity || {};
-          const room = this.rooms.get(matchID);
-
-          const reconnected$ = connect$.pipe(
-            filter(p => p.credentials === credentials)
-          );
-
-          const player = room.players[Number(playerID)];
-
-          const send = (content: string) => {
-            const message = createSysmMessage({ content });
-            room.messages = pushMessage(room.messages, message);
-            this.rooms.set(matchID, room);
-            return sendMessage(message, matchID);
-          };
-
-          return timer(2500).pipe(
-            mergeMap(() =>
-              merge(
-                of(send(`${player.playerName} disconnected`)),
-                race([
-                  reconnected$.pipe(
-                    map(() => send(`${player.playerName} reconnected`))
-                  ),
-                  timer(3500).pipe(
-                    mergeMap(() => {
-                      return this.matchService.leaveMatch(identity);
-                    }),
-                    mergeMap(() => {
-                      return this.handleLeave(socket, identity);
-                    })
-                  )
-                ])
-              )
-            ),
-            takeUntil(reconnected$.pipe(delay(1)))
-          );
-        })
+        mergeMap(() => disconnectTimeout$),
+        takeUntil(reconnected$.pipe(delay(1)))
       )
       .subscribe(
         ({ event, room, data }) => {
