@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import router from 'next/router';
 import { useRxAsync } from 'use-rx-hooks';
 import { Toaster } from '@/utils/toaster';
@@ -10,7 +10,7 @@ import { Chat } from '../Chat';
 import { ShareButton } from '../ShareButton';
 import { Preferences } from '../Preferences';
 import { MatchHeader } from './MatchHeader';
-import { MatchContent } from './MatchContent';
+import { MatchContent, Gameover } from './MatchContent';
 import { Spectator } from './Spectator';
 import styles from './Match.module.scss';
 
@@ -19,6 +19,8 @@ interface State {
   numPlayers: number;
   allowSpectate?: boolean;
 }
+
+type Props = MatchState & Gameover;
 
 const onFailure = (error: ApiError) => {
   // match not found
@@ -35,7 +37,7 @@ const onFailure = (error: ApiError) => {
   router.push('/');
 };
 
-function MatchComponent(state: MatchState) {
+function MatchComponent(state: Props) {
   const { name, matchID }: Partial<Param$GetMatch> = isMatchState(
     state,
     'local'
@@ -98,10 +100,14 @@ function MatchComponent(state: MatchState) {
   );
 }
 
-export function Match(state: MatchState) {
+export function Match({
+  children,
+  ...props
+}: Props & { children?: ReactNode }) {
   return (
     <MatchProvider>
-      <MatchComponent {...state} />
+      <MatchComponent {...props} />
+      {children}
     </MatchProvider>
   );
 }

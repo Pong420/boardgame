@@ -8,11 +8,17 @@ import { Redirect } from '../Redirect';
 import { Loading } from './CenterText';
 import styles from './Match.module.scss';
 
-interface Props {
+export interface Gameover {
+  onGameover?: () => void;
+}
+
+interface Props extends Gameover {
   state: MatchState;
   loading?: boolean;
   isSpectator?: boolean;
 }
+
+type ClientProps = ComponentProps<ReturnType<typeof Client>> & Gameover;
 
 const handleImport = (name: string) =>
   Promise.all([
@@ -20,7 +26,12 @@ const handleImport = (name: string) =>
     import(`../../games/${name}/board`)
   ]);
 
-export function MatchContent({ state, loading, isSpectator }: Props) {
+export function MatchContent({
+  state,
+  loading,
+  isSpectator,
+  onGameover
+}: Props) {
   const { name } = state;
   const [clientOpts] = useState<Partial<Parameters<typeof Client>[0]>>({
     ...(isMatchState(state, 'local')
@@ -33,17 +44,38 @@ export function MatchContent({ state, loading, isSpectator }: Props) {
   });
 
   const { ClientComponent } = useMemo(() => {
-    const ClientComponent = dynamic<ComponentProps<ReturnType<typeof Client>>>(
+    const ClientComponent = dynamic<ClientProps>(
       () =>
-        handleImport(name).then(([{ game }, { Board }]) =>
-          Client({
+        handleImport(name).then(([{ game }, { Board }]) => {
+          const ClientClass = Client({
             debug: false,
             game: game as Game,
             board: Board,
             loading: Loading,
             ...clientOpts
-          })
-        ),
+          });
+
+          return class Board extends ClientClass {
+            props: ClientProps;
+
+            constructor(props: ClientProps) {
+              const { onGameover, ...rest } = props;
+              super(rest);
+              this.props = props;
+            }
+
+            componentDidUpdate(prevProps: ClientProps) {
+              const { onGameover, ...rest } = prevProps;
+
+              super.componentDidUpdate?.call(this, rest);
+
+              const isGameover = !!this.client.getState()?.ctx.gameover;
+              if (isGameover && onGameover) {
+                onGameover();
+              }
+            }
+          };
+        }),
       { loading: Loading, ssr: false }
     );
 
@@ -67,13 +99,18 @@ export function MatchContent({ state, loading, isSpectator }: Props) {
           matchID={state.matchID}
           playerID={state.playerID}
           credentials={state.credentials}
+          onGameover={onGameover}
         />
       );
     }
 
     if (isSpectator) {
       return (
-        <ClientComponent matchID={state.matchID} playerID={state.playerID} />
+        <ClientComponent
+          matchID={state.matchID}
+          playerID={state.playerID}
+          onGameover={onGameover}
+        />
       );
     }
 
