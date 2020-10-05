@@ -7,7 +7,14 @@ import {
   OnGatewayDisconnect,
   GatewayMetadata
 } from '@nestjs/websockets';
-import { Inject, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Inject,
+  ValidationPipe,
+  UseGuards,
+  UseInterceptors,
+  UsePipes,
+  UseFilters
+} from '@nestjs/common';
 import { merge, of, Subject, timer, race, throwError, defer } from 'rxjs';
 import {
   filter,
@@ -32,6 +39,7 @@ import {
   WsPlayer
 } from '@/typings';
 import { MatchService } from '@/match/match.service';
+import { WsExceptionsFilter } from '@/utils/ws-exception.filter';
 import {
   IdentifyDto,
   JoinChatDto,
@@ -60,6 +68,8 @@ const options: GatewayMetadata = {
   pingInterval: PING_INTERVAL
 };
 
+@UsePipes(new ValidationPipe({ transform: true }))
+@UseFilters(WsExceptionsFilter)
 @UseInterceptors(ChatResponseInterceptor)
 @WebSocketGateway(options)
 export class ChatGateway implements OnGatewayDisconnect {

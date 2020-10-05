@@ -1,11 +1,12 @@
-import { IsString } from 'class-validator';
-import { Exclude } from 'class-transformer';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { Exclude, Transform } from 'class-transformer';
 import {
   MessageStatus,
   MessageType,
   Param$SendMessage,
   Schema$ChatMessage
 } from '@/typings';
+import { DOMPurify } from '@/utils/dompurify';
 import { IdentifyDto } from './identify.dto';
 
 export class SendMessageDto
@@ -21,6 +22,8 @@ export class SendMessageDto
   status: MessageStatus;
 
   @IsString()
+  @IsNotEmpty()
+  @Transform(dirty => DOMPurify.sanitize(dirty, { ALLOWED_TAGS: ['#text'] }))
   content: string;
 
   @IsString()
