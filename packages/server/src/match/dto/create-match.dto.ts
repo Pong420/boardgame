@@ -1,5 +1,6 @@
 import {
   IsString,
+  IsNotEmpty,
   IsOptional,
   IsNumber,
   IsBoolean,
@@ -40,16 +41,19 @@ class Excluded implements DTOExcluded<Schema$Match, Param$CreateMatch> {
   nextMatchID?: string;
 }
 
-class CreateMatch extends Excluded
+class CreateMatch
+  extends Excluded
   implements Partial<Omit<Param$CreateMatch, keyof Excluded>> {
   @IsOptional()
   @IsBoolean()
   unlisted?: boolean;
 }
 
-export class CreateMatchDto extends CreateMatch
+export class CreateMatchDto
+  extends CreateMatch
   implements Required<Omit<Param$CreateMatch, keyof CreateMatch>> {
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @IsNumber()

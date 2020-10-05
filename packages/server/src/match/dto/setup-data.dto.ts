@@ -1,8 +1,9 @@
 import { SetupData } from '@/typings';
-import { IsOptional, IsBoolean, IsString } from 'class-validator';
+import { IsOptional, IsBoolean, IsString, IsNotEmpty } from 'class-validator';
 
 export class SetupDataDto implements SetupData {
   @IsString()
+  @IsNotEmpty()
   // TODO: max length
   matchName: string;
 

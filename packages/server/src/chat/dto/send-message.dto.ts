@@ -13,6 +13,7 @@ export class SendMessageDto
   extends IdentifyDto
   implements Schema$ChatMessage, Param$SendMessage {
   @IsString()
+  @IsNotEmpty()
   id: string;
 
   @Exclude()
@@ -27,5 +28,6 @@ export class SendMessageDto
   content: string;
 
   @IsString()
+  @IsNotEmpty()
   playerName: string;
 }

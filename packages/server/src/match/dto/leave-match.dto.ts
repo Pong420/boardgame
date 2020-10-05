@@ -1,16 +1,20 @@
+import { IsString, IsNotEmpty } from 'class-validator';
 import { Param$LeaveMatch } from '@/typings';
-import { IsString } from 'class-validator';
 
 export class LeaveMatchDto implements Param$LeaveMatch {
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @IsString()
+  @IsNotEmpty()
   matchID: string;
 
   @IsString()
+  @IsNotEmpty()
   playerID: string;
 
   @IsString()
+  @IsNotEmpty()
   credentials: string;
 }

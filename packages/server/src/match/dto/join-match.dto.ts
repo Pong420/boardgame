@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 import { Exclude } from 'class-transformer';
 import { Param$JoinMatch } from '@/typings';
 
@@ -11,14 +11,18 @@ export class JoinMatchDto
   extends JoinMatch
   implements Required<Omit<Param$JoinMatch, keyof JoinMatch>> {
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @IsString()
+  @IsNotEmpty()
   matchID: string;
 
   @IsString()
+  @IsNotEmpty()
   playerID: string;
 
   @IsString()
+  @IsNotEmpty()
   playerName: string;
 }

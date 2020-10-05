@@ -1,6 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Param$PlayAgain } from '@/typings';
-import { IsString } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 class PlayAgain implements Partial<Param$PlayAgain> {
   @Exclude()
@@ -14,14 +14,18 @@ export class PlayAgainDto
   extends PlayAgain
   implements Required<Omit<Param$PlayAgain, keyof PlayAgain>> {
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @IsString()
+  @IsNotEmpty()
   matchID: string;
 
   @IsString()
+  @IsNotEmpty()
   playerID: string;
 
   @IsString()
+  @IsNotEmpty()
   credentials: string;
 }
