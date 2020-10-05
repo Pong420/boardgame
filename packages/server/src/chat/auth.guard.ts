@@ -26,7 +26,7 @@ export async function authenticate(
   if (rooms.has(matchID)) {
     const { players } = rooms.get(matchID);
     const player = players[Number(playerID)];
-    if (player && player.credentials === credentials) {
+    if (player && player.credentials === credentials && !player.leave) {
       return identify;
     }
     throw new WsException('Invalid credentials');

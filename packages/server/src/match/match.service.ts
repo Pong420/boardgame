@@ -15,6 +15,7 @@ export class MatchService extends MongoStore {
     const sort: keyof LobbyAPI.Match = 'createdAt';
     return await MetadataModel.find({
       unlisted: false,
+      'setupData.canceled': false,
       ...getListGamesOptsQuery({
         gameName: name,
         where

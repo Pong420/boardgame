@@ -7,7 +7,8 @@ export enum ChatEvent {
   Ready = 'Ready',
   Leave = 'Leave',
   Player = 'Player',
-  Spectate = 'Spectate'
+  Spectate = 'Spectate',
+  NextMatch = 'NextMatch'
 }
 
 export interface Identify {
@@ -59,6 +60,7 @@ export interface Param$PlayerReady extends Identify {}
 
 export interface WsPlayer {
   ready: boolean;
+  leave: boolean;
   playerID: string;
   playerName: string;
   credentials: string;

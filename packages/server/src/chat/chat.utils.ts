@@ -35,9 +35,11 @@ export function createSysmMessage(
 // limit the maximum length of message
 export function pushMessage(
   messages: Schema$Message[],
-  message: Schema$Message
+  ...newMessages: Schema$Message[]
 ): Schema$Message[] {
-  return [...messages, message].slice(Math.max(0, messages.length - 100));
+  return [...messages, ...newMessages].slice(
+    Math.max(0, messages.length - 100)
+  );
 }
 
 export const isStarted = (room: Room) => room.players.every(p => p.ready);

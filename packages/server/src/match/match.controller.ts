@@ -114,7 +114,10 @@ export class MatchController {
         createdAt: Date.now(),
         updatedAt: Date.now(),
         unlisted: !!unlisted,
-        setupData
+        setupData: {
+          ...setupData,
+          canceled: false
+        }
       };
 
       const matchID = nanoid();

@@ -8,15 +8,15 @@ import {
   GatewayMetadata
 } from '@nestjs/websockets';
 import { Inject, UseGuards, UseInterceptors } from '@nestjs/common';
-import { from, merge, of, Subject, timer, race, throwError } from 'rxjs';
+import { merge, of, Subject, timer, race, throwError, defer } from 'rxjs';
 import {
   filter,
   map,
   takeUntil,
   mergeMap,
   delay,
-  tap,
-  finalize
+  finalize,
+  mergeAll
 } from 'rxjs/operators';
 import { Socket } from 'socket.io';
 import {
@@ -116,6 +116,7 @@ export class ChatGateway implements OnGatewayDisconnect {
       room.messages = pushMessage(room.messages, joinMessage);
       room.players[Number(playerID)] = {
         ready: false,
+        leave: false,
         playerID,
         playerName,
         credentials
@@ -131,7 +132,7 @@ export class ChatGateway implements OnGatewayDisconnect {
     return merge(
       of(sendPlayer(room.players)),
       // TODO: send into array ?
-      from(room.messages).pipe(
+      defer(() => room.messages).pipe(
         map(message => sendMessage(message)),
         // make sure reconnect message is emiited after origin message
         finalize(() => connect$.next({ credentials }))
@@ -217,7 +218,8 @@ export class ChatGateway implements OnGatewayDisconnect {
       ),
       timer(5000).pipe(
         mergeMap(() => this.matchService.leaveMatch(identity)),
-        mergeMap(() => this.handleLeave(socket, identity))
+        mergeMap(() => this.handleLeave(socket, identity)),
+        mergeAll()
       )
     ]);
 
@@ -230,8 +232,9 @@ export class ChatGateway implements OnGatewayDisconnect {
       )
     );
 
-    from(authenticate(this.rooms, identity))
+    defer(() => authenticate(this.rooms, identity))
       .pipe(
+        delay(100), // wait for player leave then disconnect
         mergeMap(() => disconnectTimeout$),
         takeUntil(reconnected$.pipe(delay(1)))
       )
@@ -246,10 +249,12 @@ export class ChatGateway implements OnGatewayDisconnect {
       );
   }
 
-  handleLeave(socket: Socket, identify?: IdentifyDto) {
+  async handleLeave(socket: Socket, identify?: IdentifyDto) {
     identify = identify || this.connected.get(socket.id);
 
     if (identify) {
+      this.connected.delete(socket.id);
+
       const { matchID, playerID } = identify;
       const room = { ...this.rooms.get(matchID) };
 
@@ -260,21 +265,42 @@ export class ChatGateway implements OnGatewayDisconnect {
           content: `${player.playerName} leave the match`
         });
 
-        room.players[idx] = null;
+        const { metadata } = await this.matchService.fetch(matchID, {
+          metadata: true
+        });
+
+        const shouldCancel = isStarted(room) && !metadata.setupData.canceled;
+        const response: RoomResponse[] = [];
+
         room.messages = pushMessage(room.messages, leaveMessage);
-        this.rooms.set(matchID, room);
+        response.push(sendMessage(leaveMessage, matchID));
+
+        if (shouldCancel) {
+          const cancelMessage = createSysmMessage({
+            content: `The match has canceled since ${player.playerName} leaves the match.`
+          });
+          room.players[idx] = { ...room.players[idx], leave: true };
+          room.messages = pushMessage(room.messages, cancelMessage);
+          response.push(sendMessage(cancelMessage, matchID));
+
+          await this.matchService.setMetadata(matchID, {
+            ...metadata,
+            setupData: { ...metadata.setupData, canceled: true }
+          });
+        } else {
+          room.players[idx] = null;
+        }
+
+        socket.leave(matchID);
 
         if (room.players.every(p => p === null)) {
           this.rooms.delete(matchID);
+        } else {
+          this.rooms.set(matchID, room);
+          response.push(sendPlayer(room.players, matchID));
+          return merge(response);
         }
-
-        return merge([
-          sendMessage(leaveMessage, matchID),
-          sendPlayer(room.players, matchID)
-        ]).pipe(tap(() => socket.leave(matchID)));
       }
-
-      this.connected.delete(socket.id);
     }
 
     return throwError(`handleLeave error, identify is not defined`);
