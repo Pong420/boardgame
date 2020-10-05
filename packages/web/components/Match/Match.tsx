@@ -78,7 +78,7 @@ function MatchComponent(state: Props) {
         )}
         <Preferences disablePlayerName />
       </MatchHeader>
-      {isMatchState(state, 'spectate') && !started && (
+      {isMatchState(state, 'spectate') && (
         <Spectator name={state.name} matchID={state.matchID} />
       )}
       {(isMatchState(state, 'local') || started) && (

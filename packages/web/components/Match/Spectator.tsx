@@ -3,8 +3,8 @@ import io, { Socket } from 'socket.io-client';
 import router from 'next/router';
 import { fromEventPattern } from 'rxjs';
 import { Colors, HTMLTable, Icon } from '@blueprintjs/core';
-import { ChatEvent, WsError, WsPlayer } from '@/typings';
-import { useMatch } from '@/hooks/useMatch';
+import { ChatEvent, WsError } from '@/typings';
+import { useMatch, Player } from '@/hooks/useMatch';
 import { Toaster } from '@/utils/toaster';
 import { Loading } from './CenterText';
 import styles from './Match.module.scss';
@@ -26,36 +26,47 @@ function frommSocketIO<T>(
 
 export function Spectator({ name, matchID }: Props) {
   const [socket] = useState(() => io.connect('/spectate', { forceNew: true }));
-  const [{ players }, dispatch] = useMatch(['started', 'players']);
+  const [{ players, started, canceled }, dispatch] = useMatch([
+    'started',
+    'canceled',
+    'players'
+  ]);
 
   useEffect(() => {
-    const onPlayerUpdate = (payload: (WsPlayer | null)[]) => {
-      const canceled = payload.every(p => p === null);
-      if (canceled) {
-        router.push(`/lobby/${name}`);
-        Toaster.info({ message: 'The match is canceled' });
-      }
+    const handlePlayerUpdate = (payload: Player[]) => {
       dispatch({ type: 'UpdatePlayer', payload });
     };
 
     const events = [
-      frommSocketIO<(WsPlayer | null)[]>(socket, ChatEvent.Player).subscribe(
-        onPlayerUpdate
+      frommSocketIO<Player[]>(socket, ChatEvent.Player).subscribe(
+        handlePlayerUpdate
       ),
       frommSocketIO<WsError>(socket, 'exception').subscribe(error => {
         Toaster.failure(error);
       })
     ];
 
-    socket.emit(ChatEvent.Spectate, { name, matchID }, onPlayerUpdate);
+    socket.emit(ChatEvent.Spectate, { name, matchID }, handlePlayerUpdate);
 
     return () => {
       events.forEach(subscription => subscription.unsubscribe());
     };
   }, [socket, dispatch, name, matchID]);
 
+  useEffect(() => {
+    if (canceled) {
+      router
+        .push(`/lobby/${name}`)
+        .then(() => Toaster.info({ message: 'The match has canceled' }));
+    }
+  }, [name, canceled]);
+
   if (players.length === 0) {
     return <Loading />;
+  }
+
+  if (started) {
+    return null;
   }
 
   return (

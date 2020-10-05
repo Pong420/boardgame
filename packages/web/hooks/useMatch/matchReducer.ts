@@ -1,12 +1,15 @@
 import { MessageType, Schema$Message, WsPlayer } from '@/typings';
 
+export type Player = WsPlayer | null;
+
 export interface UseMatchState {
   started: boolean;
+  canceled: boolean;
   list: string[];
   unread: string[];
   group: string[][];
   byIds: Record<string, Schema$Message>;
-  players: (WsPlayer | null)[];
+  players: Player[];
 }
 
 interface Create {
@@ -48,6 +51,7 @@ export type UseMatchActions =
 
 export const initialState: UseMatchState = {
   started: false,
+  canceled: false,
   list: [],
   unread: [],
   group: [],
@@ -63,10 +67,14 @@ function isMatchStarted(players: UpdatePlayer['payload'], playerID?: string) {
       return {
         ...state,
         players: [...state.players, player],
-        started: state.started && !!player?.ready
+        started: state.started && !!player?.ready,
+        canceled: state.canceled || !!player?.leave
       };
     },
-    { players: [], started: true } as Pick<UseMatchState, 'players' | 'started'>
+    { players: [], started: true, canceled: false } as Pick<
+      UseMatchState,
+      'players' | 'started' | 'canceled'
+    >
   );
 }
 

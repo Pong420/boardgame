@@ -8,7 +8,9 @@ import {
   UseMatchActions
 } from './matchReducer';
 
-const defaultDeps = Object.keys(initialState) as (keyof UseMatchState)[];
+type Key = keyof UseMatchState;
+
+const defaultDeps = Object.keys(initialState) as Key[];
 
 const StateContext = React.createContext<UseMatchState | undefined>(undefined);
 const DispatchContext = React.createContext<
@@ -18,7 +20,9 @@ const DispatchContext = React.createContext<
 // cannot use Subject
 const subject = new BehaviorSubject(initialState);
 
-export function useMatchState(_deps = defaultDeps) {
+export function useMatchState<T extends Key>(
+  _deps = defaultDeps
+): Pick<UseMatchState, T> {
   const [state, setState] = useState<UseMatchState>(initialState);
   const [deps] = useState(_deps);
 
@@ -50,8 +54,8 @@ export function useMatchDispatch() {
   return context;
 }
 
-export function useMatch(deps?: (keyof UseMatchState)[]) {
-  return [useMatchState(deps), useMatchDispatch()] as const;
+export function useMatch<T extends Key>(deps?: T[]) {
+  return [useMatchState<T>(deps), useMatchDispatch()] as const;
 }
 
 export function useChatMessage(id: string) {
