@@ -56,16 +56,14 @@ export function ChatInput({ onSend }: Props) {
         popoverClassName={styles['emoji-popover']}
         content={
           <Picker
-            native
             autoFocus
-            set="google"
             showPreview={false}
             showSkinTones={false}
             theme={theme}
             color="var(--accent-color)"
-            onSelect={(emoji: BaseEmoji) =>
-              setValue(value => `${value}${emoji.native}`)
-            }
+            onSelect={(emoji: BaseEmoji) => {
+              setValue(value => `${value}${emoji.colons}`);
+            }}
           />
         }
       >

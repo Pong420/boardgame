@@ -96,3 +96,10 @@ a:hover {
     @include scrollbar();
   }
 }
+
+// Without this config, 64.png will load every Emoji component render
+.emoji-mart-emoji {
+  > span {
+    background-image: url('https://unpkg.com/emoji-datasource-apple@5.0.1/img/apple/sheets-256/64.png') !important;
+  }
+}

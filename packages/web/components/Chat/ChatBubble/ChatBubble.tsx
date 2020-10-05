@@ -4,6 +4,7 @@ import { startWith, delay } from 'rxjs/operators';
 import { Icon, Colors } from '@blueprintjs/core';
 import { useMatchDispatch, useChatMessage } from '@/hooks/useMatch';
 import { MessageStatus, MessageType } from '@/typings';
+import { TextContent } from './TextContent';
 import styles from './ChatBubble.module.scss';
 
 interface Props {
@@ -92,7 +93,10 @@ const ChatMessage = React.forwardRef<HTMLDivElement, Props>(
       >
         {!!user && <div className={styles['chat-bubble-user']}>{user}</div>}
         <div className={styles['chat-bubble-content']}>
-          <div className={styles['chat-bubble-text']}>{content}</div>
+          {/* <div className={styles['chat-bubble-text']}>
+            <span dangerouslySetInnerHTML={{ __html: content }}></span>
+          </div> */}
+          <TextContent content={content} />
           <div className={styles['chat-bubble-date']}>
             {date}
             <Status status={status} />
