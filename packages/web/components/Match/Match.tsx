@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import router from 'next/router';
 import { useRxAsync } from 'use-rx-hooks';
 import { Toaster } from '@/utils/toaster';
@@ -64,6 +64,7 @@ function MatchComponent(state: Props) {
   const { matchName, allowSpectate } = data || {};
   const { gameName } = gameMetaMap[state.name];
   const { started } = useMatchState(['started']);
+  const [isGameover, setIsGameover] = useState<boolean | undefined>();
 
   return (
     <div className={styles['match']}>
@@ -86,6 +87,7 @@ function MatchComponent(state: Props) {
           state={state}
           loading={!data || loading}
           isSpectator={allowSpectate}
+          onGameover={() => setIsGameover(true)}
         />
       )}
       {isMatchState(state, 'multi') && data && (
@@ -94,20 +96,17 @@ function MatchComponent(state: Props) {
           playerID={state.playerID}
           playerName={state.playerName}
           credentials={state.credentials}
+          isGameover={isGameover}
         />
       )}
     </div>
   );
 }
 
-export function Match({
-  children,
-  ...props
-}: Props & { children?: ReactNode }) {
+export function Match(props: Props) {
   return (
     <MatchProvider>
       <MatchComponent {...props} />
-      {children}
     </MatchProvider>
   );
 }

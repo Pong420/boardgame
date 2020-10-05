@@ -81,7 +81,7 @@ export function Spectator({ name, matchID }: Props) {
         </thead>
         <tbody>
           {players.map((p, idx) => {
-            const player: Partial<WsPlayer> = p || {};
+            const player: Partial<Player> = p || {};
             return (
               <tr key={idx}>
                 <td>{player.playerName || ' - '}</td>
