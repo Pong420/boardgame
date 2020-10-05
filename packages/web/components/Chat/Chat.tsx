@@ -24,7 +24,9 @@ import { Disconnected, Loading } from '../Match/CenterText';
 import { ReadyButton } from '../ReadyButton';
 import styles from './Chat.module.scss';
 
-interface ChatProps extends Param$JoinChat {}
+interface ChatProps extends Param$JoinChat {
+  isGameover?: boolean;
+}
 
 function frommSocketIO<T>(
   socket: typeof Socket,
