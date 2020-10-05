@@ -118,7 +118,7 @@ export function Chat(identify: ChatProps) {
         setConnected(false);
       }),
       exception$.subscribe(error => {
-        return Toaster.failure(error);
+        Toaster.failure(error);
       }),
       players$.subscribe(payload =>
         dispatch({ type: 'UpdatePlayer', payload })

@@ -78,14 +78,6 @@ function MatchComponent(state: Props) {
         )}
         <Preferences disablePlayerName />
       </MatchHeader>
-      {isMatchState(state, 'multi') && data && (
-        <Chat
-          matchID={state.matchID}
-          playerID={state.playerID}
-          playerName={state.playerName}
-          credentials={state.credentials}
-        />
-      )}
       {isMatchState(state, 'spectate') && !started && (
         <Spectator name={state.name} matchID={state.matchID} />
       )}
@@ -94,6 +86,14 @@ function MatchComponent(state: Props) {
           state={state}
           loading={!data || loading}
           isSpectator={allowSpectate}
+        />
+      )}
+      {isMatchState(state, 'multi') && data && (
+        <Chat
+          matchID={state.matchID}
+          playerID={state.playerID}
+          playerName={state.playerName}
+          credentials={state.credentials}
         />
       )}
     </div>

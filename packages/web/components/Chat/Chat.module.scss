@@ -6,6 +6,7 @@
   @include sq-dimen(100%);
   max-width: 1278px;
   padding: 0;
+  z-index: $pt-z-index-overlay;
 }
 
 .full-screen {
