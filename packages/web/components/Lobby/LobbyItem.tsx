@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from '@blueprintjs/core';
 import { Player, GameMeta, Schema$Match } from '@/typings';
 import { JoinMatch } from './JoinMatch';
-import { Spectate } from './Spectate';
+import { Spectate } from '../Spectate';
 import styles from './Lobby.module.scss';
 
 interface Props extends Schema$Match {
@@ -61,6 +61,7 @@ export function LobbyItem({
               />
             ) : (
               <Spectate
+                text="Spectate"
                 name={name}
                 matchID={matchID}
                 players={players}

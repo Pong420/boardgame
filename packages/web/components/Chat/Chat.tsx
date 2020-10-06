@@ -53,7 +53,7 @@ export function Chat({ isGameover, ...identify }: ChatProps) {
     io.connect('/chat', { query: identify, autoConnect: false, forceNew: true })
   );
 
-  const { sendMessage, toggleReady } = useMemo(() => {
+  const { sendMessage, toggleReady, nextMatch } = useMemo(() => {
     const identify = identifyRef.current;
 
     const sendMessage = (content: string) => {
@@ -86,9 +86,14 @@ export function Chat({ isGameover, ...identify }: ChatProps) {
       });
     };
 
+    const nextMatch = () => {
+      socket.emit(ChatEvent.NextMatch, identify);
+    };
+
     return {
       sendMessage,
-      toggleReady
+      toggleReady,
+      nextMatch
     };
   }, [socket, dispatch, scrollToBottom]);
 
@@ -210,10 +215,12 @@ export function Chat({ isGameover, ...identify }: ChatProps) {
               minimal
               icon="play"
               content="Play Again"
+              intent="primary"
+              onSuccess={nextMatch}
               popoverProps={{
+                position: 'top',
                 usePortal: false,
-                defaultIsOpen: true,
-                position: 'top'
+                defaultIsOpen: true
               }}
             />
           )}

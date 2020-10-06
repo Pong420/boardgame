@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useRxAsync } from 'use-rx-hooks';
 import {
   gotoMatch,
@@ -11,7 +11,9 @@ import {
 import { Toaster } from '@/utils/toaster';
 import { ButtonPopover, ButtonPopoverProps } from './ButtonPopover';
 
-interface Props extends ButtonPopoverProps {}
+interface Props extends ButtonPopoverProps {
+  onSuccess?: (state: MultiMatchState) => void;
+}
 
 const request = async (): Promise<MultiMatchState> => {
   const state = matchStorage.get();
@@ -34,14 +36,17 @@ const request = async (): Promise<MultiMatchState> => {
   throw new Error('state not found');
 };
 
-function onSuccess(state: MultiMatchState) {
-  matchStorage.save(state);
-  gotoMatch(state);
-}
-
 const onFailure = Toaster.apiError.bind(Toaster, 'Play Again Failure');
 
-export function PlayAgain(props: Props) {
+export function PlayAgain({ onSuccess: _onSuccess, ...props }: Props) {
+  const onSuccess = useCallback(
+    (state: MultiMatchState) => {
+      _onSuccess && _onSuccess(state);
+      matchStorage.save(state);
+      gotoMatch(state);
+    },
+    [_onSuccess]
+  );
   const [{ loading }, { fetch }] = useRxAsync(request, {
     defer: true,
     onSuccess,

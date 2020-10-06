@@ -45,6 +45,7 @@ export type {
   Param$JoinChat,
   Param$SendMessage,
   Param$PlayerReady,
+  Response$Spectate,
   WsPlayer,
   WsError
 } from '@boardgame/server';

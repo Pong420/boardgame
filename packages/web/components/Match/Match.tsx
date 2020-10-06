@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import router from 'next/router';
 import { useRxAsync } from 'use-rx-hooks';
 import { Toaster } from '@/utils/toaster';
@@ -11,7 +11,6 @@ import { ShareButton } from '../ShareButton';
 import { Preferences } from '../Preferences';
 import { MatchHeader } from './MatchHeader';
 import { MatchContent, Gameover } from './MatchContent';
-import { Spectator } from './Spectator';
 import styles from './Match.module.scss';
 
 interface State {
@@ -61,10 +60,14 @@ function MatchComponent(state: Props) {
   }, [name, matchID]);
 
   const [{ data, loading }] = useRxAsync(_getMatch, { onFailure });
-  const { matchName, allowSpectate } = data || {};
+  const { matchName } = data || {};
   const { gameName } = gameMetaMap[state.name];
   const { started } = useMatchState(['started']);
   const [isGameover, setIsGameover] = useState<boolean | undefined>();
+
+  useEffect(() => {
+    setIsGameover(false);
+  }, [matchID]);
 
   return (
     <div className={styles['match']}>
@@ -79,14 +82,10 @@ function MatchComponent(state: Props) {
         )}
         <Preferences disablePlayerName />
       </MatchHeader>
-      {isMatchState(state, 'spectate') && (
-        <Spectator name={state.name} matchID={state.matchID} />
-      )}
       {(isMatchState(state, 'local') || started) && (
         <MatchContent
           state={state}
           loading={!data || loading}
-          isSpectator={allowSpectate}
           onGameover={() => setIsGameover(true)}
         />
       )}

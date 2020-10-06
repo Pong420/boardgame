@@ -5,7 +5,7 @@ import { gameMetaMap } from '@/games';
 import { getMatch } from '@/services';
 import { Toaster } from '@/utils/toaster';
 import { JoinMatch } from '../Lobby/JoinMatch';
-import { Spectate } from '../Lobby/Spectate';
+import { Spectate } from '../Spectate';
 import styles from './Invitation.module.scss';
 
 interface Props {
@@ -56,6 +56,7 @@ export function Invitation({ name, matchID }: Props) {
             players={match.players}
             allow={!!match.setupData?.allowSpectate}
             type={meta.spectate}
+            text="Spectate"
           />
         </div>
       );

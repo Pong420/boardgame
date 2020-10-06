@@ -3,7 +3,7 @@ import Head from 'next/head';
 import router from 'next/router';
 import { GetServerSideProps } from 'next';
 import { gameMetaMap } from '@/games';
-import { Match } from '@/components/Match';
+import { Spectator } from '@/components/Spectator';
 import { Toaster } from '@/utils/toaster';
 import { getSpectateQuery } from '@/services';
 
@@ -50,7 +50,12 @@ export default function SpectatePage({
       </Head>
 
       {!error && (
-        <Match name={name} matchID={matchID} playerID={playerID} isSpectator />
+        <Spectator
+          isSpectator
+          name={name}
+          matchID={matchID}
+          playerID={playerID}
+        />
       )}
     </>
   );

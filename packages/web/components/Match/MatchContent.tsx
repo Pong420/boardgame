@@ -15,7 +15,6 @@ export interface Gameover {
 interface Props extends Gameover {
   state: MatchState;
   loading?: boolean;
-  isSpectator?: boolean;
 }
 
 type ClientProps = ComponentProps<ReturnType<typeof Client>> & Gameover;
@@ -26,12 +25,7 @@ const handleImport = (name: string) =>
     import(`../../games/${name}/board`)
   ]);
 
-export function MatchContent({
-  state,
-  loading,
-  isSpectator,
-  onGameover
-}: Props) {
+export function MatchContent({ state, loading, onGameover }: Props) {
   const { name } = state;
   const [clientOpts] = useState<Partial<Parameters<typeof Client>[0]>>({
     ...(isMatchState(state, 'local')
@@ -104,7 +98,7 @@ export function MatchContent({
       );
     }
 
-    if (isSpectator) {
+    if (isMatchState(state, 'spectate')) {
       return (
         <ClientComponent
           matchID={state.matchID}
