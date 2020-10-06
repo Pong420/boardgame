@@ -5,7 +5,8 @@ import {
   MessageBody,
   WsException,
   OnGatewayDisconnect,
-  GatewayMetadata
+  GatewayMetadata,
+  WsResponse
 } from '@nestjs/websockets';
 import {
   Inject,
@@ -53,7 +54,8 @@ import {
   sendPlayer,
   createSysmMessage,
   pushMessage,
-  isStarted
+  isStarted,
+  sendNextMatch
 } from './chat.utils';
 import { MemeoryStorage } from './memeory.providers';
 
@@ -203,6 +205,27 @@ export class ChatGateway implements OnGatewayDisconnect {
     @MessageBody() identify: IdentifyDto
   ) {
     return this.handleLeave(socket, identify);
+  }
+
+  @UseGuards(AuthGuard)
+  @SubscribeMessage(ChatEvent.NextMatch)
+  async onNextMatch(
+    @MessageBody()
+    { matchID }: IdentifyDto
+  ): Promise<WsResponse<string>> {
+    const room = this.rooms.get(matchID);
+    if (room) {
+      let nextMatchID = room.nextMatchID;
+      if (!nextMatchID) {
+        const { metadata } = await this.matchService.fetch(matchID, {
+          metadata: true
+        });
+        nextMatchID = metadata.nextMatchID;
+      }
+      this.rooms.set(matchID, { ...room, nextMatchID });
+      return sendNextMatch(nextMatchID, matchID);
+    }
+    throw new WsException('Match not found');
   }
 
   handleDisconnect(@ConnectedSocket() socket: Socket) {

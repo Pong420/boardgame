@@ -58,6 +58,11 @@ export interface Param$SendMessage extends Identify {
 
 export interface Param$PlayerReady extends Identify {}
 
+export interface Response$Spectate {
+  players: Room['players'];
+  nextMatchID?: string;
+}
+
 export interface WsPlayer {
   ready: boolean;
   leave: boolean;
@@ -67,6 +72,7 @@ export interface WsPlayer {
 }
 
 export interface Room {
+  nextMatchID?: string;
   players: Array<WsPlayer | null>;
   messages: Schema$Message[];
 }

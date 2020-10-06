@@ -20,6 +20,7 @@ function send<T>(event: ChatEvent, extraNamespaces?: string[]) {
 
 export const sendMessage = send<Schema$Message>(ChatEvent.Message, []);
 export const sendPlayer = send<Room['players']>(ChatEvent.Player, ['spectate']);
+export const sendNextMatch = send<string>(ChatEvent.NextMatch, ['spectate']);
 
 export function createSysmMessage(
   payload: Partial<Schema$SystemMessage> & Pick<Schema$SystemMessage, 'content'>
