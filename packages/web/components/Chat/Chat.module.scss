@@ -25,7 +25,8 @@
   right: 15px;
   left: auto;
 
-  .chat-header {
+  .chat-header-toggle {
+    @include absolute(0, 0, 0, 0);
     cursor: pointer;
   }
 
@@ -35,6 +36,7 @@
 }
 
 .chat-header {
+  @include relative();
   @include header;
   @include padding-x(20px);
   flex: 0 0 auto;
@@ -43,6 +45,10 @@
 .chat-header-title {
   @include header-title;
   @include flex(center);
+}
+
+.chat-header-action {
+  @include relative();
 }
 
 .chat-content {

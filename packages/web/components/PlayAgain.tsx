@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button, IButtonProps } from '@blueprintjs/core';
 import { useRxAsync } from 'use-rx-hooks';
 import {
   gotoMatch,
@@ -10,8 +9,9 @@ import {
   playAgain
 } from '@/services';
 import { Toaster } from '@/utils/toaster';
+import { ButtonPopover, ButtonPopoverProps } from './ButtonPopover';
 
-interface Props extends IButtonProps {}
+interface Props extends ButtonPopoverProps {}
 
 const request = async (): Promise<MultiMatchState> => {
   const state = matchStorage.get();
@@ -48,7 +48,5 @@ export function PlayAgain(props: Props) {
     onFailure
   });
 
-  return (
-    <Button {...props} text="Play again" loading={loading} onClick={fetch} />
-  );
+  return <ButtonPopover {...props} loading={loading} onClick={fetch} />;
 }

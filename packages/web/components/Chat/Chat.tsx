@@ -3,7 +3,7 @@ import io, { Socket } from 'socket.io-client';
 import router from 'next/router';
 import { fromEventPattern, timer, zip } from 'rxjs';
 import { buffer, debounceTime, switchMap, take } from 'rxjs/operators';
-import { Classes, Icon } from '@blueprintjs/core';
+import { Button, Classes } from '@blueprintjs/core';
 import {
   Param$JoinChat,
   Schema$Message,
@@ -21,6 +21,7 @@ import { ChatInput } from './ChatInput';
 import { ChatBubble } from './ChatBubble';
 import { UnreadCount } from './UnreadCount';
 import { Disconnected, Loading } from '../Match/CenterText';
+import { PlayAgain } from '../PlayAgain';
 import { ReadyButton } from '../ReadyButton';
 import styles from './Chat.module.scss';
 
@@ -39,7 +40,7 @@ function frommSocketIO<T>(
 }
 
 // @refresh reset
-export function Chat(identify: ChatProps) {
+export function Chat({ isGameover, ...identify }: ChatProps) {
   const identifyRef = useRef(identify);
   const [{ group, unread, started }, dispatch] = useMatch();
   const [collapsed, , , toggleCollapse] = useBoolean(true);
@@ -195,12 +196,32 @@ export function Chat(identify: ChatProps) {
 
   return (
     <div className={className}>
-      <div className={styles['chat-header']} onClick={toggleCollapse}>
+      <div className={`${styles['chat-header']} ${Classes.ELEVATION_1}`}>
+        <div
+          className={styles['chat-header-toggle']}
+          onClick={toggleCollapse}
+        />
         <div className={styles['chat-header-title']}>
           Chat <UnreadCount count={unread.length} />
         </div>
-        <div>
-          <Icon icon={collapsed ? 'chevron-up' : 'chevron-down'} />
+        <div className={styles['chat-header-action']}>
+          {isGameover && (
+            <PlayAgain
+              minimal
+              icon="play"
+              content="Play Again"
+              popoverProps={{
+                usePortal: false,
+                defaultIsOpen: true,
+                position: 'top'
+              }}
+            />
+          )}
+          <Button
+            minimal
+            icon={collapsed ? 'chevron-up' : 'chevron-down'}
+            onClick={toggleCollapse}
+          />
         </div>
       </div>
       {mounted ? connected ? chatContent : <Disconnected /> : <Loading />}
