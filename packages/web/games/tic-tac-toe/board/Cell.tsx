@@ -10,6 +10,7 @@ export const Cell = ({ children, ...props }: JSX.IntrinsicElements['td']) => (
         cursor: default;
         font-weight: bold;
         font-size: 20px;
+        user-select: none;
 
         &.active {
           cursor: pointer;
