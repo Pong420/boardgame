@@ -1,11 +1,8 @@
-import React, { useMemo } from 'react';
-import router from 'next/router';
-import { RxAsyncOptions, useRxAsync } from 'use-rx-hooks';
-import { getMatch, SpectateState } from '@/services';
-import { ApiError, Schema$Match } from '@/typings';
+import React from 'react';
+import { SpectateState } from '@/services';
 import { gameMetaMap } from '@/games';
-import { Toaster } from '@/utils/toaster';
 import { MatchProvider } from '@/hooks/useMatch';
+import { useGetMach } from '@/hooks/useGetMach';
 import { Loading } from '../Match';
 import { SpectatorHeader } from './SpectatorHeader';
 import { SpectatorContent } from './SpectatorContent';
@@ -17,21 +14,8 @@ type Props = SpectateState;
 export function Spectator(props: Props) {
   const { name, matchID } = props;
   const { gameName } = gameMetaMap[name];
-  const { request, options } = useMemo(() => {
-    const options: RxAsyncOptions<Schema$Match> = {
-      onFailure: (error: ApiError) => {
-        router.push('/');
-        Toaster.apiError('Get Match Failure', error);
-      }
-    };
-    const request = () => getMatch({ name, matchID }).then(res => res.data);
-    return {
-      options,
-      request
-    };
-  }, [name, matchID]);
 
-  const [{ data }] = useRxAsync(request, options);
+  const [{ data }] = useGetMach({ name, matchID });
 
   if (!data || !data.setupData) {
     return <Loading />;

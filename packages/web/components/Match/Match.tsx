@@ -22,18 +22,20 @@ interface State {
 type Props = MatchState & Gameover;
 
 const onFailure = (error: ApiError) => {
-  // match not found
+  const state = matchStorage.get();
+
   if (
     typeof error == 'object' &&
     'response' in error &&
     error.response?.status === 404 &&
-    matchStorage.get()
+    state
   ) {
     matchStorage.save(null);
   } else {
     Toaster.apiError('Get Match Failure', error);
   }
-  router.push('/');
+
+  router.push(state ? `/lobby/${state.name}` : `/`);
 };
 
 function MatchComponent(state: Props) {
@@ -42,7 +44,7 @@ function MatchComponent(state: Props) {
     'local'
   )
     ? {}
-    : { name: state.name, matchID: state.matchID };
+    : state;
 
   const _getMatch = useCallback(async (): Promise<State> => {
     if (name && matchID) {

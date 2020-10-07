@@ -1,9 +1,6 @@
-import React, { ReactNode, useMemo } from 'react';
-import router from 'next/router';
-import { useRxAsync } from 'use-rx-hooks';
+import React, { ReactNode } from 'react';
 import { gameMetaMap } from '@/games';
-import { getMatch } from '@/services';
-import { Toaster } from '@/utils/toaster';
+import { useGetMach } from '@/hooks/useGetMach';
 import { JoinMatch } from '../Lobby/JoinMatch';
 import { Spectate } from '../Spectate';
 import styles from './Invitation.module.scss';
@@ -16,16 +13,7 @@ interface Props {
 const Text: React.FC = props => <div {...props} className={styles['text']} />;
 
 export function Invitation({ name, matchID }: Props) {
-  const { request, onFailure } = useMemo(() => {
-    return {
-      request: () => getMatch({ name, matchID }).then(res => res.data),
-      onFailure: () => {
-        Toaster.failure({ message: 'Match Not Found' });
-        router.push(name ? `/lobby/${name}` : '/');
-      }
-    };
-  }, [name, matchID]);
-  const [{ data: match, loading }] = useRxAsync(request, { onFailure });
+  const [{ data: match, loading }] = useGetMach({ name, matchID });
 
   let content: ReactNode;
 
