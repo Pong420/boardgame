@@ -173,7 +173,8 @@ export const getMatches = async (page: Page, by?: By) => {
 
 export async function clickJoinButton<T extends { $x: Page['$x'] }>(
   page: Page,
-  handle: T
+  handle: T,
+  playerName = 'e2e-p2'
 ) {
   const [button] = await handle.$x('//button[.//span[text()="Join"]]');
 
@@ -188,7 +189,7 @@ export async function clickJoinButton<T extends { $x: Page['$x'] }>(
       const [input] = await page.$x(`//div[label[text()="Your Name"]]//input`);
       expect(input).toBeDefined();
       await input.focus();
-      await input.type('e2e-p-2');
+      await input.type(playerName);
 
       const [confirm] = await page.$x(`//button[.//span[text()="Confirm"]]`);
       expect(confirm).toBeDefined();
@@ -209,14 +210,17 @@ async function waitForMatch(page: Page, by?: By): Promise<ElementHandle[]> {
   return waitForMatch(page, by);
 }
 
-export const joinMatch = async (page: Page, by?: By) => {
+export const joinMatch = async (
+  page: Page,
+  { playerName, ...by }: By & { playerName?: string } = {}
+) => {
   await expect(page).isLobbyPage();
 
   const [match] = await waitForMatch(page, by);
 
   expect(match).toBeDefined();
 
-  await clickJoinButton(page, match);
+  await clickJoinButton(page, match, playerName);
 
   await expect(page).isMatchPage();
 

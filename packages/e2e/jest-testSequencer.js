@@ -4,6 +4,7 @@ const Sequencer = require('@jest/test-sequencer').default;
 const order = [
   'lobby.e2e-spec',
   'match.e2e-spec',
+  'chat.e2e-spec',
   'games/',
   'preferences.e2e-spec',
   'others.e2e-spec'

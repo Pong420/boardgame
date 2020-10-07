@@ -44,4 +44,16 @@ describe('Match', () => {
     await promise;
     await expect(page).isLobbyPage();
   });
+
+  test('close tab then open match url in new tab ', async () => {
+    // TODO:
+    await createMatch({ playerName: 'e2e', matchName: 'e2e-test' });
+    const url = page.url();
+    await jestPuppeteer.resetPage();
+    await page.goto(url);
+    await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+    await expect(page).isMatchPage();
+    await leaveMatch();
+  });
 });
