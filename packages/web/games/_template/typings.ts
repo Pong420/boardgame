@@ -38,15 +38,19 @@ export type Prefix_Moves = {
   [K in keyof typeof moves]: OmitArg<ExtractMove<typeof moves[K]>>;
 };
 
+// optional
+export type Prefix_Gameover = string;
+
 export interface Prefix_Ctx extends Ctx {
   events: NonNullable<Required<Ctx['events']>>;
   random: NonNullable<Ctx['random']>;
+  gameover?: Prefix_Gameover;
 }
 
 export type Prefix_Game = Game<Prefix_State, Prefix_Ctx> & { name: Name };
 export type Prefix_PlayerView = Prefix_Game['playerView'];
 export type Prefix_PhaseConfig = PhaseConfig<Prefix_State, Prefix_Ctx>;
-export type Prefix_BoardProps = BoardProps<Prefix_State> & {
+export type Prefix_BoardProps = Omit<BoardProps<Prefix_State>, 'ctx'> & {
   isConnected?: boolean;
   moves: Prefix_Moves;
   ctx: Prefix_Ctx;
