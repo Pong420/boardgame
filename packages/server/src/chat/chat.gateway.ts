@@ -90,25 +90,24 @@ export class ChatGateway implements OnGatewayDisconnect {
 
     let room: Room = this.rooms.get(matchID);
 
-    const match = await this.matchService.fetch(matchID, {
+    const { metadata, state } = await this.matchService.fetch(matchID, {
       state: true,
       metadata: true
     });
 
-    // TODO: check match return
-    if (!match) throw new WsException('Match not found');
+    if (!metadata || !state) throw new WsException('Match not found');
 
     if (!room) {
       room = {
         messages: [],
-        players: Array.from<null>({ length: match.state.ctx.numPlayers }).map(
+        players: Array.from<null>({ length: state.ctx.numPlayers }).map(
           () => null
         )
       };
     }
 
     const idx = Number(playerID);
-    const player = match.metadata.players[idx];
+    const player = metadata.players[idx];
 
     if (typeof player === 'undefined') {
       throw new WsException('Invalud playerID');
@@ -143,7 +142,6 @@ export class ChatGateway implements OnGatewayDisconnect {
 
     return merge(
       of(sendPlayer(room.players)),
-      // TODO: send into array ?
       defer(() => room.messages).pipe(
         map(message => sendMessage(message)),
         // make sure reconnect message is emiited after origin message
@@ -220,10 +218,16 @@ export class ChatGateway implements OnGatewayDisconnect {
         const { metadata } = await this.matchService.fetch(matchID, {
           metadata: true
         });
-        nextMatchID = metadata.nextMatchID;
+
+        if (metadata) {
+          nextMatchID = metadata.nextMatchID;
+        }
       }
-      this.rooms.set(matchID, { ...room, nextMatchID });
-      return sendNextMatch(nextMatchID, matchID);
+
+      if (nextMatchID) {
+        this.rooms.set(matchID, { ...room, nextMatchID });
+        return sendNextMatch(nextMatchID, matchID);
+      }
     }
     throw new WsException('Match not found');
   }

@@ -68,6 +68,7 @@ export class MatchController {
         })
       };
     }
+
     throw new Error('setupData is not defined');
   };
 
@@ -169,6 +170,8 @@ export class MatchController {
     const { metadata } = await this.matchService.fetch(matchID, {
       metadata: true
     });
+
+    if (!metadata) throw new NotFoundException('Match not found');
 
     if (credentials !== metadata.players[playerID].credentials) {
       throw new ForbiddenException('Invalid credentials ' + credentials);

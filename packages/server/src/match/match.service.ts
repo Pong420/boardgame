@@ -2,7 +2,8 @@ import {
   Injectable,
   Inject,
   ForbiddenException,
-  OnModuleInit
+  OnModuleInit,
+  NotFoundException
 } from '@nestjs/common';
 import { defer, Subject, timer } from 'rxjs';
 import {
@@ -80,6 +81,8 @@ export class MatchService extends MongoStore implements OnModuleInit {
     const { metadata } = await this.fetch(matchID, {
       metadata: true
     });
+
+    if (!metadata) throw new NotFoundException('Match not found');
 
     if (credentials !== metadata.players[playerID].credentials) {
       throw new ForbiddenException('Invalid credentials ' + credentials);

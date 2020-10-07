@@ -1,10 +1,16 @@
 import { SetupData } from '@/typings';
-import { IsOptional, IsBoolean, IsString, IsNotEmpty } from 'class-validator';
+import {
+  IsOptional,
+  IsBoolean,
+  IsString,
+  IsNotEmpty,
+  MaxLength
+} from 'class-validator';
 
 export class SetupDataDto implements SetupData {
   @IsString()
   @IsNotEmpty()
-  // TODO: max length
+  @MaxLength(10)
   matchName: string;
 
   @IsOptional()
@@ -13,6 +19,6 @@ export class SetupDataDto implements SetupData {
 
   @IsString()
   @IsOptional()
-  // TODO: max length
+  @MaxLength(50)
   description?: string;
 }

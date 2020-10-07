@@ -36,7 +36,7 @@ export interface Param$GetMatch {
 export interface Param$CreateMatch<T extends SetupData = SetupData> {
   name: string;
   numPlayers: number;
-  setupData?: T;
+  setupData: T;
   unlisted?: boolean;
 }
 
@@ -70,7 +70,7 @@ export interface Param$PlayAgain<T extends SetupData = SetupData> {
   playerID: string;
   credentials: string;
   numPlayers?: number;
-  setupData?: T;
+  setupData: T;
 }
 
 export interface Response$GetMatches<T extends SetupData = SetupData> {
