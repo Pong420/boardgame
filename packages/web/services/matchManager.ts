@@ -10,8 +10,9 @@ import {
 } from 'rxjs/operators';
 import { JSONParse } from '@/utils/JSONParse';
 import { createLocalStorage } from '@/utils/storage';
-import { leaveMatch } from './services';
+import { pushHistoryState } from '@/utils/historyState';
 import { gameMetaMap } from '@/games';
+import { leaveMatch } from './services';
 import isEqual from 'lodash/isEqual';
 
 type Common = {
@@ -57,6 +58,7 @@ export function isMatchState(state: unknown, type: string) {
 
 export const gotoMatch = (state: MatchState) => {
   const pathname = `/match/${state.name}/`;
+  pushHistoryState(state);
   return router.push({ pathname, query: state }, pathname);
 };
 

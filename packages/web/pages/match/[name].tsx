@@ -4,7 +4,8 @@ import router from 'next/router';
 import { GetServerSideProps } from 'next';
 import { Match } from '@/components/Match';
 import { gameMetaMap } from '@/games';
-import { matchStorage, MatchState } from '@/services';
+import { MatchState } from '@/services';
+import { historyState } from '@/utils/historyState';
 
 type Params = {
   name: string;
@@ -20,7 +21,8 @@ export default function MatchPage({ name, matchID }: Props) {
   const [state, setState] = useState<MatchState>();
 
   useEffect(() => {
-    const newState = matchStorage.get();
+    // historyState for local match
+    const newState = historyState.get();
     newState ? setState(newState) : router.push('/');
   }, [matchID]);
 
