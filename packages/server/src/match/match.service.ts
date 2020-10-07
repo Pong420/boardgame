@@ -1,14 +1,67 @@
-import { Injectable, Inject, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  ForbiddenException,
+  OnModuleInit
+} from '@nestjs/common';
+import { defer, Subject, timer } from 'rxjs';
+import {
+  exhaustMap,
+  filter,
+  groupBy,
+  map,
+  mergeMap,
+  take,
+  takeUntil
+} from 'rxjs/operators';
 import { LobbyAPI } from 'boardgame.io';
 import { MongoStore, MetadataModel, getListGamesOptsQuery } from 'bgio-mongo';
 import { GetMatchesDto } from './dto';
 import { Identify } from '@/typings';
 
 @Injectable()
-export class MatchService extends MongoStore {
+export class MatchService extends MongoStore implements OnModuleInit {
+  publicMatch$ = new Subject<string>();
+  deleteMatch$ = new Subject<string>();
+
   constructor(@Inject('MONGODB_URI') mongoUri: string) {
     super({ url: mongoUri });
+  }
+
+  onModuleInit() {
     this.connect();
+
+    const cancel = (flag: string) =>
+      this.deleteMatch$.pipe(filter(matchID => matchID === flag));
+
+    // For play again
+    // Make the match private initially. Then make it public after a while
+    // This leaves some time for the players in the same match to join the new match.
+    this.publicMatch$
+      .pipe(
+        groupBy(matchID => matchID),
+        mergeMap(group$ =>
+          group$.pipe(
+            exhaustMap(matchID => {
+              return timer(10 * 1000).pipe(
+                mergeMap(() =>
+                  defer(() => this.fetch(matchID, { metadata: true })).pipe(
+                    map(({ metadata }) => ({ ...metadata, matchID }))
+                  )
+                ),
+                takeUntil(cancel(matchID))
+              );
+            }),
+            take(1)
+          )
+        )
+      )
+      .subscribe(({ matchID, ...metadata }) => {
+        this.setMetadata(matchID, {
+          ...metadata,
+          unlisted: false
+        });
+      });
   }
 
   async getMatches({ name, ...where }: GetMatchesDto) {
@@ -39,6 +92,7 @@ export class MatchService extends MongoStore {
       await this.setMetadata(matchID, metadata);
     } else {
       await this.wipe(matchID);
+      this.deleteMatch$.next(matchID);
     }
   }
 }

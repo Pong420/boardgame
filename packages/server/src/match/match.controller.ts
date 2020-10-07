@@ -14,7 +14,6 @@ import { Player, Response$GetMatches } from '@/typings';
 import { Game, Server } from 'boardgame.io';
 import { InitializeGame } from 'boardgame.io/internal';
 import { nanoid } from 'nanoid';
-import { MatchService } from './match.service';
 import {
   CreateMatchDto,
   JoinMatchDto,
@@ -29,6 +28,7 @@ import {
   Response$JoinMatch,
   Response$PlayAgain
 } from '@/typings';
+import { MatchService } from './match.service';
 
 @Controller('/api/match')
 export class MatchController {
@@ -180,16 +180,22 @@ export class MatchController {
 
     const numPlayers = Object.keys(metadata.players).length;
 
+    const unlisted = !!metadata.unlisted;
+
     const { matchID: nextMatchID } = await this.createMatch({
       name,
       numPlayers,
-      unlisted: metadata.unlisted,
+      unlisted: true,
       setupData: metadata.setupData as SetupData
     });
 
     metadata.nextMatchID = nextMatchID;
 
     await this.matchService.setMetadata(matchID, metadata);
+
+    if (!unlisted) {
+      this.matchService.publicMatch$.next(nextMatchID);
+    }
 
     return { nextMatchID };
   }

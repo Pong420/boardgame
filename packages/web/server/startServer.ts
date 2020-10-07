@@ -54,6 +54,9 @@ export async function startServer({ dev, port, mongoUri }: Options) {
         }
       });
 
+      await nest.init();
+      await nest.getHttpAdapter().getInstance().ready();
+
       await nest.listen(port, '0.0.0.0');
 
       // eslint-disable-next-line
