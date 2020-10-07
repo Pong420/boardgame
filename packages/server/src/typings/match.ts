@@ -64,13 +64,12 @@ export interface Param$LeaveMatch {
   credentials: string;
 }
 
-export interface Param$PlayAgain<T extends SetupData = SetupData> {
+export interface Param$PlayAgain {
   name: string;
   matchID: string;
   playerID: string;
   credentials: string;
   numPlayers?: number;
-  setupData: T;
 }
 
 export interface Response$GetMatches<T extends SetupData = SetupData> {

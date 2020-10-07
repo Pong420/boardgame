@@ -7,15 +7,10 @@ import {
   ValidateNested
 } from 'class-validator';
 import { Exclude, Transform, Type } from 'class-transformer';
-import {
-  SetupData,
-  DTOExcluded,
-  Schema$Match,
-  Param$CreateMatch
-} from '@/typings';
+import { SetupData, Param$CreateMatch } from '@/typings';
 import { SetupDataDto } from './setup-data.dto';
 
-class Excluded implements DTOExcluded<Schema$Match, Param$CreateMatch> {
+class Excluded {
   @Exclude()
   id?: undefined;
 
