@@ -70,7 +70,10 @@ export const Toaster = {
       className: 'api-error-toaster',
       icon: 'error',
       intent: Intent.DANGER,
-      message: renderMessage(prefix || 'Error', getErrorMessage(error))
+      message: renderMessage(
+        prefix || 'Error',
+        typeof error === 'string' ? error : getErrorMessage(error)
+      )
     });
   },
   info(options: IToastOptions) {

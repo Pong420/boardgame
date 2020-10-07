@@ -55,7 +55,7 @@ export function SpectatorContent({ onGameover, onNextMatch, ...state }: Props) {
       ({ players, nextMatchID }: Response$Spectate) => {
         handlePlayerUpdate(players);
         setConnected(true);
-        nextMatchID && onNextMatch(nextMatchID);
+        nextMatchID && onNextMatch && onNextMatch(nextMatchID);
       }
     );
 
