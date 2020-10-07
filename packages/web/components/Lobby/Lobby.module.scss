@@ -5,16 +5,6 @@
   @include flex($flex-direction: column);
 }
 
-.lobby-header {
-  @include header;
-  flex: 0 0 auto;
-}
-
-.lobby-header-header-title {
-  @include header-title;
-  text-align: center;
-}
-
 $gap: 20px;
 
 .lobby-content {

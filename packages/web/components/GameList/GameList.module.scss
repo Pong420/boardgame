@@ -8,16 +8,6 @@
   flex: 0 0 auto;
 }
 
-.game-list-header {
-  @include header;
-  flex: 0 0 auto;
-}
-
-.game-list-header-title {
-  @include header-title;
-  text-align: center;
-}
-
 .game-list-content {
   overflow: auto;
 }

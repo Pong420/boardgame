@@ -1,22 +1,14 @@
-import React, { ReactNode, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import router from 'next/router';
 import { useRxAsync } from 'use-rx-hooks';
-import { Button } from '@blueprintjs/core';
 import { ButtonPopover } from '@/components/ButtonPopover';
+import { Header, HeaderProps } from '@/components/Header';
 import { leaveMatchAndRedirect, matchStorage } from '@/services';
 import { Toaster } from '@/utils/toaster';
-import styles from './Match.module.scss';
 
-interface Props {
-  title?: ReactNode;
-  children?: ReactNode;
-}
+interface Props extends HeaderProps {}
 
 const onFailure = Toaster.apiError.bind(Toaster, 'Leave Match Failure');
-
-const Blank = () => (
-  <Button minimal icon="blank" style={{ visibility: 'hidden' }} />
-);
 
 function LeaveMatchButton() {
   const [{ loading }, { fetch }] = useRxAsync(leaveMatchAndRedirect, {
@@ -51,20 +43,6 @@ function LeaveMatchButton() {
   );
 }
 
-export function MatchHeader({ title, children }: Props) {
-  const buttons = Array.isArray(children)
-    ? children.filter(el => React.isValidElement(el))
-    : [];
-  return (
-    <div className={styles['match-header']}>
-      <div>
-        <LeaveMatchButton />
-        {buttons.slice(1).map((_, idx) => (
-          <Blank key={idx} />
-        ))}
-      </div>
-      <div className={styles['match-header-title']}>{title}</div>
-      <div>{children}</div>
-    </div>
-  );
+export function MatchHeader(props: Props) {
+  return <Header {...props} left={<LeaveMatchButton />} />;
 }

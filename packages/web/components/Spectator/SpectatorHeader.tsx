@@ -1,37 +1,23 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import router from 'next/router';
 import { Button } from '@blueprintjs/core';
-import styles from './Spectator.module.scss';
+import { Header, HeaderProps } from '@/components/Header';
 
-interface Props {
+interface Props extends HeaderProps {
   name: string;
-  title?: ReactNode;
-  children?: ReactNode;
 }
 
-const Blank = () => (
-  <Button minimal icon="blank" style={{ visibility: 'hidden' }} />
-);
-
-export function SpectatorHeader({ name, title, children }: Props) {
-  const buttons = Array.isArray(children)
-    ? children.filter(el => React.isValidElement(el))
-    : [];
-
+export function SpectatorHeader({ name, ...props }: Props) {
   return (
-    <div className={styles['spectator-header']}>
-      <div>
+    <Header
+      {...props}
+      left={
         <Button
           minimal
           icon="arrow-left"
           onClick={() => router.push(`/lobby/${name}`)}
         />
-        {buttons.slice(1).map((_, idx) => (
-          <Blank key={idx} />
-        ))}
-      </div>
-      <div className={styles['spectator-header-title']}>{title}</div>
-      <div>{children}</div>
-    </div>
+      }
+    />
   );
 }

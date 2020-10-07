@@ -6,16 +6,6 @@
   overflow: hidden;
 }
 
-.match-header {
-  @include header;
-  flex: 0 0 auto;
-}
-
-.match-header-title {
-  @include header-title;
-  text-align-last: center;
-}
-
 .match-content {
   @include sq-dimen(100%);
   flex: 1 1 auto;

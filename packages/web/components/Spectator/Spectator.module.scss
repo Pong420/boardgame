@@ -6,16 +6,6 @@
   overflow: hidden;
 }
 
-.spectator-header {
-  @include header;
-  flex: 0 0 auto;
-}
-
-.spectator-header-title {
-  @include header-title;
-  text-align-last: center;
-}
-
 .player-ready {
   @include sq-dimen(100%);
   @include flex(center, center, column);

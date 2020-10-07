@@ -1,21 +1,17 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import styles from './Lobby.module.scss';
 import { ButtonPopover } from '../ButtonPopover';
+import { Header, HeaderProps } from '../Header';
 
-interface Props {
-  title?: string;
-  children?: ReactNode;
-}
-
-export function LobbyHeader({ title, children }: Props) {
+export function LobbyHeader(props: HeaderProps) {
   return (
-    <div className={styles['lobby-header']}>
-      <Link href="/">
-        <ButtonPopover content="Back to home" icon="arrow-left" minimal />
-      </Link>
-      <div className={styles['lobby-header-header-title']}>{title}</div>
-      <div>{children}</div>
-    </div>
+    <Header
+      {...props}
+      left={
+        <Link href="/">
+          <ButtonPopover content="Back to home" icon="arrow-left" minimal />
+        </Link>
+      }
+    />
   );
 }
