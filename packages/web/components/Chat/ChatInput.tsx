@@ -74,8 +74,8 @@ export function ChatInput({ onSend }: Props) {
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
           setValue(event.target.value)
         }
-        rightElement={<Button text="Send" intent="primary" onClick={send} />}
       />
+      <Button text="Send" intent="primary" onClick={send} />
     </form>
   );
 }

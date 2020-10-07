@@ -7,12 +7,22 @@
 }
 
 .#{$ns}-popover.#{$ns}-popover {
-  .#{$ns}-popover-arrow-fill {
-    fill: var(--main-diff1-color);
+  [data-theme^='light'] & {
+    box-shadow: $pt-elevation-shadow-2;
   }
+
   .#{$ns}-popover-content {
-    background-color: var(--main-diff1-color);
     color: var(--text-color);
+  }
+
+  [data-theme^='dark'] & {
+    .#{$ns}-popover-arrow-fill {
+      fill: var(--main-diff1-color);
+    }
+
+    .#{$ns}-popover-content {
+      background-color: var(--main-diff1-color);
+    }
   }
 }
 
@@ -66,4 +76,10 @@ a:hover,
   .#{$ns}-card {
     background-color: var(--main-diff1-color);
   }
+
+  // .#{$ns}-popover.#{$ns}-popover {
+  //   .#{$ns}-popover-content {
+  //     background-color: var(--main-diff1-color);
+  //   }
+  // }
 }

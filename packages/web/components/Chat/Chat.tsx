@@ -180,7 +180,7 @@ export function Chat({ isGameover, ...identify }: ChatProps) {
           </Fragment>
         ))}
       </div>
-      <div className={styles['chat-footer']}>
+      <div className={`${styles['chat-footer']} ${Classes.ELEVATION_1}`}>
         <ChatInput onSend={sendMessage} />
         {!started && (
           <ReadyButton playerID={identify.playerID} toggleReady={toggleReady} />

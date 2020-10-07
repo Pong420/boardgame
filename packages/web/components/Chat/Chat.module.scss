@@ -68,16 +68,19 @@
 
 .chat-footer {
   @include flex(center);
+  background-color: var(--main-diff1-color);
   flex: 0 0 auto;
-  padding: 10px;
+  padding: 15px 10px 10px;
 
   .chat-input {
     @include flex(center, center);
     flex: 1 1 auto;
     margin-right: 10px;
 
-    button {
-      margin-right: 10px;
+    :global {
+      .#{$ns}-input-group {
+        @include margin-x(10px);
+      }
     }
   }
 }
