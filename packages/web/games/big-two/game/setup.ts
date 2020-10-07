@@ -1,9 +1,7 @@
-import { Ctx } from 'boardgame.io';
+import { BigTwoPlayer, BigTwoState, BigTwoCtx } from '../typings';
 import { deck } from '../utils/deck';
-import { BigTwoPlayer, BigTwoSecret, BigTwoState } from '../typings';
 
 const createPlayer = (): BigTwoPlayer => ({
-  ready: false,
   hand: []
 });
 
@@ -15,18 +13,22 @@ function createPlayers(num: number) {
   return players;
 }
 
-export function setup(ctx: Ctx, _setupData?: unknown): BigTwoState {
-  const secret: BigTwoSecret = {
-    deck
-  };
+export function setup(ctx: BigTwoCtx, _setupData?: unknown): BigTwoState {
+  const { numPlayers } = ctx;
+  const players = createPlayers(numPlayers);
+  const shuffled = ctx.random.Shuffle(deck).slice(0, numPlayers * 13);
+
+  for (let i = 0; i < shuffled.length; i++) {
+    const player = players[i % numPlayers];
+    player.hand.push(shuffled[i]);
+  }
 
   return {
-    secret,
     previous: {
       hand: null,
       player: ctx.currentPlayer
     },
     opponents: [],
-    players: createPlayers(ctx.numPlayers)
+    players
   };
 }

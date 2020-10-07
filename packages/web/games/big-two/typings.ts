@@ -14,12 +14,9 @@ export interface BigTwoState {
   };
 }
 
-export interface BigTwoSecret {
-  deck: string[];
-}
+export interface BigTwoSecret {}
 
 export interface BigTwoPlayer {
-  ready: boolean;
   hand: string[];
 }
 
@@ -46,15 +43,18 @@ export type BigTwoMoves = {
   [K in keyof typeof moves]: OmitArg<ExtractMove<typeof moves[K]>>;
 };
 
+export type BigTwoGameOver = string | null;
+
 export interface BigTwoCtx extends Ctx {
   events: NonNullable<Required<Ctx['events']>>;
   random: NonNullable<Ctx['random']>;
+  gameover?: BigTwoGameOver;
 }
 
 export type BigTwoGame = Game<BigTwoState, BigTwoCtx> & { name: Name };
 export type BigTwoPlayerView = BigTwoGame['playerView'];
 export type BigTwoPhaseConfig = PhaseConfig<BigTwoState, BigTwoCtx>;
-export type BigTwoBoardProps = BoardProps<BigTwoState> & {
+export type BigTwoBoardProps = Omit<BoardProps<BigTwoState>, 'ctx'> & {
   isConnected?: boolean;
   moves: BigTwoMoves;
   ctx: BigTwoCtx;

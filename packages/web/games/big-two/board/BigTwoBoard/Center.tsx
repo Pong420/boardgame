@@ -29,7 +29,9 @@ export function Center(props: BigTwoBoardProps) {
           </div>
         </div>
         <div className="message">
-          {props.isActive
+          {props.ctx.gameover
+            ? `Player ${props.ctx.gameover} Win`
+            : props.isActive
             ? 'Your Turn'
             : `Waiting for Player ${props.ctx.currentPlayer}`}
         </div>
