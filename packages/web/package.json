@@ -21,7 +21,7 @@
     "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.20",
-    "next": "9.5.3",
+    "next": "9.5.4",
     "next-compose-plugins": "^2.2.0",
     "next-optimized-images": "^2.6.2",
     "next-transpile-modules": "^4.1.0",
