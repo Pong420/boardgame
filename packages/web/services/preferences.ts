@@ -1,5 +1,5 @@
 import React, { useState, ProviderProps, useEffect, useRef } from 'react';
-import { createLocalStorage } from '../utils/storage';
+import { createBoardgameStorage } from '../utils/storage';
 
 export interface PreferencesState {
   theme: Theme;
@@ -16,7 +16,7 @@ const initialState: PreferencesState = {
     typeof window === 'undefined' ? 'limited' : window.__initialScreenWidth
 };
 
-export const preferencesStorage = createLocalStorage<PreferencesState>(
+export const preferencesStorage = createBoardgameStorage<PreferencesState>(
   'BOARDGAME_PREFERENCE',
   initialState
 );

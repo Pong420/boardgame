@@ -6,7 +6,16 @@ export interface Storage<T> {
   save(value: T): void;
 }
 
-type WebStorage = typeof localStorage | typeof sessionStorage;
+type WebStorage = Pick<globalThis.Storage, 'getItem' | 'setItem'>;
+
+function mixStorage(key: string, storage: WebStorage): WebStorage {
+  const baseStorage = createStorage<Record<string, unknown>>(storage)(key, {});
+  return {
+    getItem: key => JSON.stringify(baseStorage.get()[key]),
+    setItem: (key, value) =>
+      baseStorage.save({ ...baseStorage.get(), [key]: JSONParse(value, null) })
+  };
+}
 
 function createStorage<T>(storage?: WebStorage) {
   const _storage = storage as WebStorage;
@@ -48,6 +57,17 @@ export function storageSupport() {
 
   return false;
 }
+
+export const BOARDGAME_SOTRAGE = 'BOARDGAME_SOTRAGE';
+
+export const createBoardgameStorage: <T>(
+  key: string,
+  defaultValue: T
+) => Storage<T> = createStorage(
+  !storageSupport() || typeof localStorage === 'undefined'
+    ? undefined
+    : mixStorage('BOARDGAME_SOTRAGE', localStorage)
+);
 
 export const createLocalStorage: <T>(
   key: string,

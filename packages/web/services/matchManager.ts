@@ -9,7 +9,7 @@ import {
   switchMap
 } from 'rxjs/operators';
 import { JSONParse } from '@/utils/JSONParse';
-import { createLocalStorage } from '@/utils/storage';
+import { createBoardgameStorage, BOARDGAME_SOTRAGE } from '@/utils/storage';
 import { pushHistoryState } from '@/utils/historyState';
 import { gameMetaMap } from '@/games';
 import { leaveMatch } from './services';
@@ -66,7 +66,7 @@ export const gotoSpectate = ({ name, matchID, playerID }: SpectateState) => {
   return router.push(`/spectate/${name}/${matchID}/${playerID || ''}`);
 };
 
-export const matchStorage = createLocalStorage<MultiMatchState | null>(
+export const matchStorage = createBoardgameStorage<MultiMatchState | null>(
   'BOARDGAME_MATCH_STATE',
   null
 );
@@ -120,7 +120,9 @@ export function leaveMatchAndRedirect(
 
 // leave match if user try to delete the matchStorage
 if (typeof window !== 'undefined') {
-  const parse = (payload: string | null): MultiMatchState | null => {
+  const parse = (base: string | null): MultiMatchState | null => {
+    const payload =
+      base && JSONParse<Record<string, string>>(base, {})[matchStorage.key];
     const state = payload
       ? JSONParse<(MultiMatchState & { key: string }) | null>(payload)
       : undefined;
@@ -133,7 +135,7 @@ if (typeof window !== 'undefined') {
 
   fromEvent<StorageEvent>(window, 'storage')
     .pipe(
-      filter(event => event.key === matchStorage.key),
+      filter(event => event.key === BOARDGAME_SOTRAGE),
       exhaustMap(event => {
         const oldState = parse(event.oldValue);
         const newState = parse(event.newValue);
