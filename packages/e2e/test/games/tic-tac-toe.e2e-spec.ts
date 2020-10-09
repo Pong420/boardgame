@@ -5,6 +5,17 @@ import { waitForSocket } from '@/utils/socket';
 
 type Player = 'O' | '✕';
 
+interface Options {
+  player?: Player;
+  retry?: boolean;
+}
+
+// prettier-ignore
+interface ClickHandler {
+  (page: Page, options: Options & { player: Player }): (idx: number) => Promise<void>;
+  (page: Page, options?: Options): (idx: number, player: Player) => Promise<void>;
+}
+
 describe('Tic-Tac-Toe', () => {
   beforeAll(async () => {
     await expect(page).goto('/');
@@ -18,11 +29,10 @@ describe('Tic-Tac-Toe', () => {
   const clientSelector = (player: Player) =>
     `//div[@class="bgio-client"][.//div[contains(text(), '${player}')]]`;
 
-  // prettier-ignore
-  function clickHandler(page: Page): (idx: number, defaultPlayer: Player) => Promise<void>;
-  // prettier-ignore
-  function clickHandler(page: Page, defaultPlayer: Player): (idx: number) => Promise<void>;
-  function clickHandler(page: Page, defaultPlayer?: Player) {
+  const clickHandler: ClickHandler = (
+    page: Page,
+    { player: defaultPlayer, retry = true }: Options = {}
+  ) => {
     return async function clickCell(idx: number, player = defaultPlayer) {
       if (player) {
         expect(idx).toBeGreaterThan(0);
@@ -39,7 +49,7 @@ describe('Tic-Tac-Toe', () => {
               { timeout: 1000 }
             );
           } catch (error) {
-            if (count < 10) {
+            if (retry && count < 10) {
               await Promise.all([page.reload({ waitUntil: 'networkidle2' })]);
               await waitForMyTurn(player);
               // eslint-disable-next-line
@@ -72,7 +82,7 @@ describe('Tic-Tac-Toe', () => {
         throw new Error(`player is not defined`);
       }
     };
-  }
+  };
 
   const createNewPage = newPageHelper('/lobby/tic-tac-toe');
   const isWinner = async (page: Page, player: Player, win: boolean) => {
@@ -84,12 +94,17 @@ describe('Tic-Tac-Toe', () => {
     }
   };
 
-  const playAgainButton = (page: Page) =>
-    page.$x(`//button[.//*[text()="Play again"]]`);
+  const gePlayAgainButton = (page: Page) =>
+    page.$x(`//button[*[contains(@class, 'icon-play')]]`);
+
+  const clickReady = async (page: Page) => {
+    const [ready] = await page.$x('//button[./span[text()="I am ready"]]');
+    await ready.click();
+  };
 
   test('local', async () => {
     await createMatch({ local: true });
-    const clickCell = clickHandler(page);
+    const clickCell = clickHandler(page, { retry: false });
 
     await clickCell(1, 'O');
     await clickCell(2, '✕');
@@ -100,9 +115,6 @@ describe('Tic-Tac-Toe', () => {
     await isWinner(page, 'O', true);
     await isWinner(page, '✕', false);
 
-    const buttons = await playAgainButton(page);
-    expect(buttons.length).toBe(0);
-
     await leaveMatch();
     await expect(page).isLobbyPage();
   });
@@ -111,16 +123,23 @@ describe('Tic-Tac-Toe', () => {
     'online',
     async () => {
       const matchName = 'e2e-match';
-      await createMatch({ playerName: 'p1', matchName });
-      const p1 = page;
-      const p2 = await createNewPage();
+      await createMatch({ playerName: 'P1', matchName });
+      const P1 = page;
+      const P2 = await createNewPage();
 
-      // wait for p2 goto lobby page
-      await p2.waitForNavigation({ waitUntil: 'domcontentloaded' });
-      await joinMatch(p2);
+      // wait for P2 goto lobby page
+      await P2.waitForNavigation({ waitUntil: 'domcontentloaded' });
+      await joinMatch(P2);
 
-      const P1_CLICK = clickHandler(p1, 'O');
-      const P2_CLICK = clickHandler(p2, '✕');
+      // player ready
+      await clickReady(P1);
+      await P2.waitForTimeout(300);
+      await clickReady(P2);
+      await P1.waitForSelector('.bgio-client');
+      await P2.waitForSelector('.bgio-client');
+
+      const P1_CLICK = clickHandler(P1, { player: 'O' });
+      const P2_CLICK = clickHandler(P2, { player: '✕' });
 
       await P1_CLICK(1);
       await P2_CLICK(5);
@@ -129,38 +148,38 @@ describe('Tic-Tac-Toe', () => {
       await P1_CLICK(4);
       await Promise.all([
         Promise.all([
-          isWinner(p2, '✕', true),
-          waitForSocket(p2, 'FrameReceived')
+          isWinner(P2, '✕', true),
+          waitForSocket(P2, 'FrameReceived')
         ]),
         Promise.all([
-          isWinner(p1, 'O', false),
-          waitForSocket(p1, 'FrameReceived')
+          isWinner(P1, 'O', false),
+          waitForSocket(P1, 'FrameReceived')
         ]),
         P2_CLICK(7)
       ]);
 
-      await page.waitForTimeout(100);
-
       // play again
+      // TODO: check users are at in same room
       await Promise.all(
-        [p1, p2].map(async page => {
-          const [btn] = await playAgainButton(page);
+        [P1, P2].map(async page => {
+          await page.waitFor(300);
+          const [btn] = await gePlayAgainButton(page);
           await Promise.all([
             expect(page).waitForResponse('play-again'),
             page.waitForNavigation({ waitUntil: 'networkidle2' }),
             btn.click()
           ]);
           await expect(page).isMatchPage();
-          const buttons = await playAgainButton(page);
+          const buttons = await gePlayAgainButton(page);
           expect(buttons).toHaveLength(0);
         })
       );
 
-      await Promise.all([leaveMatch(p1), leaveMatch(p2)]);
+      await Promise.all([leaveMatch(P1), leaveMatch(P2)]);
 
-      await p2.close();
-      await p2.browserContext().close();
+      await P2.close();
+      await P2.browserContext().close();
     },
-    10 * 1000
+    100000 * 1000
   );
 });
