@@ -36,14 +36,22 @@ export class MongoStore extends Async {
     super();
   }
 
+  connection: typeof mongoose;
+
   async connect(): Promise<void> {
     const { url, ...options } = this.options;
     // sync sequelize models with database schema
-    await mongoose.connect(url, {
+    this.connection = await mongoose.connect(url, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       ...options
     });
+  }
+
+  async disconnect(): Promise<void> {
+    if (this.connection) {
+      this.connection.disconnect();
+    }
   }
 
   async createGame(
