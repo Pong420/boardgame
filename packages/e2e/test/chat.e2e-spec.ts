@@ -34,7 +34,7 @@ describe('Chat', () => {
 
     P2 = await createNewPage();
     await P2.waitForNavigation({ waitUntil: 'networkidle0' });
-    await joinMatch(P2, { matchName, playerName: p2Name });
+    await joinMatch(P2, { matchName, playerName: P2Name });
     await Promise.all([
       waitForSocketReady(P2),
       waitForSocket(P1, 'FrameReceived') // P2 join message
@@ -60,24 +60,75 @@ describe('Chat', () => {
   const sendMessage = async (sender: Page, receiver: Page) => {
     const buttonSelector = '//button[./span[text()="Send"]]';
     const button = await sender.waitForXPath(buttonSelector);
-    const input = await sender.waitForXPath(`${buttonSelector}/../../input`);
+    const input = await sender.waitForXPath(`${buttonSelector}/..//input`);
     const content = nanoid();
     await input.type(content);
-    await Promise.all([
+    await Promise.all<unknown>([
       button.click(),
       waitForSocket(sender, 'FrameSent'),
       waitForSocket(sender, 'FrameReceived'),
-      waitForSocket(receiver, 'FrameReceived')
+      receiver ? waitForSocket(receiver, 'FrameReceived') : Promise.resolve()
     ]);
-    await receiver.waitForTimeout(300);
-    return await hasMessage(content);
+
+    await receiver.waitForTimeout(200);
+    return content;
+  };
+
+  const clickReady = async (page: Page) => {
+    const [ready] = await page.$x('//button[./span[text()="I am ready"]]');
+    await ready.click();
+  };
+
+  const getChatHeader = (page: Page) =>
+    page.$x(`//div[contains(text(), "Chat")]/..`);
+
+  const toggleChat = async (page: Page) => {
+    const [header] = await getChatHeader(page);
+    await header.click();
+    await page.waitForTimeout(300); // transition
+  };
+
+  const getUnreadMessage = async (page: Page) => {
+    const [el] = await page.$x(`//div[contains(text(), "Chat")]//div`);
+    return el && el.evaluate(node => Number(node.textContent || 0));
   };
 
   test('general', async () => {
     await expect(hasMessage(`${P1Name} join the match`)).resolves.toBe(true);
     await expect(hasMessage(`${P2Name} join the match`)).resolves.toBe(true);
-    await expect(sendMessage(P1, P2)).resolves.toBe(true);
-    await expect(sendMessage(P2, P1)).resolves.toBe(true);
+    await expect(
+      sendMessage(P1, P2).then(content => hasMessage(content))
+    ).resolves.toBe(true);
+    await expect(
+      sendMessage(P2, P1).then(content => hasMessage(content))
+    ).resolves.toBe(true);
+
+    // test ready
+    await Promise.all([clickReady(P1), waitForSocket(P2, 'FrameReceived')]);
+    await expect(
+      P2.$x(`//*[contains(text(), 'Other players are ready')]`)
+    ).resolves.toHaveLength(1);
+
+    await Promise.all([clickReady(P2), waitForSocket(P1, 'FrameReceived')]);
+
+    await P1.waitForTimeout(300);
+
+    await expect(
+      Promise.all([P1.$(`.bgio-client`), P2.$(`.bgio-client`)]).then(els =>
+        els.every(el => !!el)
+      )
+    ).resolves.toBe(true);
+
+    // test un read message
+    await toggleChat(P1);
+    await sendMessage(P1, P2);
+    await sendMessage(P1, P2);
+
+    await P2.waitFor(300);
+    await expect(getUnreadMessage(P2)).resolves.toBe(2);
+    await toggleChat(P2);
+    await P2.waitFor(500);
+    await expect(getUnreadMessage(P2)).resolves.toBe(undefined);
   });
 
   test.skip(
