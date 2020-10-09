@@ -6,7 +6,7 @@ describe('MatchService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [MatchService]
+      providers: [MatchService, { provide: 'MONGODB_URI', useValue: '' }]
     }).compile();
 
     service = module.get<MatchService>(MatchService);
