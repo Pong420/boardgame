@@ -119,15 +119,15 @@ describe('Chat', () => {
       )
     ).resolves.toBe(true);
 
-    // test un read message
+    // test unread message
     await toggleChat(P1);
     await sendMessage(P1, P2);
     await sendMessage(P1, P2);
 
-    await P2.waitFor(300);
+    await P2.waitForTimeout(500);
     await expect(getUnreadMessage(P2)).resolves.toBe(2);
     await toggleChat(P2);
-    await P2.waitFor(500);
+    await P2.waitForTimeout(500);
     await expect(getUnreadMessage(P2)).resolves.toBe(undefined);
   });
 

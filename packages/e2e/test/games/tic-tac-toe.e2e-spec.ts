@@ -162,7 +162,7 @@ describe('Tic-Tac-Toe', () => {
       // TODO: check users are at in same room
       await Promise.all(
         [P1, P2].map(async page => {
-          await page.waitFor(300);
+          await page.waitForTimeout(500);
           const [btn] = await gePlayAgainButton(page);
           await Promise.all([
             expect(page).waitForResponse('play-again'),
