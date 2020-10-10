@@ -2,7 +2,7 @@ import router, { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { createBoardgameStorage, BOARDGAME_SOTRAGE } from '@/utils/storage';
+import { createBoardgameStorage, BOARDGAME_STORAGE } from '@/utils/storage';
 import { JSONParse } from '@/utils/JSONParse';
 
 const activate = createBoardgameStorage<number>('BOARDGAME_ACTIVATE', 0);
@@ -13,7 +13,7 @@ export function useActivate() {
 
   useEffect(() => {
     const subscription = fromEvent<StorageEvent>(window, 'storage')
-      .pipe(filter(event => event.key === BOARDGAME_SOTRAGE))
+      .pipe(filter(event => event.key === BOARDGAME_STORAGE))
       .subscribe(event => {
         const newValue = event.newValue
           ? JSONParse<Record<string, unknown>>(event.newValue, {})

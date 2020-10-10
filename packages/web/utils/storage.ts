@@ -58,7 +58,7 @@ export function storageSupport() {
   return false;
 }
 
-export const BOARDGAME_SOTRAGE = 'BOARDGAME_SOTRAGE';
+export const BOARDGAME_STORAGE = 'BOARDGAME_STORAGE';
 
 export const createBoardgameStorage: <T>(
   key: string,
@@ -66,7 +66,7 @@ export const createBoardgameStorage: <T>(
 ) => Storage<T> = createStorage(
   !storageSupport() || typeof localStorage === 'undefined'
     ? undefined
-    : mixStorage('BOARDGAME_SOTRAGE', localStorage)
+    : mixStorage('BOARDGAME_STORAGE', localStorage)
 );
 
 export const createLocalStorage: <T>(

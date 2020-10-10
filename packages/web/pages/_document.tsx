@@ -16,54 +16,11 @@ class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head />
+        <Head>
+          <link rel="preload" href="/preload.js" as="script" />
+        </Head>
         <body>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-              (() => {
-                function get(key, defaultValue) {
-                  try {
-                    return localStorage.getItem(key) || defaultValue;
-                  } catch (error) {
-                    return defaultValue;
-                  }
-                }
-              
-                var THEME = 'BOARDGAME_THEME';
-                window.__initialTheme = get(THEME, 'dark');
-                window.__setTheme = function (theme) {
-                  document.documentElement.setAttribute('data-theme', theme);
-                  document.documentElement.classList[theme === 'dark' ? 'add' : 'remove'](
-                    'bp3-dark'
-                  );
-                  try {
-                    localStorage.setItem(THEME, theme);
-                  } catch {}
-                };
-                window.__setTheme(window.__initialTheme);
-              
-                var SCREEN_WIDTH = 'BOARDGAME_SCREEN_WIDTH';
-                window.__initialScreenWidth = get(SCREEN_WIDTH, 'limited');
-                window.__setScreenWidth = function (screenWidth) {
-                  document.documentElement.setAttribute('data-screen-width', screenWidth);
-                  try {
-                    localStorage.setItem(SCREEN_WIDTH, screenWidth);
-                  } catch {}
-                };
-                window.__setScreenWidth(window.__initialScreenWidth);
-
-                document.documentElement.setAttribute(
-                  'data-platform',
-                  navigator.platform.replace(
-                    /[A-Z]/g,
-                    (char, idx) => (idx === 0 ? '' : '-') + char.toLowerCase()
-                  )
-                );
-              })();
-            `
-            }}
-          />
+          <script src="/preload.js" />
           <Main />
           <NextScript />
         </body>

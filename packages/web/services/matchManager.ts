@@ -9,7 +9,7 @@ import {
   switchMap
 } from 'rxjs/operators';
 import { JSONParse } from '@/utils/JSONParse';
-import { createBoardgameStorage, BOARDGAME_SOTRAGE } from '@/utils/storage';
+import { createBoardgameStorage, BOARDGAME_STORAGE } from '@/utils/storage';
 import { pushHistoryState } from '@/utils/historyState';
 import { gameMetaMap } from '@/games';
 import { leaveMatch } from './services';
@@ -135,7 +135,7 @@ if (typeof window !== 'undefined') {
 
   fromEvent<StorageEvent>(window, 'storage')
     .pipe(
-      filter(event => event.key === BOARDGAME_SOTRAGE),
+      filter(event => event.key === BOARDGAME_STORAGE),
       exhaustMap(event => {
         const oldState = parse(event.oldValue);
         const newState = parse(event.newValue);
