@@ -52,8 +52,8 @@ export const PreferencesProvider: React.FC = ({ children }) => {
   useEffect(() => {
     // mainly for big-two
     if (previous.current.screenWidth !== preferences.screenWidth) {
-      window.dispatchEvent(new Event('resize'));
       window.__setScreenWidth(preferences.screenWidth);
+      window.dispatchEvent(new Event('resize'));
     }
 
     if (previous.current.theme !== preferences.theme) {
