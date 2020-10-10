@@ -3,9 +3,16 @@
 .game-list {
   @include sq-dimen(100%);
   @include flex($flex-direction: column);
-  max-width: 320px;
   border-right: $divider;
-  flex: 0 0 auto;
+
+  @media (min-width: $break-point+1) {
+    max-width: 320px;
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: $break-point) {
+    flex: 1 1 auto;
+  }
 }
 
 .game-list-content {

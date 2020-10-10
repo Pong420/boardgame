@@ -3,6 +3,13 @@
 .lobby {
   @include dimen(100%);
   @include flex($flex-direction: column);
+
+  @media (max-width: $break-point) {
+    // game-list
+    + * {
+      display: none;
+    }
+  }
 }
 
 $gap: 20px;

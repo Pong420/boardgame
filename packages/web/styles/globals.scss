@@ -78,7 +78,7 @@ a:hover {
 
 .layout {
   @include sq-dimen(100%);
-  @include flex();
+  @include flex($flex-direction: row-reverse);
   margin: auto;
   border-left: $divider;
   border-right: $divider;

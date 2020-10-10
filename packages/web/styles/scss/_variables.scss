@@ -1,5 +1,7 @@
 $header-height: 50px;
 
+$break-point: 768px;
+
 $divider: 1px solid var(--divider-color);
 
 @function get-color($color, $tone: primary) {

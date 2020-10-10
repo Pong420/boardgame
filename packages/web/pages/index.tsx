@@ -9,8 +9,8 @@ export default function HomePage() {
       <Head>
         <title>Boardgame | Home</title>
       </Head>
-      <GameList />
       <Home />
+      <GameList />
     </>
   );
 }
