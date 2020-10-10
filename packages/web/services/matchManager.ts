@@ -1,19 +1,11 @@
 import router from 'next/router';
 import { AxiosError } from 'axios';
-import { fromEvent, defer, empty, timer, throwError } from 'rxjs';
-import {
-  filter,
-  exhaustMap,
-  retryWhen,
-  catchError,
-  switchMap
-} from 'rxjs/operators';
-import { JSONParse } from '@/utils/JSONParse';
-import { createBoardgameStorage, BOARDGAME_STORAGE } from '@/utils/storage';
+import { defer, empty, timer, throwError } from 'rxjs';
+import { exhaustMap, retryWhen, catchError, switchMap } from 'rxjs/operators';
+import { createBoardgameStorage, onBoardgameStorage$ } from '@/utils/storage';
 import { pushHistoryState } from '@/utils/historyState';
 import { gameMetaMap } from '@/games';
 import { leaveMatch } from './services';
-import isEqual from 'lodash/isEqual';
 
 type Common = {
   name: string;
@@ -120,30 +112,11 @@ export function leaveMatchAndRedirect(
 
 // leave match if user try to delete the matchStorage
 if (typeof window !== 'undefined') {
-  const parse = (base: string | null): MultiMatchState | null => {
-    const payload =
-      base && JSONParse<Record<string, string>>(base, {})[matchStorage.key];
-    const state = payload
-      ? JSONParse<(MultiMatchState & { key: string }) | null>(payload)
-      : undefined;
-    if (state) {
-      const { key, ...rest } = state;
-      return rest;
-    }
-    return null;
-  };
-
-  fromEvent<StorageEvent>(window, 'storage')
+  onBoardgameStorage$<MultiMatchState>(matchStorage.key)
     .pipe(
-      filter(event => event.key === BOARDGAME_STORAGE),
-      exhaustMap(event => {
-        const oldState = parse(event.oldValue);
-        const newState = parse(event.newValue);
-
-        return oldState && !isEqual(oldState, newState)
-          ? leaveMatchAndRedirect(oldState)
-          : empty();
-      }),
+      exhaustMap(([oldState]) =>
+        oldState ? leaveMatchAndRedirect(oldState) : empty()
+      ),
       catchError(() => empty())
     )
     .subscribe();

@@ -1,9 +1,6 @@
 import router, { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { fromEvent } from 'rxjs';
-import { filter } from 'rxjs/operators';
-import { createBoardgameStorage, BOARDGAME_STORAGE } from '@/utils/storage';
-import { JSONParse } from '@/utils/JSONParse';
+import { createBoardgameStorage, onBoardgameStorage$ } from '@/utils/storage';
 
 const activate = createBoardgameStorage<number>('BOARDGAME_ACTIVATE', 0);
 
@@ -12,21 +9,19 @@ export function useActivate() {
   const isErrorPage = [pathname, asPath].some(p => p.startsWith('/error'));
 
   useEffect(() => {
-    const subscription = fromEvent<StorageEvent>(window, 'storage')
-      .pipe(filter(event => event.key === BOARDGAME_STORAGE))
-      .subscribe(event => {
-        const newValue = event.newValue
-          ? JSONParse<Record<string, unknown>>(event.newValue, {})
-          : {};
-        // If newValue is not a number. May be deleted by the user
-        if (typeof newValue[activate.key] === 'number') {
-          router.push('/error/Only allow one screen at a time');
-        }
-      });
-
     if (!isErrorPage) {
+      const subscription = onBoardgameStorage$(activate.key).subscribe(
+        ([, newValue]) => {
+          // if newValue is not a number. Most likey user delete the storage
+          if (typeof newValue === 'number') {
+            router.push('/error/Only allow one screen at a time');
+          }
+        }
+      );
+
       activate.save(+new Date());
+
+      return () => subscription.unsubscribe();
     }
-    return () => subscription.unsubscribe();
   }, [isErrorPage]);
 }

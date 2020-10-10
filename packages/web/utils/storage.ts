@@ -1,4 +1,7 @@
+import { fromEvent } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { JSONParse } from './JSONParse';
+import isEqual from 'lodash/isEqual';
 
 export interface Storage<T> {
   key: string;
@@ -86,3 +89,30 @@ export const createSessionStorage: <T>(
     ? undefined
     : sessionStorage
 );
+
+export function onBoardgameStorage$<T>(key: string) {
+  const parse = (base: string | null) => {
+    const payload = base && JSONParse<Record<string, string>>(base, {})[key];
+    const state = payload
+      ? JSONParse<(T & { key: string }) | null>(payload)
+      : undefined;
+    if (state && typeof state === 'object') {
+      const { key, ...rest } = state;
+      return rest;
+    } else if (typeof state !== 'undefined') {
+      return state;
+    }
+    return null;
+  };
+
+  return fromEvent<StorageEvent>(window, 'storage').pipe(
+    filter(event => event.key === BOARDGAME_STORAGE),
+    map(event => {
+      const oldState = parse(event.oldValue);
+      const newState = parse(event.newValue);
+      return !isEqual(oldState, newState)
+        ? ([oldState, newState] as const)
+        : [];
+    })
+  );
+}
