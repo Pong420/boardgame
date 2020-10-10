@@ -18,6 +18,8 @@ class MyDocument extends Document {
       <Html>
         <Head>
           <link rel="preload" href="/preload.js" as="script" />
+          <link rel="preload" href="/font/font.css" as="style" />
+          <link rel="stylesheet" href="/font/font.css" as="style" />
         </Head>
         <body>
           <script src="/preload.js" />
