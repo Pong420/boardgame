@@ -168,15 +168,18 @@ export function CreateMatch({ meta, content, ...props }: Props) {
 
   async function onConfirm() {
     const store = await form.validateFields();
+    const matchID = String(+new Date());
 
     if (store.local) {
       await gotoMatch({
+        matchID,
         local: true,
         name: store.name,
         numPlayers: store.numPlayers
       });
     } else if (store.bot) {
       await gotoMatch({
+        matchID,
         bot: true,
         name: store.name,
         numPlayers: store.numPlayers

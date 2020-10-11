@@ -98,7 +98,8 @@ export function MatchContent({ state, loading, onGameover }: Props) {
         <ClientComponent
           key={idx}
           playerID={`${idx}`}
-          matchID={`${state.name}-${+new Date()}`}
+          matchID={state.matchID}
+          onGameover={idx === 0 ? onGameover : undefined}
         />
       ));
     }
@@ -107,7 +108,8 @@ export function MatchContent({ state, loading, onGameover }: Props) {
       return (
         <ClientComponent
           playerID="0"
-          matchID={`${state.name}-${+new Date()}`}
+          matchID={state.matchID}
+          onGameover={onGameover}
         />
       );
     }

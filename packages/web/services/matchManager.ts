@@ -14,11 +14,13 @@ type Common = {
 export type LocalMatchState = Common & {
   local: boolean;
   numPlayers: number;
+  matchID: string;
 };
 
 export type BotMatchState = Common & {
   bot: boolean;
   numPlayers: number;
+  matchID: string;
 };
 
 export type MultiMatchState = Common & {

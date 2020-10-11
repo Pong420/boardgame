@@ -32,7 +32,7 @@ export default function MatchPage({ name, matchID }: Props) {
         <Head>
           <title>Boardgame | Match | {meta.gameName}</title>
         </Head>
-        {state ? <Match {...state} /> : null}
+        {state ? <Match state={state} /> : null}
       </>
     );
   }

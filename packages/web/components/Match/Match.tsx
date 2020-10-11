@@ -1,111 +1,26 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import router from 'next/router';
-import { useRxAsync } from 'use-rx-hooks';
-import { Toaster } from '@/utils/toaster';
-import { gameMetaMap } from '@/games';
-import { ApiError, Param$GetMatch } from '@/typings';
-import { MatchProvider, useMatchState } from '@/hooks/useMatch';
-import { MatchState, getMatch, matchStorage, isMatchState } from '@/services';
-import { Chat } from '../Chat';
-import { ShareButton } from '../ShareButton';
-import { Preferences } from '../Preferences';
-import { MatchHeader } from './MatchHeader';
-import { MatchContent, onGameover } from './MatchContent';
-import styles from './Match.module.scss';
+import React from 'react';
+import { MatchProvider } from '@/hooks/useMatch';
+import { MatchState, isMatchState } from '@/services';
+import { Redirect } from '../Redirect';
+import { OnlineMatch } from './OnlineMatch';
+import { LocalMatch } from './LocalMatch';
 
-interface State {
-  matchName: string;
-  numPlayers: number;
-  allowSpectate?: boolean;
+interface Props {
+  state: MatchState;
 }
 
-type Props = MatchState & onGameover;
-
-const onFailure = (error: ApiError) => {
-  const state = matchStorage.get();
-
-  if (
-    typeof error == 'object' &&
-    'response' in error &&
-    error.response?.status === 404 &&
-    state
-  ) {
-    matchStorage.save(null);
-  } else {
-    Toaster.apiError('Get Match Failure', error);
+export function Match({ state }: Props) {
+  if (isMatchState(state, 'local') || isMatchState(state, 'bot')) {
+    return <LocalMatch state={state} />;
   }
 
-  router.push(state ? `/lobby/${state.name}` : `/`);
-};
+  if (isMatchState(state, 'multi') || isMatchState(state, 'spectate')) {
+    return (
+      <MatchProvider>
+        <OnlineMatch state={state} />
+      </MatchProvider>
+    );
+  }
 
-function MatchComponent(state: Props) {
-  const { name, matchID }: Partial<Param$GetMatch> =
-    isMatchState(state, 'local') || isMatchState(state, 'bot') ? {} : state;
-
-  const _getMatch = useCallback(async (): Promise<State> => {
-    if (name && matchID) {
-      const { data } = await getMatch({ name, matchID });
-
-      return data.setupData
-        ? {
-            ...data,
-            ...data.setupData,
-            numPlayers: data.players.length
-          }
-        : Promise.reject('Invalid match');
-    }
-    return { matchName: 'Local', numPlayers: 0 };
-  }, [name, matchID]);
-
-  const [{ data, loading }] = useRxAsync(_getMatch, { onFailure });
-  const { matchName } = data || {};
-  const { gameName } = gameMetaMap[state.name];
-  const { started } = useMatchState(['started']);
-  const [isGameover, setIsGameover] = useState<boolean | undefined>();
-
-  useEffect(() => {
-    setIsGameover(false);
-  }, [matchID]);
-
-  return (
-    <div className={styles['match']}>
-      <MatchHeader title={[gameName, matchName].filter(Boolean).join(' - ')}>
-        {isMatchState(state, 'multi') && (
-          <ShareButton
-            gameName={gameName}
-            name={state.name}
-            matchID={state.matchID}
-            playerName={state.playerName}
-          />
-        )}
-        <Preferences disablePlayerName />
-      </MatchHeader>
-      {(isMatchState(state, 'local') ||
-        isMatchState(state, 'bot') ||
-        started) && (
-        <MatchContent
-          state={state}
-          loading={!data || loading}
-          onGameover={() => setIsGameover(true)}
-        />
-      )}
-      {isMatchState(state, 'multi') && data && (
-        <Chat
-          matchID={state.matchID}
-          playerID={state.playerID}
-          playerName={state.playerName}
-          credentials={state.credentials}
-          isGameover={isGameover}
-        />
-      )}
-    </div>
-  );
-}
-
-export function Match(props: Props) {
-  return (
-    <MatchProvider>
-      <MatchComponent {...props} />
-    </MatchProvider>
-  );
+  return <Redirect />;
 }
