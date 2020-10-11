@@ -7,10 +7,10 @@ import { ChatEvent, WsError, Response$Spectate } from '@/typings';
 import { Toaster } from '@/utils/toaster';
 import { Player, useMatch } from '@/hooks/useMatch';
 import { PlayerReadyTable } from './PlayerReadyTable';
-import { Loading, MatchContent, Gameover } from '../Match';
+import { Loading, MatchContent, onGameover } from '../Match';
 
 type Props = SpectateState &
-  Gameover & {
+  onGameover & {
     onNextMatch?: (nextMatchID: string) => void;
   };
 
