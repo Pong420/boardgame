@@ -16,6 +16,11 @@ export type LocalMatchState = Common & {
   numPlayers: number;
 };
 
+export type BotMatchState = Common & {
+  bot: boolean;
+  numPlayers: number;
+};
+
 export type MultiMatchState = Common & {
   matchID: string;
   playerID: string;
@@ -30,8 +35,13 @@ export type SpectateState = Common & {
   isSpectator: boolean;
 };
 
-export type MatchState = LocalMatchState | MultiMatchState | SpectateState;
+export type MatchState =
+  | LocalMatchState
+  | BotMatchState
+  | MultiMatchState
+  | SpectateState;
 
+export function isMatchState(s: unknown, type: 'bot'): s is BotMatchState;
 export function isMatchState(s: unknown, type: 'local'): s is LocalMatchState;
 export function isMatchState(s: unknown, type: 'multi'): s is MultiMatchState;
 export function isMatchState(s: unknown, type: 'spectate'): s is SpectateState;
@@ -40,6 +50,8 @@ export function isMatchState(state: unknown, type: string) {
     switch (type) {
       case 'local':
         return 'local' in state;
+      case 'bot':
+        return 'bot' in state;
       case 'multi':
         return 'playerName' in state;
       case 'spectate':

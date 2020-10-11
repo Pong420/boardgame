@@ -21,6 +21,7 @@ import { PlayerNameControl } from '../PlayerNameControl';
 interface Store extends Param$CreateMatch {
   playerName: string;
   local?: boolean;
+  bot?: boolean;
 }
 
 export interface Create {
@@ -29,6 +30,11 @@ export interface Create {
 
 interface Props extends Create, ButtonPopoverProps {
   content?: string;
+}
+
+interface CreateMatchFormProps extends FormProps<Store> {
+  numPlayersOps: number[];
+  bot?: boolean;
 }
 
 const { Form, FormItem, useForm } = createForm<Store>();
@@ -54,19 +60,29 @@ function createAndJoinMatch({ playerName, local, name, ...reset }: Store) {
   );
 }
 
-function HiddenIfLocal(props: FormItemProps<Store>) {
+type ItemProps = FormItemProps<Store> & {
+  deps?: undefined;
+  flag?: (keyof Store)[];
+};
+
+function HiddenIf({ flag = ['local', 'bot'], ...props }: ItemProps) {
   return (
-    <FormItem deps={['local']} noStyle>
-      {({ local }) => (local ? <div /> : <FormItem {...props} />)}
+    <FormItem deps={flag} noStyle>
+      {state => {
+        // const hidden = target.some(key => !!state[key] && props.name !== key);
+        const hidden = flag.some(key => !!state[key]);
+        return hidden ? <div /> : <FormItem {...props} />;
+      }}
     </FormItem>
   );
 }
 
 function CreateMatchForm({
+  bot,
   numPlayersOps,
   initialValues,
   ...props
-}: FormProps<Store> & { numPlayersOps: number[] }) {
+}: CreateMatchFormProps) {
   return (
     <Form
       {...props}
@@ -77,11 +93,17 @@ function CreateMatchForm({
         setupData: { matchName: '', allowSpectate: true }
       }}
     >
-      <FormItem name="local" valuePropName="checked">
+      <HiddenIf name="local" valuePropName="checked" flag={['bot']}>
         <Checkbox>Local</Checkbox>
-      </FormItem>
+      </HiddenIf>
 
-      <HiddenIfLocal
+      {bot && (
+        <HiddenIf name="bot" valuePropName="checked" flag={['local']}>
+          <Checkbox>Bot</Checkbox>
+        </HiddenIf>
+      )}
+
+      <HiddenIf
         label="Your Name"
         name="playerName"
         validators={[validators.required('Please input your name')]}
@@ -92,9 +114,9 @@ function CreateMatchForm({
           rightIcon="edit"
           placehodler="Click to type your name"
         />
-      </HiddenIfLocal>
+      </HiddenIf>
 
-      <HiddenIfLocal
+      <HiddenIf
         label="Match Name"
         name={['setupData', 'matchName']}
         validators={[
@@ -103,7 +125,7 @@ function CreateMatchForm({
         ]}
       >
         <Input />
-      </HiddenIfLocal>
+      </HiddenIf>
 
       <FormItem
         label="Number of Players"
@@ -114,7 +136,7 @@ function CreateMatchForm({
         <HTMLSelect fill options={numPlayersOps} />
       </FormItem>
 
-      <HiddenIfLocal
+      <HiddenIf
         label="Description ( Optional )"
         name={['setupData', 'description']}
         validators={[
@@ -122,18 +144,15 @@ function CreateMatchForm({
         ]}
       >
         <TextArea />
-      </HiddenIfLocal>
+      </HiddenIf>
 
-      <HiddenIfLocal
-        name={['setupData', 'allowSpectate']}
-        valuePropName="checked"
-      >
+      <HiddenIf name={['setupData', 'allowSpectate']} valuePropName="checked">
         <Checkbox>Spectate</Checkbox>
-      </HiddenIfLocal>
+      </HiddenIf>
 
-      <HiddenIfLocal name="unlisted" valuePropName="checked">
+      <HiddenIf name="unlisted" valuePropName="checked">
         <Checkbox>Private</Checkbox>
-      </HiddenIfLocal>
+      </HiddenIf>
 
       <FormItem name="name" noStyle>
         <div hidden />
@@ -145,13 +164,20 @@ function CreateMatchForm({
 export function CreateMatch({ meta, content, ...props }: Props) {
   const [form] = useForm();
   const [{ playerName }, updatePrefrences] = usePreferences();
-  const { name, gameName, numPlayers } = meta;
+  const { name, gameName, numPlayers, bot } = meta;
 
   async function onConfirm() {
     const store = await form.validateFields();
+
     if (store.local) {
       await gotoMatch({
         local: true,
+        name: store.name,
+        numPlayers: store.numPlayers
+      });
+    } else if (store.bot) {
+      await gotoMatch({
+        bot: true,
         name: store.name,
         numPlayers: store.numPlayers
       });
@@ -179,8 +205,10 @@ export function CreateMatch({ meta, content, ...props }: Props) {
         openConfirmDialog({
           title: `Create ${gameName} Match`,
           onConfirm,
+          onClosed: () => form.resetFields(),
           children: (
             <CreateMatchForm
+              bot={bot}
               form={form}
               initialValues={{ name, playerName }}
               onValuesChange={({ playerName }) =>

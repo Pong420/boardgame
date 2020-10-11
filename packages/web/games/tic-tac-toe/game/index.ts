@@ -56,10 +56,10 @@ export const game: TicTacToeGame = {
 
   endIf: (G, ctx): TicTacToeGameOver | undefined => {
     if (IsVictory(G.cells)) {
-      return ctx.currentPlayer;
+      return { winner: ctx.currentPlayer };
     }
     if (IsDraw(G.cells)) {
-      return 'darw';
+      return { draw: true };
     }
   },
 
@@ -70,7 +70,7 @@ export const game: TicTacToeGame = {
 
   ai: {
     enumerate: G => {
-      const r: Array<{ move: string; args: Cell[] }> = [];
+      const r = [];
       for (let i = 0; i < 9; i++) {
         if (G.cells[i] === null) {
           r.push({ move: 'clickCell', args: [i] });

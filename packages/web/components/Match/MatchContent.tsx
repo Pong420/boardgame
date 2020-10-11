@@ -2,22 +2,23 @@ import React, { useMemo, useState, ReactNode, ComponentProps } from 'react';
 import dynamic from 'next/dynamic';
 import { Game } from 'boardgame.io';
 import { Client } from 'boardgame.io/react';
+import { MCTSBot } from 'boardgame.io/ai';
 import { SocketIO, Local } from 'boardgame.io/multiplayer';
 import { MatchState, isMatchState } from '@/services';
-import { Redirect } from '../Redirect';
 import { Loading } from './CenterText';
 import styles from './Match.module.scss';
 
-export interface Gameover {
+export interface onGameover {
   onGameover?: () => void;
 }
 
-interface Props extends Gameover {
+interface Props extends onGameover {
   state: MatchState;
   loading?: boolean;
 }
 
-type ClientProps = ComponentProps<ReturnType<typeof Client>> & Gameover;
+type ClientProps = ComponentProps<ReturnType<typeof Client>> & onGameover;
+type ClientOptions = Parameters<typeof Client>[0];
 
 const handleImport = (name: string) =>
   Promise.all([
@@ -27,14 +28,29 @@ const handleImport = (name: string) =>
 
 export function MatchContent({ state, loading, onGameover }: Props) {
   const { name } = state;
-  const [clientOpts] = useState<Partial<Parameters<typeof Client>[0]>>({
-    ...(isMatchState(state, 'local')
-      ? { numPlayers: state.numPlayers, multiplayer: Local() as any }
-      : {
-          multiplayer: SocketIO({
-            server: typeof window === 'undefined' ? '' : window.location.origin
-          })
-        })
+  const [clientOpts] = useState<Partial<ClientOptions>>(() => {
+    if (isMatchState(state, 'local')) {
+      return {
+        numPlayers: state.numPlayers,
+        multiplayer: Local() as ClientOptions['multiplayer']
+      };
+    }
+
+    if (isMatchState(state, 'bot')) {
+      const bots: Record<string, typeof MCTSBot> = {};
+      for (let i = 1; i < state.numPlayers; i++) {
+        bots[i] = MCTSBot;
+      }
+      return {
+        multiplayer: Local({ bots }) as ClientOptions['multiplayer']
+      };
+    }
+
+    return {
+      multiplayer: SocketIO({
+        server: typeof window === 'undefined' ? '' : window.location.origin
+      })
+    };
   });
 
   const { ClientComponent } = useMemo(() => {
@@ -87,6 +103,15 @@ export function MatchContent({ state, loading, onGameover }: Props) {
       ));
     }
 
+    if (isMatchState(state, 'bot')) {
+      return (
+        <ClientComponent
+          playerID="0"
+          matchID={`${state.name}-${+new Date()}`}
+        />
+      );
+    }
+
     if (isMatchState(state, 'multi')) {
       return (
         <ClientComponent
@@ -112,7 +137,8 @@ export function MatchContent({ state, loading, onGameover }: Props) {
       return <Loading />;
     }
 
-    return <Redirect />;
+    // return <Redirect />;
+    return null;
   };
 
   return (

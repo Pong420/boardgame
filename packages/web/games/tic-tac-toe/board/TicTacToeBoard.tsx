@@ -67,13 +67,13 @@ export function TicTacToeBoard(props: TicTacToeBoardProps) {
 
     winner = (
       <Text>
-        {props.ctx.gameover === 'draw'
+        {props.ctx.gameover.draw
           ? 'Draw'
           : props.playerID
-          ? props.ctx.gameover === props.playerID
+          ? props.ctx.gameover.winner === props.playerID
             ? 'You win'
             : 'You lose'
-          : `Player ${symbol(props.ctx.gameover)} win`}
+          : `Player ${symbol(props.ctx.gameover.winner || '')} win`}
       </Text>
     );
   }

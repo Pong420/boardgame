@@ -20,6 +20,14 @@ export interface GameMeta {
   numPlayers: number[];
   description?: string;
   spectate?: 'all-players' | 'single-player';
+  bot?: boolean;
+}
+
+// To use bots in boardgame.io/ai, `ctx.gameover` must be this format
+export interface Gameover {
+  score?: number;
+  draw?: boolean;
+  winner?: string; // playerID
 }
 
 export type {

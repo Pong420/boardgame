@@ -1,5 +1,6 @@
 import { Game, Ctx, PhaseConfig } from 'boardgame.io';
 import { BoardProps } from 'boardgame.io/react';
+import { Gameover } from '@/typings';
 
 type Name = 'tic-tac-toe';
 
@@ -20,7 +21,7 @@ export interface TicTacToeState {
   cells: Cell[];
 }
 
-export type TicTacToeGameOver = string | null;
+export interface TicTacToeGameOver extends Gameover {}
 
 export interface TicTacToeCtx extends Ctx {
   events: NonNullable<Required<Ctx['events']>>;
@@ -31,7 +32,7 @@ export interface TicTacToeCtx extends Ctx {
 export type TicTacToeGame = Game<TicTacToeState, TicTacToeCtx> & { name: Name };
 export type TicTacToePlayerView = TicTacToeGame['playerView'];
 export type TicTacToePhaseConfig = PhaseConfig<TicTacToeState, TicTacToeCtx>;
-export type TicTacToeBoardProps = BoardProps<TicTacToeState> & {
+export type TicTacToeBoardProps = Omit<BoardProps<TicTacToeState>, 'ctx'> & {
   credentials?: string | null;
   isConnected?: boolean;
   ctx: TicTacToeCtx;

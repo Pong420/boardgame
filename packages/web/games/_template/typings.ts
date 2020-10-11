@@ -1,5 +1,6 @@
 import { Game, Ctx, PhaseConfig } from 'boardgame.io';
 import { BoardProps } from 'boardgame.io/react';
+import { Gameover } from '@/typings';
 import { moves } from './game/moves';
 
 type Name = 'game-name';
@@ -38,8 +39,7 @@ export type Prefix_Moves = {
   [K in keyof typeof moves]: OmitArg<ExtractMove<typeof moves[K]>>;
 };
 
-// optional
-export type Prefix_Gameover = string;
+export interface Prefix_Gameover extends Gameover {}
 
 export interface Prefix_Ctx extends Ctx {
   events: NonNullable<Required<Ctx['events']>>;

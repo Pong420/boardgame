@@ -71,7 +71,6 @@ node scripts/clone.js NewGameName
 
 ### TODO
 
-- [ ] Tic-Tac-Toe AI
 - [ ] Display player name
 - [ ] Mongodb TTL
 - [ ] i18n

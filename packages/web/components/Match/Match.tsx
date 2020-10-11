@@ -10,7 +10,7 @@ import { Chat } from '../Chat';
 import { ShareButton } from '../ShareButton';
 import { Preferences } from '../Preferences';
 import { MatchHeader } from './MatchHeader';
-import { MatchContent, Gameover } from './MatchContent';
+import { MatchContent, onGameover } from './MatchContent';
 import styles from './Match.module.scss';
 
 interface State {
@@ -19,7 +19,7 @@ interface State {
   allowSpectate?: boolean;
 }
 
-type Props = MatchState & Gameover;
+type Props = MatchState & onGameover;
 
 const onFailure = (error: ApiError) => {
   const state = matchStorage.get();
@@ -39,12 +39,8 @@ const onFailure = (error: ApiError) => {
 };
 
 function MatchComponent(state: Props) {
-  const { name, matchID }: Partial<Param$GetMatch> = isMatchState(
-    state,
-    'local'
-  )
-    ? {}
-    : state;
+  const { name, matchID }: Partial<Param$GetMatch> =
+    isMatchState(state, 'local') || isMatchState(state, 'bot') ? {} : state;
 
   const _getMatch = useCallback(async (): Promise<State> => {
     if (name && matchID) {
@@ -84,7 +80,9 @@ function MatchComponent(state: Props) {
         )}
         <Preferences disablePlayerName />
       </MatchHeader>
-      {(isMatchState(state, 'local') || started) && (
+      {(isMatchState(state, 'local') ||
+        isMatchState(state, 'bot') ||
+        started) && (
         <MatchContent
           state={state}
           loading={!data || loading}

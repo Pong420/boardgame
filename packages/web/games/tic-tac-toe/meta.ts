@@ -9,5 +9,6 @@ export const TicTacToeMeta: GameMeta = {
   numPlayers: [2],
   author: 'boardgame.io',
   description: '',
-  spectate: 'all-players'
+  spectate: 'all-players',
+  bot: true
 };
