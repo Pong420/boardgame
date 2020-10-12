@@ -29,13 +29,15 @@ describe('Chat', () => {
       P1.waitForNavigation({ waitUntil: 'networkidle0' }),
       link.click()
     ]);
-    await createMatch({ playerName: P1Name, matchName });
-    await waitForSocketReady(P1);
+    await Promise.all([
+      createMatch({ playerName: P1Name, matchName }),
+      waitForSocketReady(P1)
+    ]);
 
     P2 = await createNewPage();
     await P2.waitForNavigation({ waitUntil: 'networkidle0' });
-    await joinMatch(P2, { matchName, playerName: P2Name });
     await Promise.all([
+      joinMatch(P2, { matchName, playerName: P2Name }),
       waitForSocketReady(P2),
       waitForSocket(P1, 'FrameReceived') // P2 join message
     ]);
