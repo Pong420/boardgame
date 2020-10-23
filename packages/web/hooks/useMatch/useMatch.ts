@@ -26,10 +26,6 @@ export function useMatchState<T extends Key>(
   const [state, setState] = useState<UseMatchState>(initialState);
   const [deps] = useState(_deps);
 
-  if (state === undefined) {
-    throw new Error('useMatchState must be used within a ChatProvider');
-  }
-
   useEffect(() => {
     const subscription = subject.subscribe(newState => {
       setState(state => {
@@ -73,6 +69,32 @@ export function useChatMessage(id: string) {
 
   return [msg, unread] as const;
 }
+
+export function usePlayerName(playerIDs: string[]) {
+  const [playerNames, setPlayerNames] = useState<Array<string | null>>([]);
+
+  useEffect(() => {
+    const subscription = subject.subscribe(state => {
+      setPlayerNames(names => {
+        let hasChange = false;
+        const playerNames = playerIDs.map(playerID => {
+          const idx = Number(playerID);
+          const name = state.players[idx]?.playerName;
+          if (isNaN(idx) || typeof name === 'undefined') {
+            throw new Error('Invalid playerID');
+          }
+          hasChange = hasChange || name !== names[idx];
+          return name;
+        });
+        return hasChange ? playerNames : names;
+      });
+    });
+    return () => subscription.unsubscribe();
+  }, [playerIDs]);
+
+  return playerNames;
+}
+
 
 export const MatchProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(matchReducer, initialState);

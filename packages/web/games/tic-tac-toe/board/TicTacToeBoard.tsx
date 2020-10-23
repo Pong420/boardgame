@@ -8,6 +8,7 @@
 
 import React, { ReactNode } from 'react';
 import { Disconnected } from '@/components/Match';
+import { usePlayerName } from '@/hooks/useMatch';
 import { TicTacToeBoardProps } from '../typings';
 import { Cell } from './Cell';
 import { Text } from './Text';
@@ -16,6 +17,10 @@ const symbol = (playerID: string) =>
   (({ '0': 'O', '1': '✕' } as Record<string, string>)[playerID]);
 
 export function TicTacToeBoard(props: TicTacToeBoardProps) {
+  const ohterPlayerName = usePlayerName(
+    props.ctx.playerID ? (props.ctx.playerID === '0' ? '1' : '0') : ''
+  );
+
   const isActive = (id: number) => {
     return props.isActive && props.G.cells[id] === null;
   };
