@@ -3,10 +3,10 @@ import { SpectateState } from '@/services';
 import { gameMetaMap } from '@/games';
 import { MatchProvider } from '@/hooks/useMatch';
 import { useGetMach } from '@/hooks/useGetMach';
-import { Loading } from '../Match';
+import { Loading } from '../CenterText';
+import { Preferences } from '../Preferences';
 import { SpectatorHeader } from './SpectatorHeader';
 import { SpectatorContent } from './SpectatorContent';
-import { Preferences } from '../Preferences';
 import styles from './Spectator.module.scss';
 
 type Props = SpectateState;

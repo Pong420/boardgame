@@ -20,7 +20,7 @@ import { Toaster } from '@/utils/toaster';
 import { ChatInput } from './ChatInput';
 import { ChatBubble } from './ChatBubble';
 import { UnreadCount } from './UnreadCount';
-import { Disconnected, Loading } from '../Match/CenterText';
+import { Disconnected, Loading } from '../CenterText';
 import { PlayAgain } from '../PlayAgain';
 import { ReadyButton } from '../ReadyButton';
 import styles from './Chat.module.scss';

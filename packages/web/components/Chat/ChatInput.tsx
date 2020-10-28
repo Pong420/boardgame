@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button, Popover } from '@blueprintjs/core';
-import { Loading } from '../Match/CenterText';
+import { Loading } from '../CenterText';
 import { Input } from '../Input';
 import type { EmojiPickerProps } from './EmojiPicker';
 import styles from './Chat.module.scss';

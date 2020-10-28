@@ -5,7 +5,7 @@ import { Client } from 'boardgame.io/react';
 import { MCTSBot } from 'boardgame.io/ai';
 import { SocketIO, Local } from 'boardgame.io/multiplayer';
 import { MatchState, isMatchState } from '@/services';
-import { Loading } from './CenterText';
+import { Loading } from '../CenterText';
 import styles from './Match.module.scss';
 
 export interface onGameover {

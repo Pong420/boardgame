@@ -7,7 +7,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import { Disconnected } from '@/components/Match';
+import { Disconnected } from '@/components/CenterText';
 import { TicTacToeBoardProps } from '../typings';
 import { Cell } from './Cell';
 import { Text } from './Text';

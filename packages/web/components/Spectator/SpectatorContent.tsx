@@ -7,7 +7,8 @@ import { ChatEvent, WsError, Response$Spectate } from '@/typings';
 import { Toaster } from '@/utils/toaster';
 import { Player, useMatch } from '@/hooks/useMatch';
 import { PlayerReadyTable } from './PlayerReadyTable';
-import { Loading, MatchContent, onGameover } from '../Match';
+import { MatchContent, onGameover } from '../Match';
+import { Loading } from '../CenterText';
 
 type Props = SpectateState &
   onGameover & {
