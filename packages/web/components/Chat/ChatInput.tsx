@@ -1,22 +1,16 @@
 import React, { ChangeEvent, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { PickerProps, BaseEmoji } from 'emoji-mart';
 import { Button, Popover } from '@blueprintjs/core';
-import { usePreferencesState } from '@/services';
-import { Input } from '../Input';
 import { Loading } from '../Match/CenterText';
+import { Input } from '../Input';
+import type { EmojiPickerProps } from './EmojiPicker';
 import styles from './Chat.module.scss';
 
 interface Props {
   onSend: (value: string) => void;
 }
 
-const Picker = dynamic<PickerProps>(
-  () => import('emoji-mart').then(comp => comp.Picker),
-  { loading: Loading, ssr: false }
-);
-
-const icon = (
+export const emojiSvgIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -34,9 +28,16 @@ const icon = (
   </svg>
 );
 
+const EmojiPicker = dynamic<EmojiPickerProps>(
+  () =>
+    import(/* webpackChunkName: "emoji-picker" */ './EmojiPicker').then(
+      ({ EmojiPicker }) => EmojiPicker
+    ),
+  { loading: Loading, ssr: false }
+);
+
 export function ChatInput({ onSend }: Props) {
   const [value, setValue] = useState('');
-  const { theme } = usePreferencesState();
   const send = () => {
     if (value) {
       onSend(value);
@@ -55,19 +56,14 @@ export function ChatInput({ onSend }: Props) {
       <Popover
         popoverClassName={styles['emoji-popover']}
         content={
-          <Picker
-            autoFocus
-            showPreview={false}
-            showSkinTones={false}
-            theme={theme}
-            color="var(--accent-color)"
-            onSelect={(emoji: BaseEmoji) => {
+          <EmojiPicker
+            onSelect={emoji => {
               setValue(value => `${value}${emoji.colons}`);
             }}
           />
         }
       >
-        <Button minimal icon={icon}></Button>
+        <Button icon={emojiSvgIcon} minimal />
       </Popover>
       <Input
         value={value}

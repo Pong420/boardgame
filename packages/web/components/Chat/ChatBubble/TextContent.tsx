@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { EmojiProps } from 'emoji-mart';
+import type { EmojiProps } from 'emoji-mart';
 import styles from './ChatBubble.module.scss';
 
 const colons = `:[a-zA-Z0-9-_+]+:`;
