@@ -5,6 +5,7 @@
 @import './mixins/position';
 @import './mixins/size';
 @import './mixins/textOverflow';
+@import './mixins/font';
 
 @mixin header() {
   @include dimen(100%, $header-height);
