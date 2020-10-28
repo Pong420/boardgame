@@ -1,7 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
 import { GetStaticProps, GetStaticPaths } from 'next';
-import { GameList } from '@/components/GameList';
 import { Lobby } from '@/components/Lobby';
 import { gameMetaMap, gameMetadata } from '@/games';
 
@@ -13,7 +12,7 @@ interface Props {
   name?: string;
 }
 
-export default function LobbyPage({ name }: Props) {
+function LobbyPage({ name }: Props) {
   const meta = name && gameMetaMap[name];
   if (meta) {
     return (
@@ -22,12 +21,15 @@ export default function LobbyPage({ name }: Props) {
           <title>Boardgame | Lobby | {meta.gameName}</title>
         </Head>
         <Lobby {...meta} />
-        <GameList />
       </>
     );
   }
   return null;
 }
+
+LobbyPage.gameList = true;
+
+export default LobbyPage;
 
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
   return {

@@ -1,16 +1,18 @@
 import React from 'react';
 import Head from 'next/head';
 import { Home } from '@/components/Home';
-import { GameList } from '@/components/GameList';
 
-export default function HomePage() {
+function HomePage() {
   return (
     <>
       <Head>
         <title>Boardgame | Home</title>
       </Head>
       <Home />
-      <GameList />
     </>
   );
 }
+
+HomePage.gameList = true;
+
+export default HomePage;

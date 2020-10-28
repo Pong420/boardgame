@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { GameListHeader } from './GameListHeader';
 import { GameMeta } from '@/typings';
 import { gameMetadata } from '@/games';
@@ -18,7 +19,7 @@ export function GameListItem({ meta }: ItemProps) {
     <div className={styles['game-icon']}>
       {icon ? (
         typeof icon === 'string' ? (
-          <img src={icon} alt={icon} />
+          <Image src={icon} alt={`${gameName}-icon`} unsized />
         ) : (
           icon
         )

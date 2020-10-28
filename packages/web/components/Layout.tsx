@@ -1,15 +1,17 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import router from 'next/router';
 import { defer } from 'rxjs';
+import { GameList } from '@/components/GameList';
 import { useActivate } from '@/hooks/useActivate';
 import { storageSupport } from '@/utils/storage';
 import { gotoMatch, matchStorage } from '@/services';
 
 interface LayoutProps {
   children?: ReactNode;
+  gameList?: boolean;
 }
 
-export const Layout = ({ children }: LayoutProps) => {
+export const Layout = ({ children, gameList = false }: LayoutProps) => {
   const [ready, setReady] = useState(false);
 
   useActivate();
@@ -32,5 +34,10 @@ export const Layout = ({ children }: LayoutProps) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  return ready ? <div className="layout">{children}</div> : null;
+  return ready ? (
+    <div className="layout">
+      {gameList && <GameList />}
+      {children}
+    </div>
+  ) : null;
 };
